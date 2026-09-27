@@ -1,0 +1,9 @@
+/*
+ * src/index.css dagi qatlamsiz `button, a, input { color: inherit }` qoidasi Tailwind'ning
+ * qatlamli `text-*` utilitalarini yengib qo'yadi (bg-ink tugmalarda matn ko'rinmaydi).
+ * Bu qoida rangni oxirgi e'lon qilingan qatlamga (utilities) qaytaradi — ya'ni Tailwind
+ * mo'ljallagan kaskadni tiklaydi, boshqa hech narsani o'zgartirmaydi. Radix portallari
+ * (Modal, Drawer, menyular) document.body ichida ochilgani uchun global yoziladi.
+ * Asl yechim: src/index.css dagi base qoidalarni `@layer base` ichiga olish.
+ */
+html :is(button, a, input, select, textarea) { color: revert-layer; }

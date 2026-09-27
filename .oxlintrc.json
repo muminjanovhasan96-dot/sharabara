@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "react",
+    "typescript",
+    "unicorn"
+  ],
+  "rules": {
+    "react/only-export-components": "off",
+    "no-unused-vars": "warn",
+    "react/static-components": "off"
+  },
+  "ignorePatterns": [
+    "dist",
+    "dev-dist",
+    "coverage",
+    "node_modules",
+    "screenshots",
+    "test-results",
+    "playwright-report"
+  ]
+}

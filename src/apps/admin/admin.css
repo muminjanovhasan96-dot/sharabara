@@ -1,0 +1,24 @@
+/*
+ * «Toza bozor» — admin qobig'i uchun mahalliy qoidalar.
+ * src/design dagi umumiy primitivlarni (DataTable, Modal) o'zgartirmasdan, faqat admin ildizi
+ * ([data-admin-root]) ichida jadval sarlavhasi, qator balandligi va tanlov ranglarini A yo'nalishiga moslaydi.
+ * Qatlamsiz yozilgani uchun Tailwind utilitalaridan ustun turadi.
+ */
+[data-admin-root] table thead { background: var(--paper); }
+[data-admin-root] table thead th { height: 40px; font-size: 11.5px; letter-spacing: 0.06em; color: var(--ink-3); }
+[data-admin-root] table thead th button { color: inherit; }
+[data-admin-root] table thead th button:hover,
+[data-admin-root] table thead th[aria-sort] button { color: var(--ink); }
+[data-admin-root] table tbody tr[data-row-index] { height: 44px !important; }
+[data-admin-root] table tbody tr[data-row-index]:hover { background-color: color-mix(in srgb, var(--blue-soft) 45%, transparent); }
+[data-admin-root] table tbody tr[data-row-index][aria-selected='true'],
+[data-admin-root] table tbody tr[data-row-index][aria-selected='true']:hover { background-color: var(--blue-soft); }
+[data-admin-root] table tbody tr[data-row-index]:focus-visible,
+[data-admin-root] table tbody tr[data-row-index].shadow-\[inset_2px_0_0_var\(--gold\)\] { box-shadow: inset 3px 0 0 var(--blue); }
+
+/* Jadval ichidagi pul ustunlari — tabular raqamlar, o'ngga */
+[data-admin-root] table td[class*='text-right'] { font-variant-numeric: tabular-nums; }
+
+/* Recharts: yumshoqroq to'r va oq kartada ko'k kursor */
+[data-admin-root] .recharts-cartesian-grid line { stroke: var(--line); stroke-opacity: 0.8; }
+[data-admin-root] .recharts-tooltip-cursor { fill: color-mix(in srgb, var(--blue-soft) 60%, transparent); }

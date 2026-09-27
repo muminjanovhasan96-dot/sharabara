@@ -1,0 +1,149 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter/index.css';
+@import 'leaflet/dist/leaflet.css';
+
+/* ─── "Toza bozor" tokens (A yo'nalishi, kuchaytirilgan aksent) ─────────── */
+:root {
+  --paper: #f3f4f7;      /* sahifa foni: yengil kulrang */
+  --paper-2: #e8ebf1;    /* ikkinchi fon, skeleton, chip */
+  --card: #ffffff;       /* kartalar */
+  --ink: #0f1f3a;        /* to'q ko'k (navy) matn va asosiy tugma */
+  --ink-2: #4a5568;
+  --ink-3: #616b7a;
+  --gold: #c9930a;       /* oltin: chiziqlar, ikonlar, muhr */
+  --gold-fill: #f5b400;  /* yorqin oltin: CTA tugma, faol tab, muhr diski */
+  --brick: #e0443b;      /* chegirma, ogohlantirish */
+  --green: #1e9e6a;      /* ishonch: Narx tekshirilgan, muvaffaqiyat */
+  --blue: #2f6fed;       /* aksent: havolalar, info, faol holat */
+  --blue-soft: #e8f0ff;
+  --green-soft: #e3f6ee;
+  --gold-soft: #fff4d6;
+  --brick-soft: #fde8e6;
+  --line: rgba(15, 31, 58, 0.09);
+  --line-strong: rgba(15, 31, 58, 0.2);
+  --shadow-soft: 0 1px 2px rgba(15, 31, 58, 0.04), 0 10px 30px -14px rgba(15, 31, 58, 0.16);
+  --shadow-sheet: 0 -8px 40px -12px rgba(15, 31, 58, 0.3);
+  --radius: 16px;
+  --radius-lg: 22px;
+  --font-display: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --paper: #0b1220;
+  --paper-2: #111a2c;
+  --card: #16213a;
+  --ink: #f5f7fa;
+  --ink-2: #b6becc;
+  --ink-3: #8b95a7;
+  --gold: #e0b23a;
+  --blue-soft: #1c2c4f;
+  --green-soft: #143a2d;
+  --gold-soft: #3b3012;
+  --brick-soft: #3f1d1b;
+  --line: rgba(245, 247, 250, 0.1);
+  --line-strong: rgba(245, 247, 250, 0.22);
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 30px -14px rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-gold: var(--gold);
+  --color-gold-fill: var(--gold-fill);
+  --color-brick: var(--brick);
+  --color-green: var(--green);
+  --color-blue: var(--blue);
+  --color-blue-soft: var(--blue-soft);
+  --color-green-soft: var(--green-soft);
+  --color-gold-soft: var(--gold-soft);
+  --color-brick-soft: var(--brick-soft);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --radius-card: var(--radius);
+  --radius-card-lg: var(--radius-lg);
+  --shadow-soft: var(--shadow-soft);
+  --shadow-sheet: var(--shadow-sheet);
+}
+
+/* ─── Base (layered, so Tailwind utilities win) ────────────────────────── */
+@layer base {
+  html, body, #root { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overscroll-behavior-y: none;
+  }
+  h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; }
+  input, textarea, select, button { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 6px; }
+  ::selection { background: color-mix(in srgb, var(--gold-fill) 45%, transparent); }
+  a { color: inherit; text-decoration: none; }
+}
+.font-display { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; }
+.tnum, [data-money], table td, table th { font-variant-numeric: tabular-nums; }
+
+/* Eyebrow */
+.eyebrow { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; color: var(--ink-3); }
+.eyebrow-brick { color: var(--brick); }
+
+/* Mahsulot plitkasi foni (eski chiziqli naqsh o'rniga yumshoq gradient) */
+.hatch { background: linear-gradient(160deg, var(--paper-2), var(--paper)); }
+[data-theme='dark'] .hatch { background: linear-gradient(160deg, var(--paper-2), var(--card)); }
+
+/* Skeleton shimmer in paper tones */
+.skeleton {
+  position: relative; overflow: hidden; background: var(--paper-2); border-radius: 8px;
+}
+.skeleton::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--card) 80%, transparent), transparent);
+  transform: translateX(-100%); animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer { to { transform: translateX(100%); } }
+
+/* Ledger dotted leader */
+.ledger-dots { flex: 1; border-bottom: 1.5px dotted var(--line-strong); margin: 0 8px 4px; min-width: 12px; }
+
+/* Scrollbars */
+.scroll-thin { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+.no-scrollbar { scrollbar-width: none; } .no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Safe areas (PWA) */
+.pt-safe { padding-top: env(safe-area-inset-top); }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+
+/* Line-clamp helpers */
+.clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* Leaflet tweaks */
+.leaflet-container { font-family: var(--font-body); background: var(--paper-2); border-radius: var(--radius); }
+.leaflet-control-attribution { font-size: 9px; background: rgba(251,248,240,.7) !important; }
+
+/* Print: A6 shipping label */
+@media print {
+  body * { visibility: hidden; }
+  #print-root, #print-root * { visibility: visible; }
+  #print-root { position: fixed; inset: 0; background: #fff; color: #000; }
+  @page { size: A6; margin: 6mm; }
+}
