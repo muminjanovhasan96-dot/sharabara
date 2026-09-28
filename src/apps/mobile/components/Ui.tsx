@@ -68,9 +68,11 @@ export interface PastelTileProps extends HTMLAttributes<HTMLSpanElement> {
   radius?: number
 }
 /** Kategoriya plitkasi: iliq neytral doira + siyoh chiziqli ikon (Sharabara uslubi; pastel ranglar olib tashlandi). */
-export function PastelTile({ icon, Icon, tone: _tone = 'blue', size = 64, iconSize, radius, className, style, ...rest }: PastelTileProps) {
+/** A: pastel fon + to'yingan ikon (Uzum/Ozon uslubidagi kategoriya plitkasi). */
+export function PastelTile({ icon, Icon, tone = 'blue', size = 64, iconSize, radius, className, style, ...rest }: PastelTileProps) {
+  const t = typeof tone === 'string' ? PASTEL[tone] : tone
   const Cmp = Icon ?? resolveIcon(icon ?? 'tag')
-  const st: CSSProperties = { width: size, height: size, background: 'var(--paper-2)', color: 'var(--ink)', boxShadow: 'inset 0 0 0 1px var(--line)', borderRadius: radius ?? Math.round(size * 0.3), ...style }
+  const st: CSSProperties = { width: size, height: size, background: t.bg, color: t.fg, borderRadius: radius ?? Math.round(size * 0.29), ...style }
   return (
     <span className={cn('inline-flex shrink-0 items-center justify-center', className)} style={st} aria-hidden="true" {...rest}>
       <Cmp size={iconSize ?? Math.round(size * 0.42)} strokeWidth={1.8} />
@@ -79,7 +81,7 @@ export function PastelTile({ icon, Icon, tone: _tone = 'blue', size = 64, iconSi
 }
 
 /* ─── Navy karta (InkCard ustida gradient + oq matn) ─────────────────── */
-export const NAVY_GRADIENT = 'linear-gradient(112deg, #1a2430 0%, #22303f 62%, #2b3a4a 100%)'
+export const NAVY_GRADIENT = 'linear-gradient(110deg, #10203a 0%, #1d3557 100%)'
 export function NavyCard({ className, style, children, ...rest }: InkCardProps) {
   return (
     <InkCard className={cn('relative overflow-hidden text-white', className)} style={{ background: NAVY_GRADIENT, color: '#ffffff', ...style }} {...rest}>

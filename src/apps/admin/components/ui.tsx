@@ -57,7 +57,7 @@ export function Kpi({ label, value, money = false, compact = false, delta, delta
           {money ? (
             <AnimatedMoney tiyin={value as Tiyin} size="xl" compact={compact} softCurrency className="text-[23px] tracking-[-0.02em] @[220px]:text-[26px]" />
           ) : (
-            <AnimatedNumber value={value} format={format} className="whitespace-nowrap font-display text-[23px] font-bold tracking-[-0.02em] text-ink @[220px]:text-[26px]" />
+            <AnimatedNumber value={value} format={format} className="whitespace-nowrap font-price text-[23px] font-bold tracking-[-0.02em] text-ink @[220px]:text-[26px]" />
           )}
           {suffix && <span className="truncate text-[13px] text-ink-3">{suffix}</span>}
         </div>

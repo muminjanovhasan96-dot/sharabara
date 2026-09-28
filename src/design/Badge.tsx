@@ -8,7 +8,7 @@ export type BadgeSize = 'sm' | 'md'
 
 const TONE: Record<BadgeTone, string> = {
   neutral: 'bg-paper-2 text-ink-2 border-transparent',
-  gold: 'bg-gold-soft text-[#7a5f10] border-transparent',
+  gold: 'bg-gold-soft text-[#8a6400] border-transparent',
   brick: 'bg-brick-soft text-brick border-transparent',
   green: 'bg-green-soft text-green border-transparent',
   blue: 'bg-blue-soft text-blue border-transparent',

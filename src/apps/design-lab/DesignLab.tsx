@@ -27,12 +27,12 @@ interface Direction {
 
 const directions: Direction[] = [
   {
-    id: 'D', recommended: true, name: 'B asosida, A aksentlari', pitch: 'Asos — B: siyoh sarlavha-blok, qorong’i tab-bar va admin menyusi, serif narxlar, oltin urg’u. A’dan faqat uslub aksentlari: oq kartochkalarda katta rasm va narx birinchi, 4×2 kategoriya plitkalari, yorug’ admin kontenti.',
-    accent: D.ink, accentFg: D.gold,
-    swatches: [{ hex: D.page, label: 'Fon · iliq oq' }, { hex: D.card, label: 'Karta' }, { hex: D.ink, label: 'Siyoh' }, { hex: D.gold, label: 'Oltin · CTA' }, { hex: D.goldDeep, label: 'Oltin · to’q' }, { hex: D.green, label: 'Ishonch' }, { hex: D.red, label: 'Chegirma' }],
-    type: { display: D.display, body: D.font, sample: '6 200 000 so’m', names: 'Narx va sarlavha: Bitter (serif) · Matn: Inter, 15px' },
-    why: 'Brend xarakteri (siyoh + oltin, B) har ekranda birinchi ko’zga tashlanadi — ilovani ochganda darhol «Sharabara» ekani bilinadi. Tovar kartalari va kategoriyalar esa A’ning tanish tartibida — o’rganish talab qilmaydi. Jonli demo shu yo’nalishga o’tkazildi.',
-    familiar: 'Apple Card / Revolut / Uzum Bank hissi + Uzum Market tovar tartibi.',
+    id: 'D', recommended: true, name: 'A asosida, Sharabara aksentlari', pitch: 'Asos — A (70%): oq kartochkalar, ko’k aksent, pastel kategoriya plitkalari, yorug’ admin, Inter sarlavhalar. Sharabara aksenti (30%): oltin muhr va CTA, serif narx va KPI raqamlari, siyoh hero-karta.',
+    accent: D.gold, accentFg: D.navy,
+    swatches: [{ hex: D.page, label: 'Fon' }, { hex: D.card, label: 'Karta' }, { hex: D.navy, label: 'Matn · hero' }, { hex: D.blue, label: 'Ko’k · aksent' }, { hex: D.gold, label: 'Oltin · muhr, CTA' }, { hex: D.green, label: 'Ishonch' }, { hex: D.red, label: 'Chegirma' }],
+    type: { display: D.display, body: D.font, sample: '6 200 000 so’m', names: 'Sarlavha va matn: Inter · Narx va KPI: Bitter (serif)' },
+    why: 'Foydalanuvchi Uzum/Ozon’dan o’rganib qolgan tartibni oladi — o’rganish talab qilmaydi, ko’k aksent va pastel plitkalar ilovani jonli va tanish qiladi. Oltin muhr, serif narxlar va siyoh hero-karta esa har ekranda «bu Sharabara» deb turadi. Jonli demo shu yo’nalishga o’tkazildi.',
+    familiar: 'Uzum Market, Ozon, Wildberries + Sharabara’ning oltin muhri.',
     mockups: [<HomeD key="h" />, <AdminD key="a" />, <DirectorD key="d" />],
   },
   {
@@ -93,7 +93,7 @@ function Section({ d }: { d: Direction }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
               <span style={{ width: 44, height: 44, borderRadius: 12, background: d.accent, color: d.accentFg, display: 'grid', placeItems: 'center', fontSize: 22, fontWeight: 900, fontFamily: P.font }}>{d.id}</span>
               <h2 style={{ ...h2, fontSize: 32, margin: 0 }}>{d.name}</h2>
-              {d.recommended && <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: 1, textTransform: 'uppercase', background: D.gold, color: D.ink, padding: '5px 10px', borderRadius: 999 }}>Tavsiya</span>}
+              {d.recommended && <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: 1, textTransform: 'uppercase', background: D.gold, color: D.navy, padding: '5px 10px', borderRadius: 999 }}>Tavsiya</span>}
             </div>
             <p style={{ fontSize: 17, lineHeight: 1.5, color: P.text2, margin: '14px 0 0', maxWidth: 620 }}>{d.pitch}</p>
           </div>
@@ -153,7 +153,7 @@ export default function DesignLab() {
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: A.gold }} />Dizayn laboratoriyasi · 28-sentabr, 2026
         </div>
         <h1 style={{ ...h2, fontSize: 44, margin: '14px 0 0', lineHeight: 1.05 }}>Sharabara — dizayn yo’nalishlari</h1>
-        <p style={{ fontSize: 20, color: P.text2, margin: '10px 0 0' }}>4 ta namuna: D — B asosida A aksentlari (tavsiya), keyin A, B, C</p>
+        <p style={{ fontSize: 20, color: P.text2, margin: '10px 0 0' }}>4 ta namuna: D — A asosida Sharabara aksentlari (tavsiya), keyin A, B, C</p>
         <p style={{ fontSize: 15.5, lineHeight: 1.55, color: P.text2, margin: '18px 0 0', maxWidth: 760 }}>
           Har bir yo’nalishda uchta haqiqiy ekran ko’rsatilgan: mijoz ilovasining bosh sahifasi, adminning «Boshqaruv paneli» va direktor uchun mobil panel.
           Kontent, narxlar va raqamlar hammasida bir xil — faqat uslub farq qiladi, shuning uchun taqqoslash oson.
@@ -189,7 +189,7 @@ export default function DesignLab() {
                 {scores.map(s => (
                   <tr key={s.label} style={{ borderTop: `1px solid ${P.line}` }}>
                     <td style={{ padding: '14px 18px', fontSize: 15, fontWeight: 600 }}>{s.label}</td>
-                    <td style={{ padding: '14px 18px' }}><Dots n={s.d} color={D.goldDeep} /></td>
+                    <td style={{ padding: '14px 18px' }}><Dots n={s.d} color={D.gold} /></td>
                     <td style={{ padding: '14px 18px' }}><Dots n={s.a} color={A.navy} /></td>
                     <td style={{ padding: '14px 18px' }}><Dots n={s.b} color={B.goldDeep} /></td>
                     <td style={{ padding: '14px 18px' }}><Dots n={s.c} color={C.green} /></td>

@@ -77,20 +77,20 @@ export default function PartnerApp({ embedded = false }: { embedded?: boolean })
   return (
     <PrintRootCtx.Provider value={printRoot}>
       <div ref={rootRef} className={cn('relative flex bg-paper text-ink', isEmbedded ? 'h-full min-h-0' : 'h-dvh')} data-app="partner">
-        <aside className={cn('flex shrink-0 flex-col border-r border-white/10 text-white transition-[width]', rail ? 'w-[64px]' : 'w-[232px]')} style={{ background: '#1a2430' }} aria-label={P.title}>
+        <aside className={cn('flex shrink-0 flex-col border-r border-line bg-card text-ink transition-[width]', rail ? 'w-[64px]' : 'w-[232px]')} aria-label={P.title}>
           <div className={cn('flex h-14 items-center', rail ? 'justify-center' : 'gap-2.5 px-4')}>
-            <Wordmark tone="paper" size="sm" textOnly className={rail ? 'sr-only' : 'text-gold-fill'} />
-            {rail && <Seal icon="stamp" size={28} variant="gold" />}
+            <Wordmark tone="ink" size="sm" textOnly={rail} className={rail ? 'sr-only' : ''} />
+            {rail && <Seal icon="stamp" size={28} variant="ink" />}
           </div>
-          {!rail && <div className="eyebrow px-4 pb-1 pt-3 !text-[10.5px] !text-white/45">{P.eyebrow}</div>}
+          {!rail && <div className="eyebrow px-4 pb-1 pt-3 !text-[10.5px]">{P.eyebrow}</div>}
           <nav className="flex flex-1 flex-col gap-0.5 p-2" aria-label="Bo’limlar">
             {NAV.map((n) => (
               <NavLink key={n.to} to={href(n.to)} end={n.to === '/'} title={P.nav[n.key]} aria-label={P.nav[n.key]}
-                className={({ isActive }) => cn('group relative flex items-center gap-2.5 rounded-[10px] text-[13.5px] text-white/72 transition-colors hover:bg-white/[.06] hover:text-white focus-visible:ring-2 focus-visible:ring-gold-fill', rail ? 'h-10 justify-center' : 'h-9 px-2.5', isActive && 'bg-gold-fill/12 font-semibold text-gold-fill hover:bg-gold-fill/12 hover:text-gold-fill')}>
+                className={({ isActive }) => cn('group relative flex items-center gap-2.5 rounded-[10px] text-[13.5px] text-ink-2 transition-colors hover:bg-paper-2 hover:text-ink focus-visible:ring-2 focus-visible:ring-blue', rail ? 'h-10 justify-center' : 'h-9 px-2.5', isActive && 'bg-blue-soft font-semibold text-blue hover:bg-blue-soft hover:text-blue')}>
                 {({ isActive }) => (
                   <>
-                    {isActive && <span aria-hidden="true" className="absolute -left-2 top-1.5 h-6 w-[3px] rounded-r bg-gold-fill" />}
-                    <Icon name={n.icon} size={18} className={isActive ? 'text-gold-fill' : 'text-white/45 group-hover:text-white'} />
+                    {isActive && <span aria-hidden="true" className="absolute -left-2 top-1.5 h-6 w-[3px] rounded-r bg-blue" />}
+                    <Icon name={n.icon} size={18} className={isActive ? 'text-blue' : 'text-ink-3 group-hover:text-ink'} />
                     {!rail && <span className="truncate">{P.nav[n.key]}</span>}
                   </>
                 )}
@@ -98,10 +98,10 @@ export default function PartnerApp({ embedded = false }: { embedded?: boolean })
             ))}
           </nav>
           {!rail && (
-            <div className="border-t border-white/10 p-2">
-              <div className="flex items-center gap-2 rounded-[10px] bg-white/[.06] px-2.5 py-2">
-                <Clock3 size={15} strokeWidth={1.75} className="shrink-0 text-gold-fill" aria-hidden="true" />
-                <span className="min-w-0 leading-tight"><span className="block text-[10px] uppercase tracking-[0.12em] text-white/45">{uz.app.demo}</span><span className="tnum block text-[13px] font-medium text-white">{formatDemoTime(now)}</span></span>
+            <div className="border-t border-line p-2">
+              <div className="flex items-center gap-2 rounded-[10px] bg-paper px-2.5 py-2">
+                <Clock3 size={15} strokeWidth={1.75} className="shrink-0 text-gold" aria-hidden="true" />
+                <span className="min-w-0 leading-tight"><span className="block text-[10px] uppercase tracking-[0.12em] text-ink-3">{uz.app.demo}</span><span className="tnum block text-[13px] font-medium text-ink">{formatDemoTime(now)}</span></span>
               </div>
             </div>
           )}

@@ -10,9 +10,9 @@ const SIZE: Record<MoneySize, string> = {
   xs: 'text-[12px]',
   sm: 'text-[13px]',
   md: 'text-[15px] font-medium',
-  lg: 'text-[18px] font-display font-bold',
-  xl: 'text-[24px] font-display font-bold',
-  display: 'text-[34px] font-display font-extrabold tracking-[-0.02em]',
+  lg: 'text-[18px] font-price font-bold',
+  xl: 'text-[24px] font-price font-bold',
+  display: 'text-[34px] font-price font-extrabold tracking-[-0.02em]',
 }
 
 export interface MoneyProps extends HTMLAttributes<HTMLSpanElement> {
