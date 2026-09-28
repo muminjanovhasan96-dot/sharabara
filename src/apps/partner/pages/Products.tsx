@@ -150,7 +150,7 @@ export function Products() {
 
   return (
     <div ref={wrapRef}>
-      <PageHeader eyebrow={c.name} title={P.nav.products}>{t(P.products.total, { n: all.length })} · {P.products.editHint}</PageHeader>
+      <PageHeader eyebrow={c.name} help={P.help.products} title={P.nav.products}>{t(P.products.total, { n: all.length })} · {P.products.editHint}</PageHeader>
       <DataTable<Product>
         columns={columns} rows={rows} rowKey={(p) => p.id} loading={loading} onRowClick={(p) => setOpenId(p.id)} pageSize={15}
         exportFilename={`${c.id}-tovarlar`} defaultSort={{ key: 'stock', dir: 'asc' }} hiddenColumns={hiddenColumns}

@@ -89,7 +89,8 @@ export function makeDailyStats(r: Rng, now: ISODate, orders: Order[], listings: 
       listingsSalesTiyin: listingsSales + bgListing,
       mallSalesTiyin: mallSales + bgMall,
       orders: dayOrders.length + bg,
-      newListings: listings.filter((l) => dateKey(l.createdAt) === date && !l.historical).length + r.int(3, 12),
+      // navbatdagi 34 e'lon ataylab «bugun» yaratilgan — KPI shishib ketmasligi uchun kunlik son sintetik
+      newListings: Math.min(12, listings.filter((l) => dateKey(l.createdAt) === date && !l.historical).length) + r.int(3, 9),
       commissionTiyin: commission + mulRate(bgListing, 0.03) + mulRate(bgMall, 0.08),
       avgReviewMinutes: r.int(14, 55),
       byRegion,

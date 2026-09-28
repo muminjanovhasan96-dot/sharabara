@@ -202,7 +202,7 @@ export const uz = {
   },
   wallet: {
     title: 'Hamyon',
-    pending: 'Kutilayotgan (escrow)',
+    pending: 'Kutilayotgan (himoyada)',
     available: 'Yechish mumkin',
     paid: 'To’langan',
     nextPayout: 'Keyingi to’lov: juma',
@@ -258,6 +258,23 @@ export const uz = {
     idleTitle: 'Demo sahnasi',
     idleHint: 'Chapda — mijozning telefoni, o’ngda — xodimning kompyuteri. Ikkalasi bitta ma’lumot ustida ishlaydi: telefonda qilingan amal darhol kompyuterda ko’rinadi. Yuqorida rolni tanlang yoki «Oltin yo’l»ni bosing — bitta savdo 11 qadamda o’zi o’tadi.',
     stopped: 'Holat saqlandi — ekranlarni o’zingiz boshqaring',
+    back: 'Orqaga', speed: 'Tezlik', again: 'Qaytadan', tryMyself: 'O’zim sinab ko’raman',
+    onPhone: 'Chapdagi telefonda', onDesktop: 'O’ngdagi kompyuterda',
+    phoneOf: '{r}ning telefoni', desktopOf: '{r}ning kompyuteri',
+    doneTitle: 'Bitta tovar · 5 rol · 0 ta qo’lda taksi', doneSub: 'Har qadam audit logda — kim, qachon, nimani o’zgartirgani ko’rinadi.',
+    roleHint: {
+      buyer: 'Xaridor — e’lonlarni ko’radi, savatga soladi, buyurtma beradi',
+      seller: 'Sotuvchi — e’lon beradi, narx taklifini qabul qiladi, pul oladi',
+      super_admin: 'Super admin — hamma bo’limni ko’radi, rollar va auditni boshqaradi',
+      director: 'Direktor — savdo, pul, ombor va muammolarni bir ekranda ko’radi',
+      moderator: 'Moderator — e’lonlarni tekshiradi: tasdiqlaydi, qaytaradi, rad etadi',
+      price_analyst: 'Narx tahlilchisi — AI tavsiyasini tekshirib sotuvchiga taklif yuboradi',
+      logistics: 'Logistika — yuklarni qadoqlaydi, kechki partiyani BTS’ga topshiradi',
+      finance: 'Moliya — xizmat haqini tasdiqlaydi, juma to’lovini o’tkazadi',
+      operator: 'Operator — qaytarish va nizolarni hal qiladi',
+      company: 'Kompaniya — Mall’da tovar sotadi: zaxira, Excel, hisob-kitob',
+      bts: 'BTS — yetkazish hamkori: partiyani qabul qiladi, filialga yetkazadi',
+    } as Record<string, string>,
   },
 } as const
 

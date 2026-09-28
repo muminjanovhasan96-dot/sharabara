@@ -49,11 +49,11 @@ export function Umumiy() {
           <div className="grid grid-cols-2 gap-3">
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 text-[12px] font-medium text-ink-3"><span className="h-2 w-2 rounded-[2px] bg-blue" aria-hidden="true" />{D.overview.mall}</div>
-              <div className="mt-1 flex items-baseline gap-1.5"><BigMoney tiyin={ov.mall} size="lg" /><span className="tnum text-[12px] text-ink-3">· {Math.round(mallShare * 100)} %</span></div>
+              <div className="mt-1 flex items-baseline gap-1.5"><BigMoney tiyin={ov.mall} size="lg" />{ov.revenue > 0 && <span className="tnum text-[12px] text-ink-3">· {Math.round(mallShare * 100)} %</span>}</div>
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 text-[12px] font-medium text-ink-3"><span className="h-2 w-2 rounded-[2px] bg-ink" aria-hidden="true" />{D.overview.listings}</div>
-              <div className="mt-1 flex items-baseline gap-1.5"><BigMoney tiyin={ov.listings} size="lg" /><span className="tnum text-[12px] text-ink-3">· {Math.round((1 - mallShare) * 100)} %</span></div>
+              <div className="mt-1 flex items-baseline gap-1.5"><BigMoney tiyin={ov.listings} size="lg" />{ov.revenue > 0 && <span className="tnum text-[12px] text-ink-3">· {Math.round((1 - mallShare) * 100)} %</span>}</div>
             </div>
           </div>
           <div className="mt-2.5 flex h-[7px] gap-0.5 overflow-hidden rounded-full bg-paper-2" aria-hidden="true">
@@ -88,7 +88,7 @@ export function Umumiy() {
                 <span className="h-2.5 w-2.5 shrink-0 rounded-[3px]" style={{ background: CHANNEL_COLOR[c.channel] }} aria-hidden="true" />
                 <span className="min-w-0 flex-1 truncate font-medium text-ink" title={c.orders ? `${c.orders} ${D.orders}` : undefined}>{c.label}</span>
                 <span className="tnum shrink-0 font-bold text-ink">{cmp(c.amount)}</span>
-                <span className="tnum w-[34px] shrink-0 text-right text-[12px] text-ink-3">{Math.round(c.share * 100)} %</span>
+                <span className="tnum w-[34px] shrink-0 text-right text-[12px] text-ink-3">{ov.revenue > 0 ? `${Math.round(c.share * 100)} %` : '—'}</span>
               </li>
             ))}
           </ul>

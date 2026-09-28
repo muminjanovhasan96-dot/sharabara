@@ -2,6 +2,7 @@ import type { ApiKey, Company, ISODate, Product } from '../domain/types'
 import { MODEL_DICTIONARY } from '../domain/checks/models'
 import { addDays, setHour } from '../domain/clock'
 import { mulRate, roundToStep } from '../domain/money'
+import { mallCheck } from '../domain/pricing'
 import type { Rng } from './rng'
 import { CATEGORY_SLUG, TEMPLATES } from './static'
 
@@ -45,9 +46,10 @@ export function makeProducts(r: Rng, now: ISODate): Product[] {
   const push = (companyId: string, categoryId: string, title: string, description: string, marketSum: number, attributes: Record<string, string | number>) => {
     n += 1
     const market = roundToStep(marketSum * S, 1_000_000)
-    const delta = Math.round(r.float(-0.12, 0.15) * 100) / 100
+    // ~15% tovar bozor medianidan 4–12% qimmat (narx qoidasidan o'tmaydi), qolganlari −10…+3%
+    const delta = Math.round((r.chance(0.15) ? r.float(0.04, 0.12) : r.float(-0.1, 0.03)) * 100) / 100
     const price = roundToStep(mulRate(market, 1 + delta), 1_000_000)
-    const check: Product['check'] = r.chance(0.1) ? 'pending' : delta > 0.05 ? 'overpriced' : 'passed'
+    const check: Product['check'] = mallCheck(price, market)
     const stock = r.chance(0.15) ? r.int(0, 3) : r.int(4, 60)
     const created = setHour(addDays(now, -r.int(1, 80)), r.int(8, 20))
     const views = r.int(20, 900)

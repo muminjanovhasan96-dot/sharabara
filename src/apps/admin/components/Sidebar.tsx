@@ -1,7 +1,7 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import * as Tooltip from '@radix-ui/react-tooltip'
-import { Clock3, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { ChevronDown, Clock3, PanelLeftClose, PanelLeftOpen, Zap } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Icon, Logo } from '@/design'
 import { useNow, useStore } from '@/store'
@@ -12,8 +12,11 @@ import type { AdminSection } from '@/domain/types'
 import { NAV_GROUPS, queueCounts, sectionTitle, SECTION_ICON, useAdminRole, useVisibleSections } from '../lib/sections'
 import { A } from '../strings'
 
-/** Shoshilinch navbatlar — g'isht rangli pilla, qolganlari ko'k. */
+/** Shoshilinch navbatlar — g'isht rangli pilla, qolganlari oltin. */
 const URGENT: ReadonlySet<AdminSection> = new Set<AdminSection>(['moderation', 'returns'])
+/** Super admin uchun eng ko'p ishlatiladigan 5 bo'lim — menyu tepasida «Tez kirish». */
+const QUICK: AdminSection[] = ['pricing', 'moderation', 'logistics', 'payments', 'audit']
+const COLLAPSE_KEY = 'sb-admin-nav-collapsed'
 
 export function Sidebar({ active, compact, onToggle, onNavigate, pulses }: {
   active: AdminSection | null; compact: boolean; onToggle: () => void; onNavigate: (s: AdminSection) => void; pulses: Partial<Record<AdminSection, number>>
@@ -23,6 +26,10 @@ export function Sidebar({ active, compact, onToggle, onNavigate, pulses }: {
   const now = useNow()
   const role = useAdminRole()
   const counts = useMemo(() => queueCounts(data, now), [data, now])
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>(() => { try { return JSON.parse(localStorage.getItem(COLLAPSE_KEY) ?? '{}') as Record<string, boolean> } catch { return {} } })
+  const toggleGroup = (k: string) => setCollapsed((c) => { const n = { ...c, [k]: !c[k] }; try { localStorage.setItem(COLLAPSE_KEY, JSON.stringify(n)) } catch { /* noop */ } return n })
+  const quick = role === 'super_admin' ? QUICK.filter((s) => visible.includes(s)) : []
+  const groups = quick.length ? [{ key: 'quick', label: A.shell.quick, items: quick }, ...NAV_GROUPS] : NAV_GROUPS
   return (
     <Tooltip.Provider delayDuration={200}>
       <nav
@@ -40,20 +47,28 @@ export function Sidebar({ active, compact, onToggle, onNavigate, pulses }: {
           )}
         </div>
         <div className="scroll-thin min-h-0 flex-1 overflow-y-auto px-2 pb-2">
-          {NAV_GROUPS.map((g) => {
+          {groups.map((g) => {
             const items = g.items.filter((s) => visible.includes(s))
             if (!items.length) return null
+            const isCollapsed = !compact && g.label !== null && g.key !== 'quick' && collapsed[g.key]
             return (
               <div key={g.key} className="mt-1">
-                {g.label && !compact && <div className="eyebrow px-2.5 pb-0.5 pt-2 !text-[10.5px]">{g.label}</div>}
+                {g.label && !compact && (
+                  <button type="button" onClick={() => g.key !== 'quick' && toggleGroup(g.key)} aria-expanded={!isCollapsed} className={cn('flex w-full items-center gap-1 px-2.5 pb-0.5 pt-2 text-left', g.key === 'quick' ? 'cursor-default' : 'hover:text-ink')}>
+                    {g.key === 'quick' && <Zap size={11} strokeWidth={2.2} className="text-gold" aria-hidden="true" />}
+                    <span className="eyebrow !text-[10.5px]">{g.label}</span>
+                    {g.key !== 'quick' && <ChevronDown size={12} strokeWidth={2} className={cn('ml-auto text-ink-3 transition-transform', isCollapsed && '-rotate-90')} aria-hidden="true" />}
+                    {isCollapsed && items.reduce((a, s) => a + (counts[s] ?? 0), 0) > 0 && <span className="tnum rounded-full bg-gold-soft px-1.5 text-[10.5px] font-semibold text-ink">{items.reduce((a, s) => a + (counts[s] ?? 0), 0)}</span>}
+                  </button>
+                )}
                 {g.label && compact && <div className="mx-3 my-2 h-px bg-line" />}
-                {items.map((s) => {
+                {!isCollapsed && items.map((s) => {
                   const isActive = active === s
                   const count = counts[s] ?? 0
                   const urgent = URGENT.has(s)
                   const item = (
                     <button
-                      key={s}
+                      key={`${g.key}-${s}`}
                       type="button"
                       data-section={s}
                       aria-current={isActive ? 'page' : undefined}
@@ -89,7 +104,7 @@ export function Sidebar({ active, compact, onToggle, onNavigate, pulses }: {
                   )
                   if (!compact) return item
                   return (
-                    <Tooltip.Root key={s}>
+                    <Tooltip.Root key={`${g.key}-${s}`}>
                       <Tooltip.Trigger asChild>{item}</Tooltip.Trigger>
                       <Tooltip.Portal>
                         <Tooltip.Content side="right" sideOffset={8} className="z-[80] rounded-[8px] bg-ink px-2.5 py-1.5 text-[12px] text-paper shadow-soft">

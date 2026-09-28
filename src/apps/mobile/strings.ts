@@ -2,6 +2,14 @@
  * Mobil ilovaga xos matnlar (o’zbek lotin). `@/i18n/uz` da bo’lmagan kalitlar shu yerda.
  */
 export const ms = {
+  onboarding: {
+    skip: 'O’tkazib yuborish', next: 'Keyingi', start: 'Boshlash',
+    slides: [
+      { icon: 'badge-check', title: '«Narx tekshirilgan» nima?', body: 'Har e’lon narxi 30 kunlik bozor bilan solishtiriladi. Bu belgi — narx bozordan arzon va tekshirilgan degani.' },
+      { icon: 'tag', title: 'Qanday sotiladi?', body: 'Rasm, IMEI va narxni kiritasiz. AI va narx tahlilchisi tekshiradi, sizga taklif keladi. Rozi bo’lsangiz — e’lon chiqadi.' },
+      { icon: 'shield-check', title: 'Pul qanday himoyalanadi?', body: 'Xaridor to’lovi tovar sizga yetgunicha Sharabara himoyasida turadi. Tovarni olib tasdiqlaganingizdan keyin pul sotuvchiga o’tadi.' },
+    ],
+  },
   hint: {
     desktop: 'Telefon ko’rinishi. Haqiqiy qurilmada to’liq ekranda ochiladi.',
   },
@@ -20,6 +28,8 @@ export const ms = {
     dropsSub: 'Sotuvchi narxni pasaytirdi',
     camera: 'Rasm bo’yicha qidirish',
     mallCta: 'Mall’ga o’tish',
+    mallBannerTitle: 'Sharabara Mall',
+    mallBannerSub: 'Kompaniyalardan yangi tovar · rasmiy kafolat · 1 kunda yetkazish',
     mixed: 'Lenta',
     official: 'Rasmiy',
     refresh: 'Yangilanmoqda…',
@@ -140,7 +150,7 @@ export const ms = {
     emptyCart: 'Savat bo’sh — rasmiylashtirish uchun tovar qo’shing.',
     branchLabel: 'BTS filiali',
     orderTotal: 'Buyurtma summasi',
-    escrowShort: 'Escrow',
+    escrowShort: 'Himoyada',
   },
   orders: {
     detail: 'Buyurtma',
@@ -199,7 +209,7 @@ export const ms = {
     member: 'A’zo',
     faq: [
       { q: '«Narx tekshirilgan» nimani anglatadi?', a: 'Sharabara AI va narx tahlilchisi e’lonni 30 kunlik bozor ma’lumotlari bilan solishtiradi. Belgi — narx bozordan kamida 5% arzon degani.' },
-      { q: 'Pulim qanday himoyalanadi?', a: 'To’lov escrow’da saqlanadi. Siz tovarni BTS filialidan olib, SMS-kod bilan tasdiqlaganingizdan keyin pul sotuvchiga o’tadi.' },
+      { q: 'Pulim qanday himoyalanadi?', a: 'To’lov Sharabara himoyasida saqlanadi. Siz tovarni BTS filialidan olib, SMS-kod bilan tasdiqlaganingizdan keyin pul sotuvchiga o’tadi.' },
       { q: 'Yetkazish qancha vaqt oladi?', a: 'Sotuvchi tovarni Sharabara punktiga topshiradi, biz tekshirib qadoqlaymiz. BTS orqali viloyatlarga 1–3 kun.' },
       { q: 'Tovar tavsifga mos kelmasa?', a: 'Buyurtma sahifasida «Muammo bor» tugmasini bosing. Operator 24 soat ichida javob beradi, pul to’liq yoki qisman qaytariladi.' },
       { q: 'Sotuvchi sifatida qancha to’layman?', a: 'Xizmat haqi faqat tovar sotilganda olinadi — narxga qarab 2–5%. E’lon joylash bepul.' },

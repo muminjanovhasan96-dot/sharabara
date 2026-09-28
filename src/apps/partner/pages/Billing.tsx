@@ -81,7 +81,7 @@ export function Billing() {
 
   return (
     <div>
-      <PageHeader eyebrow={c.name} title={P.billing.title} actions={<Button variant="gold" leading={<FileText />} onClick={() => setAkt(true)}>{P.billing.aktBtn}</Button>} />
+      <PageHeader eyebrow={c.name} help={P.help.billing} title={P.billing.title} actions={<Button variant="gold" leading={<FileText />} onClick={() => setAkt(true)}>{P.billing.aktBtn}</Button>} />
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
         <DataTable<Payout> columns={columns} rows={mine} rowKey={(p) => p.id} loading={loading} pageSize={10} exportFilename={`${c.id}-tolovlar`} defaultSort={{ key: 'status', dir: 'asc' }}
           emptyState={<EmptyState compact icon="wallet" title={P.billing.empty} hint={P.billing.emptyHint} />} toolbarLeft={<span className="eyebrow">{P.billing.payouts}</span>} />

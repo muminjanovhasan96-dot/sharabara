@@ -254,12 +254,14 @@ export interface GoldenState {
   /** pane the current step acts on */
   pane: StagePane
   fast: boolean
+  /** 0.5 = 2 barobar sekin, 2 = 2 barobar tez */
+  speed: number
 }
 
 type PaneRects = Partial<Record<StagePane, () => DOMRect | null>>
 
 class GoldenRunner {
-  private state: GoldenState = { status: 'idle', index: 0, total: GOLDEN_STEPS.length, error: null, cursor: { x: -100, y: -100, visible: false, clicks: 0 }, pane: 'phone', fast: false }
+  private state: GoldenState = { status: 'idle', index: 0, total: GOLDEN_STEPS.length, error: null, cursor: { x: -100, y: -100, visible: false, clicks: 0 }, pane: 'phone', fast: false, speed: 1 }
   private listeners = new Set<() => void>()
   private skip: AbortController | null = null
   private stopped = false
@@ -267,6 +269,7 @@ class GoldenRunner {
   private resumeFns: (() => void)[] = []
   private panes: PaneRects = {}
   private running = false
+  private jump: number | null = null
 
   subscribe = (fn: () => void) => { this.listeners.add(fn); return () => { this.listeners.delete(fn) } }
   getState = () => this.state
@@ -274,6 +277,7 @@ class GoldenRunner {
 
   registerPane(pane: StagePane, rect: () => DOMRect | null) { this.panes[pane] = rect }
   setFast(v: boolean) { this.set({ fast: v }) }
+  setSpeed(v: number) { this.set({ speed: v }) }
 
   // controls
   pause() { if (this.state.status === 'running') { this.paused = true; this.set({ status: 'paused' }) } }
@@ -284,6 +288,8 @@ class GoldenRunner {
   }
   /** «Keyingi»: drop the remaining waits of the current step (its actions still run, instantly). */
   next() { if (this.paused) this.resume(); this.skip?.abort() }
+  /** «Orqaga»: joriy qadamni tugatib, oldingi qadamni qayta ko'rsatadi (holat qaytmaydi — ekranlar qayta ko'rsatiladi). */
+  prev() { if (this.state.index <= 0) return; this.jump = this.state.index - 1; if (this.paused) this.resume(); this.skip?.abort() }
   stop(status: GoldenStatus = 'idle') {
     this.stopped = true
     this.skip?.abort()
@@ -299,7 +305,7 @@ class GoldenRunner {
 
   private async wait(ms: number, signal: AbortSignal) {
     if (this.stopped) throw new GoldenStopped()
-    await sleep(this.state.fast ? Math.min(ms, 150) : ms, signal)
+    await sleep(this.state.fast ? Math.min(ms, 150) : Math.round(ms / (this.state.speed || 1)), signal)
     await this.gate()
     if (this.stopped) throw new GoldenStopped()
   }
@@ -339,6 +345,7 @@ class GoldenRunner {
         }
         await step.run(ctx)
         this.set({ cursor: { ...this.state.cursor, visible: false } })
+        if (this.jump !== null) { i = this.jump - 1; this.jump = null }
       }
       this.set({ status: 'done', index: GOLDEN_STEPS.length - 1 })
     } catch (e) {
@@ -348,7 +355,7 @@ class GoldenRunner {
         this.set({ status: 'error', error: e instanceof Error ? e.message : String(e), cursor: { ...this.state.cursor, visible: false } })
       }
     } finally {
-      this.running = false; this.skip = null
+      this.running = false; this.skip = null; this.jump = null
     }
   }
 }

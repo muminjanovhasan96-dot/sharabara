@@ -44,6 +44,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     <motion.button
       ref={ref}
       type={type}
+      data-size={size}
       disabled={isDisabled}
       aria-busy={loading || undefined}
       whileTap={isDisabled || reduce ? undefined : { scale: 0.97 }}

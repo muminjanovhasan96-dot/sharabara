@@ -2,15 +2,16 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { Bell, Check, Command, Moon, Search, Sun } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Avatar, Badge, IconButton, Kbd, useTheme } from '@/design'
+import { Avatar, Badge, HelpPopover, IconButton, Kbd, useTheme } from '@/design'
 import { useNow, useStore } from '@/store'
 import { uz } from '@/i18n/uz'
 import type { AdminSection, StaffRole } from '@/domain/types'
-import { groupOf, sectionTitle, useAdminRole } from '../lib/sections'
+import { sectionTitle, useAdminRole } from '../lib/sections'
 import { useAppNavigate } from '@/lib/router'
-import { A } from '../strings'
+import { A, HELP } from '../strings'
 import { ago } from '../lib/format'
 import { AuditKindBadge } from './ui'
+import { auditField, auditValue } from '../lib/audit'
 
 interface Hit { kind: 'listing' | 'order' | 'user'; id: string; title: string; sub: string; to: string }
 
@@ -22,7 +23,6 @@ export function TopBar({ section, onOpenPalette, compactSearch }: { section: Adm
   const setSession = useStore((s) => s.setSession)
   const now = useNow()
   const staff = data.staff.find((s) => s.id === session.staffId) ?? data.staff[0]
-  const group = section ? groupOf(section) : undefined
   const adminRole = useAdminRole()
 
   // ── global search ──
@@ -56,10 +56,13 @@ export function TopBar({ section, onOpenPalette, compactSearch }: { section: Adm
   const auditTarget = (entity: string, id: string) => (entity === 'listing' ? `/pricing?id=${id}` : entity === 'order' || entity === 'subOrder' ? `/orders?id=${id}` : entity === 'payout' ? '/payments' : entity === 'user' ? `/users?id=${id}` : `/audit?q=${id}`)
 
   return (
-    <header className="flex h-[60px] shrink-0 items-center gap-3 border-b border-line bg-card px-5">
-      <div className="min-w-0 shrink-0">
-        <div className="eyebrow !text-[10px] leading-none">{group?.label ?? uz.app.name}</div>
-        <h1 className="m-0 mt-0.5 truncate font-display text-[20px] leading-tight text-ink">{section ? sectionTitle(section) : uz.app.name}</h1>
+    <header className="flex h-[64px] shrink-0 items-center gap-3 border-b border-line bg-card px-5">
+      <div className="min-w-0 shrink-0 max-w-[46%]">
+        <div className="flex items-center gap-1.5">
+          <h1 className="m-0 truncate font-display text-[19px] leading-tight text-ink">{section ? sectionTitle(section) : uz.app.name}</h1>
+          {section && <HelpPopover size="sm" title={sectionTitle(section)} help={HELP[section]} />}
+        </div>
+        {section && <div className="mt-0.5 truncate text-[12px] leading-tight text-ink-2" title={HELP[section].sub}>{HELP[section].sub}</div>}
       </div>
       <div ref={boxRef} className={cn('relative mx-auto min-w-0 flex-1', compactSearch ? 'max-w-[260px]' : 'max-w-[440px]')}>
         <Search size={16} strokeWidth={1.75} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-3" aria-hidden="true" />
@@ -108,8 +111,8 @@ export function TopBar({ section, onOpenPalette, compactSearch }: { section: Adm
                 <DropdownMenu.Item key={a.id} onSelect={() => nav(auditTarget(a.entity, a.entityId))} className="flex cursor-pointer items-start gap-2 rounded-[8px] px-2.5 py-2 outline-none data-[highlighted]:bg-paper-2">
                   <AuditKindBadge kind={a.kind} />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[13px]">{a.actorName} · <span className="tnum">{a.entityId}</span> · {a.field}</span>
-                    <span className="block truncate text-[11.5px] text-ink-3">{a.from !== null && a.from !== undefined ? `${a.from} → ` : ''}{a.to ?? '—'} · {ago(a.at, now)}</span>
+                    <span className="block truncate text-[13px]">{a.actorName} · <span className="tnum">{a.entityId}</span> · {auditField(a.field)}</span>
+                    <span className="block truncate text-[11.5px] text-ink-3">{a.from !== null && a.from !== undefined ? `${auditValue(a, a.from)} → ` : ''}{auditValue(a, a.to)} · {ago(a.at, now)}</span>
                   </span>
                 </DropdownMenu.Item>
               ))}

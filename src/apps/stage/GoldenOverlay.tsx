@@ -41,7 +41,7 @@ function FakeCursor() {
   )
 }
 
-export function GoldenOverlay() {
+export function GoldenOverlay({ onRestart }: { onRestart?: () => void }) {
   const g = useGolden()
   const reduce = useReducedMotion()
 
@@ -68,8 +68,8 @@ export function GoldenOverlay() {
                   <Seal size={80} variant="gold" icon="stamp" ticks />
                   <div className="min-w-0 flex-1">
                     <div className="eyebrow !text-gold-fill">{uz.demo.golden} · yakun</div>
-                    <h2 className="mt-2 font-display text-[26px] leading-tight text-paper">Bitta tovar — 5 rol — 0 ta qo’lda taksi.</h2>
-                    <p className="mt-2 text-[15px] leading-snug text-paper/75">Har qadam audit logda.</p>
+                    <h2 className="mt-2 font-display text-[26px] leading-tight text-paper">{uz.demo.doneTitle}</h2>
+                    <p className="mt-2 text-[15px] leading-snug text-paper/75">{uz.demo.doneSub}</p>
                     <div className="mt-5 grid grid-cols-3 gap-3 text-paper">
                       {[['6 200 000', 'AI narxi'], ['186 000', 'xizmat haqi'], ['6 014 000', 'sotuvchiga']].map(([v, l]) => (
                         <div key={l} className="rounded-[12px] border border-paper/10 bg-paper/[.05] px-3 py-2.5">
@@ -78,8 +78,9 @@ export function GoldenOverlay() {
                         </div>
                       ))}
                     </div>
-                    <div className="mt-5 flex justify-end">
-                      <Button variant="gold" onClick={() => goldenRunner.dismiss()}>{uz.app.close}</Button>
+                    <div className="mt-5 flex flex-wrap justify-end gap-2">
+                      <Button variant="secondary" className="!border-paper/20 !bg-transparent !text-paper hover:!bg-paper/10" onClick={() => { goldenRunner.dismiss(); onRestart?.() }}>{uz.demo.again}</Button>
+                      <Button variant="gold" onClick={() => goldenRunner.dismiss()}>{uz.demo.tryMyself}</Button>
                     </div>
                   </div>
                 </div>

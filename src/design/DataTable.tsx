@@ -24,6 +24,8 @@ export interface Column<T> {
   sortValue?: (row: T) => string | number | null | undefined
   /** can be hidden via the columns menu (default true) */
   hideable?: boolean
+  /** hidden by default (shown via the columns menu) — jadvalda standart 5–6 ta muhim ustun qoladi */
+  defaultHidden?: boolean
   /** header text for CSV when `header` is not a string */
   csvHeader?: string
 }
@@ -151,7 +153,7 @@ export function DataTable<T>({
   const curPage = page ?? innerPage
   const setPage = (p: number) => { setInnerPage(p); onPageChange?.(p) }
 
-  const [innerHidden, setInnerHidden] = useState<string[]>([])
+  const [innerHidden, setInnerHidden] = useState<string[]>(() => columns.filter((c) => c.defaultHidden).map((c) => c.key))
   const hidden = hiddenColumns ?? innerHidden
   const setHidden = (h: string[]) => { setInnerHidden(h); onHiddenColumnsChange?.(h) }
 
@@ -282,7 +284,7 @@ export function DataTable<T>({
                     scope="col"
                     style={{ width: c.width, height: 40 }}
                     aria-sort={active ? (curSort?.dir === 'asc' ? 'ascending' : 'descending') : undefined}
-                    className={cn('eyebrow whitespace-nowrap px-3 py-0 font-semibold', alignCls(c.align))}
+                    className={cn('eyebrow whitespace-nowrap px-3 py-0 font-semibold', alignCls(c.align), c.key === visibleCols[0]?.key && !selectable && 'sticky left-0 z-[2] bg-card')}
                   >
                     {c.sortable ? (
                       <button
@@ -331,7 +333,7 @@ export function DataTable<T>({
                     </td>
                   )}
                   {visibleCols.map((c) => (
-                    <td key={c.key} className={cn('truncate px-3 py-0 align-middle', alignCls(c.align))} style={{ maxWidth: c.width }}>
+                    <td key={c.key} className={cn('truncate px-3 py-0 align-middle', alignCls(c.align), c.key === visibleCols[0]?.key && !selectable && 'sticky left-0 z-[1] bg-card')} style={{ maxWidth: c.width }}>
                       {c.render ? c.render(r) : toCell(raw(r, c.key))}
                     </td>
                   ))}

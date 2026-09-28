@@ -24,7 +24,18 @@ export const PRICE_STEP: Tiyin = 5_000_000
 export const COMPARABLE_WINDOW_DAYS = 30
 export const STALE_DAYS = 14
 export const WEIGHTS = { sold: 1, active: 0.6, activeUnverified: 0.45, stale: 0.3 } as const
-export const FAIR_BAND = 0.08
+/** So'ralgan narx tavsiyadan shuncha foizdan ko'p bo'lsa — «Qimmat»; ± shu oraliqda — «Mos». */
+export const FAIR_BAND = 0.03
+/** Mall tovari bozor medianidan shuncha foizdan qimmat bo'lsa — narx qoidasidan o'tmaydi. */
+export const MALL_MAX_OVER = 0.03
+export function mallCheck(priceTiyin: Tiyin, marketMedianTiyin: Tiyin): 'passed' | 'overpriced' {
+  if (marketMedianTiyin <= 0) return 'passed'
+  return priceTiyin * 1000 > marketMedianTiyin * Math.round((1 + MALL_MAX_OVER) * 1000) ? 'overpriced' : 'passed'
+}
+/** Narx tahlili navbati: sotuvchi yuborgan, hali taklif yuborilmagan e'lonlar (sidebar va sahifa bitta manba). */
+export function isPricingQueue(l: Pick<Listing, 'status' | 'historical'>): boolean {
+  return (l.status === 'in_review' || l.status === 'submitted' || l.status === 'ai_checked') && !l.historical
+}
 export const FALLBACK_DISCOUNT = 0.05
 
 export interface SuggestInput {

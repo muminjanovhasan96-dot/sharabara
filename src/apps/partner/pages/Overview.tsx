@@ -54,7 +54,7 @@ export function Overview() {
 
   return (
     <div>
-      <PageHeader eyebrow={c.name} title={P.nav.overview}>
+      <PageHeader eyebrow={c.name} help={P.help.overview} title={P.nav.overview}>
         {formatDemoDate(now)} · {P.model[c.model]} · {Math.round(c.commissionRate * 100)}% komissiya
       </PageHeader>
 
@@ -82,7 +82,7 @@ export function Overview() {
                   <Tooltip cursor={{ fill: 'var(--blue-soft)', fillOpacity: 0.55 }} content={({ active, payload }) => {
                     if (!active || !payload?.length) return null
                     const p = payload[0].payload as { d: string; value: number }
-                    return <div className={chartTheme.tooltipClass}><div className={chartTheme.tooltipLabelClass}>{formatDemoDate(`${p.d}T12:00:00`)}</div><div className="font-medium">{formatMoney(p.value)}</div></div>
+                    return <div className={chartTheme.tooltipClass}><div className={chartTheme.tooltipLabelClass}>{formatDemoDate(`${p.d}T12:00:00`)}</div><div className="font-medium">{formatMoney(p.value, { compact: true })}</div></div>
                   }} />
                   <Bar dataKey="value" fill="var(--blue)" radius={[6, 6, 0, 0]} maxBarSize={22} isAnimationActive={false} />
                 </BarChart>

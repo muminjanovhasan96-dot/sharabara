@@ -68,7 +68,7 @@ export function ApiKeys() {
 
   return (
     <div>
-      <PageHeader eyebrow={c.name} title={P.api.title} actions={<Button variant="gold" leading={<Plus />} onClick={() => setCreate(true)}>{P.api.newKey}</Button>}>{P.api.lead}</PageHeader>
+      <PageHeader eyebrow={c.name} help={P.help.api} title={P.api.title} actions={<Button variant="gold" leading={<Plus />} onClick={() => setCreate(true)}>{P.api.newKey}</Button>}>{P.api.lead}</PageHeader>
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
         <Card padding="none" className="self-start overflow-hidden">
           {loading ? <div className="flex flex-col gap-3 p-4">{Array.from({ length: 3 }, (_, i) => <Skeleton key={i} height={56} />)}</div> : keys.length === 0 ? <EmptyState icon="key-round" title={P.api.empty} hint={P.api.emptyHint} /> : (

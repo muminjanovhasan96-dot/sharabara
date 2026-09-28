@@ -1,49 +1,61 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/inter/index.css';
+@import '@fontsource/bitter/700.css';
+@import '@fontsource/bitter/800.css';
 @import 'leaflet/dist/leaflet.css';
 
-/* ─── "Toza bozor" tokens (A yo'nalishi, kuchaytirilgan aksent) ─────────── */
+/* ─── Sharabara tokens: toza zamonaviy asos + iliq qog'oz va oltin aksent ─────────── */
 :root {
-  --paper: #f3f4f7;      /* sahifa foni: yengil kulrang */
-  --paper-2: #e8ebf1;    /* ikkinchi fon, skeleton, chip */
-  --card: #ffffff;       /* kartalar */
-  --ink: #0f1f3a;        /* to'q ko'k (navy) matn va asosiy tugma */
-  --ink-2: #4a5568;
-  --ink-3: #616b7a;
-  --gold: #c9930a;       /* oltin: chiziqlar, ikonlar, muhr */
-  --gold-fill: #f5b400;  /* yorqin oltin: CTA tugma, faol tab, muhr diski */
-  --brick: #e0443b;      /* chegirma, ogohlantirish */
-  --green: #1e9e6a;      /* ishonch: Narx tekshirilgan, muvaffaqiyat */
-  --blue: #2f6fed;       /* aksent: havolalar, info, faol holat */
-  --blue-soft: #e8f0ff;
-  --green-soft: #e3f6ee;
-  --gold-soft: #fff4d6;
-  --brick-soft: #fde8e6;
-  --line: rgba(15, 31, 58, 0.09);
-  --line-strong: rgba(15, 31, 58, 0.2);
-  --shadow-soft: 0 1px 2px rgba(15, 31, 58, 0.04), 0 10px 30px -14px rgba(15, 31, 58, 0.16);
-  --shadow-sheet: 0 -8px 40px -12px rgba(15, 31, 58, 0.3);
+  --paper: #f6f3ec;      /* sahifa foni: iliq oq */
+  --paper-2: #eee9dd;    /* ikkinchi fon, skeleton, chip */
+  --card: #fffdf8;       /* kartalar */
+  --ink: #1a2430;        /* asosiy matn, qora tugma, admin sidebar */
+  --ink-2: #4e5763;
+  --ink-3: #7a828d;      /* faqat 13px+ yordamchi yozuv */
+  --gold-fill: #e3be4a;  /* YAGONA asosiy aksent: asosiy tugma, faol tab, fokus */
+  --gold: #b8901e;       /* oltin chiziq, ikon, muhr halqasi, havolalar */
+  --gold-deep: #b8901e;  /* grafikdagi 2-seriya (Mall), havolalar */
+  --brick: #a63a2a;      /* xavf, «Narx tushdi», xato */
+  --green: #2e6b4a;      /* ishonch: Narx tekshirilgan, muvaffaqiyat */
+  --info: #2f5f8f;       /* faqat «Yo'lda» statusi va info toast */
+  --info-soft: #e6eef6;
+  /* «blue» nomli eski aksent endi oltinga yo'naltirilgan: havolalar, faol menyu, badge'lar */
+  --blue: var(--gold-deep);
+  --blue-soft: #f5ecd3;
+  --green-soft: #e3efe7;
+  --gold-soft: #f8f0d6;
+  --brick-soft: #f5e3df;
+  --line: #e7e0d2;
+  --line-strong: #cfc4ad;
+  --shadow-soft: 0 1px 2px rgba(26, 36, 48, 0.04), 0 10px 30px -14px rgba(26, 36, 48, 0.14);
+  --shadow-sheet: 0 -8px 40px -12px rgba(26, 36, 48, 0.3);
   --radius: 16px;
   --radius-lg: 22px;
-  --font-display: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Bitter', 'Georgia', 'Times New Roman', serif;
   --font-body: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   color-scheme: light;
 }
 
 [data-theme='dark'] {
-  --paper: #0b1220;
-  --paper-2: #111a2c;
-  --card: #16213a;
-  --ink: #f5f7fa;
-  --ink-2: #b6becc;
-  --ink-3: #8b95a7;
-  --gold: #e0b23a;
-  --blue-soft: #1c2c4f;
-  --green-soft: #143a2d;
-  --gold-soft: #3b3012;
-  --brick-soft: #3f1d1b;
-  --line: rgba(245, 247, 250, 0.1);
-  --line-strong: rgba(245, 247, 250, 0.22);
+  --paper: #121922;
+  --paper-2: #182130;
+  --card: #1a2430;
+  --ink: #f2eee6;
+  --ink-2: #c3bfb5;
+  --ink-3: #8f948f;
+  --gold: #e3be4a;
+  --gold-deep: #e3be4a;
+  --blue: var(--gold-deep);
+  --blue-soft: #33301f;
+  --info: #7fa6cf;
+  --info-soft: #1f2e40;
+  --green: #6fbf93;
+  --green-soft: #17342a;
+  --gold-soft: #3a3115;
+  --brick: #e07b6c;
+  --brick-soft: #3f2320;
+  --line: rgba(242, 238, 230, 0.1);
+  --line-strong: rgba(242, 238, 230, 0.22);
   --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 30px -14px rgba(0, 0, 0, 0.5);
   color-scheme: dark;
 }
@@ -57,6 +69,9 @@
   --color-ink-3: var(--ink-3);
   --color-gold: var(--gold);
   --color-gold-fill: var(--gold-fill);
+  --color-gold-deep: var(--gold-deep);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
   --color-brick: var(--brick);
   --color-green: var(--green);
   --color-blue: var(--blue);
@@ -88,14 +103,16 @@
     text-rendering: optimizeLegibility;
     overscroll-behavior-y: none;
   }
-  h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; }
+  /* Bitter faqat «ovoz» joylarda: sahifa sarlavhalari, narx va KPI raqamlari (.font-display). Kichik sarlavhalar Inter'da qoladi. */
+  h1, h2 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.01em; }
+  h3, h4 { font-family: var(--font-body); font-weight: 700; letter-spacing: -0.01em; }
   input, textarea, select, button { font: inherit; color: inherit; }
   button { cursor: pointer; }
   :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 6px; }
   ::selection { background: color-mix(in srgb, var(--gold-fill) 45%, transparent); }
   a { color: inherit; text-decoration: none; }
 }
-.font-display { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; }
+.font-display { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.01em; }
 .tnum, [data-money], table td, table th { font-variant-numeric: tabular-nums; }
 
 /* Eyebrow */
@@ -105,6 +122,17 @@
 /* Mahsulot plitkasi foni (eski chiziqli naqsh o'rniga yumshoq gradient) */
 .hatch { background: linear-gradient(160deg, var(--paper-2), var(--paper)); }
 [data-theme='dark'] .hatch { background: linear-gradient(160deg, var(--paper-2), var(--card)); }
+
+/* Juda xira qog'oz teksturasi — faqat bosh sahifa va «Narx bilan yutamiz» bannerida */
+.paper-texture { position: relative; }
+.paper-texture::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; opacity: 0.07; mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Mijoz ilovasida asosiy tugmalar 48 px */
+#phone-screen button[data-size='md'] { min-height: 48px; height: 48px; }
+#phone-screen button[data-size='sm'] { min-height: 40px; }
 
 /* Skeleton shimmer in paper tones */
 .skeleton {

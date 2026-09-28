@@ -8,7 +8,7 @@ import { cn, SPRING } from '@/lib/utils'
 import { uz, t } from '@/i18n/uz'
 import { groupDigits } from '@/domain/money'
 import { rankFeed } from '@/domain/recs'
-import { Badge, BottomSheet, Button, ErrorState, usePhoneContainer } from '@/design'
+import { Badge, BottomSheet, Button, ErrorState, Seal, usePhoneContainer } from '@/design'
 import type { Listing, Product, RegionId } from '@/domain/types'
 import { ms } from '../strings'
 import { regionName, useMe, useMeId, useScreenLoad } from '../lib'
@@ -95,10 +95,10 @@ export default function Home() {
         <NavyCard
           padding="none" role="button" tabIndex={0}
           onClick={() => nav('/catalog?verified=1')} onKeyDown={(e) => { if (e.key === 'Enter') nav('/catalog?verified=1') }}
-          className="flex min-h-[124px] cursor-pointer items-center justify-between gap-3 py-4 pl-[18px] pr-4"
+          className="paper-texture flex min-h-[124px] cursor-pointer items-center justify-between gap-3 py-4 pl-[18px] pr-4"
         >
           <div className="pointer-events-none absolute -right-10 -top-14 h-48 w-48 rounded-full" style={{ background: 'radial-gradient(circle, rgba(245,180,0,.42) 0%, rgba(245,180,0,0) 70%)' }} aria-hidden="true" />
-          <div className="pointer-events-none absolute -bottom-16 left-1/3 h-40 w-40 rounded-full" style={{ background: 'radial-gradient(circle, rgba(47,111,237,.35) 0%, rgba(47,111,237,0) 70%)' }} aria-hidden="true" />
+          <div className="pointer-events-none absolute -bottom-16 left-1/3 h-40 w-40 rounded-full" style={{ background: 'radial-gradient(circle, rgba(227,190,74,.22) 0%, rgba(227,190,74,0) 70%)' }} aria-hidden="true" />
           <div className="relative min-w-0 flex-1">
             <div className="font-display text-[21px] font-extrabold leading-[1.1] tracking-[-0.02em] text-white">{ms.home.heroTitle}</div>
             <div className="tnum mt-1 text-[12.5px] text-white/70">{t(ms.home.heroSub, { n: groupDigits(verifiedCount) })}</div>
@@ -115,7 +115,7 @@ export default function Home() {
             const tone = categoryTone(c.id, i)
             return (
               <motion.button key={c.id} type="button" whileTap={reduce ? undefined : { scale: 0.94 }} transition={SPRING} onClick={() => nav(`/catalog?cat=${c.id}`)} className="flex min-w-0 flex-col items-center gap-1.5">
-                <PastelTile icon={c.icon} tone={tone} size={66} iconSize={28} radius={20} />
+                <PastelTile icon={c.icon} tone={tone} size={66} iconSize={28} />
                 <span className="clamp-2 w-full text-center text-[12px] font-medium leading-[15px] text-ink">{c.name}</span>
               </motion.button>
             )
@@ -123,16 +123,6 @@ export default function Home() {
         </section>
 
         {error && <ErrorState compact onRetry={reload} className="my-3" />}
-
-        {/* Narx tekshirilgan */}
-        <section className="mt-6">
-          <SectionTitle sub={ms.home.verifiedSub} action={uz.home.seeAll} onAction={() => nav('/catalog?verified=1')}>{ms.home.verified}</SectionTitle>
-          {loading ? <CarouselSkeleton /> : verified.length === 0 ? (
-            <EmptyState compact icon="shield-check" tone="green" title={ms.home.noFeed} />
-          ) : (
-            <Carousel>{verified.map((l) => <ListingCard key={l.id} listing={l} variant="carousel" />)}</Carousel>
-          )}
-        </section>
 
         {/* Siz uchun tanlandi */}
         <section data-testid={TID.mForYou} className="mt-6">
@@ -145,6 +135,26 @@ export default function Home() {
                 ? <ListingCard key={f.id} listing={item as never} variant="carousel" reason={f.reason} />
                 : <ProductCard key={f.id} product={item as never} variant="carousel" reason={f.reason} />)}
             </Carousel>
+          )}
+        </section>
+
+        {/* Sharabara Mall banneri */}
+        <button type="button" onClick={() => nav('/mall')} className="mt-5 flex w-full items-center gap-3 rounded-card border border-line bg-card p-3 text-left shadow-soft active:scale-[.99]">
+          <Seal size={40} variant="gold" icon="store" />
+          <span className="min-w-0 flex-1">
+            <span className="block font-display text-[15px] leading-tight text-ink">{ms.home.mallBannerTitle}</span>
+            <span className="clamp-2 mt-0.5 block text-[12px] leading-[1.3] text-ink-2">{ms.home.mallBannerSub}</span>
+          </span>
+          <ChevronRight size={18} strokeWidth={2} className="shrink-0 text-ink-3" />
+        </button>
+
+        {/* Narx tekshirilgan */}
+        <section className="mt-6">
+          <SectionTitle sub={ms.home.verifiedSub} action={uz.home.seeAll} onAction={() => nav('/catalog?verified=1')}>{ms.home.verified}</SectionTitle>
+          {loading ? <CarouselSkeleton /> : verified.length === 0 ? (
+            <EmptyState compact icon="shield-check" tone="green" title={ms.home.noFeed} />
+          ) : (
+            <Carousel>{verified.map((l) => <ListingCard key={l.id} listing={l} variant="carousel" />)}</Carousel>
           )}
         </section>
 

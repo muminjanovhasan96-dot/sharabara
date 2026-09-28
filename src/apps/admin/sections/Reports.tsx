@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis, ZAxis, type TooltipContentProps } from 'recharts'
-import { EmptyState, Field, Input, Money, Skeleton, chartTheme } from '@/design'
+import { EmptyState, Field, Money, Skeleton, chartTheme, DateInput } from '@/design'
 import { useNow, useStore } from '@/store'
 import { dateKey, addDays } from '@/domain/clock'
 import { formatMoney, formatMoneyCompact } from '@/domain/money'
@@ -47,7 +47,7 @@ export function Reports() {
   return (
     <div className="flex flex-col gap-4 p-5">
       <div className="flex flex-wrap items-end gap-3">
-        <Field label={A.reports.range}><div className="flex items-center gap-2"><Input size="sm" type="date" value={from} max={to} onChange={(e) => setFrom(e.target.value)} aria-label={A.orders.dateFrom} className="w-40" /><span className="text-ink-3">—</span><Input size="sm" type="date" value={to} min={from} onChange={(e) => setTo(e.target.value)} aria-label={A.orders.dateTo} className="w-40" /></div></Field>
+        <Field label={A.reports.range}><div className="flex items-center gap-2"><DateInput size="sm" value={from} onValueChange={setFrom} aria-label={A.orders.dateFrom} className="w-36" /><span className="text-ink-3">—</span><DateInput size="sm" value={to} onValueChange={setTo} aria-label={A.orders.dateTo} className="w-36" /></div></Field>
         <span className="pb-2.5 text-[12.5px] text-ink-3">{stats.length} {A.common.days}</span>
       </div>
       {stats.length === 0 ? <EmptyState icon="bar-chart-3" title={A.reports.noData} /> : (
@@ -59,7 +59,7 @@ export function Reports() {
                   <CartesianGrid vertical={false} {...AC_GRID} />
                   <XAxis dataKey="date" tick={chartTheme.axisTick} axisLine={chartTheme.axisLine} tickLine={false} />
                   <YAxis tick={chartTheme.axisTick} axisLine={false} tickLine={false} width={56} tickFormatter={(v: number) => formatMoneyCompact(v)} />
-                  <Tooltip cursor={{ stroke: 'var(--blue)', strokeWidth: 1, strokeDasharray: '3 3' }} content={tip((v) => formatMoney(v), SN)} />
+                  <Tooltip cursor={{ stroke: 'var(--blue)', strokeWidth: 1, strokeDasharray: '3 3' }} content={tip((v) => formatMoney(v, { compact: true }), SN)} />
                   <Area type="monotone" dataKey="listings" stackId="1" stroke={AC.navy} strokeWidth={2} fill={AC.navy} fillOpacity={0.12} />
                   <Area type="monotone" dataKey="mall" stackId="1" stroke={AC.blue} strokeWidth={2} fill={AC.blue} fillOpacity={0.16} />
                 </AreaChart>

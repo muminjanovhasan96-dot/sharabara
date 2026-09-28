@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Badge, DataTable, EmptyState, Input, Select, type Column } from '@/design'
+import { Badge, DataTable, EmptyState, Select, type Column, DateInput } from '@/design'
 import { useStore } from '@/store'
 import { dateKey } from '@/domain/clock'
 import type { MovementKind, SalesChannel, StockMovement } from '@/domain/types'
@@ -55,8 +55,8 @@ export function MovementsTab({ wh }: { wh: WhFilter }) {
         <div className="w-36"><Select size="sm" value={kind} onChange={(e) => setKind(e.target.value)} aria-label={M.kind} options={[{ value: '', label: M.kind_all }, ...KINDS.map((k) => ({ value: k, label: kindLabel(k) }))]} /></div>
         <div className="w-40"><Select size="sm" value={channel} onChange={(e) => setChannel(e.target.value)} aria-label={M.channel} options={[{ value: '', label: M.channel_all }, ...CHANNELS.map((c) => ({ value: c, label: channelLabel(c as SalesChannel) }))]} /></div>
         {wh === 'all' && <div className="w-44"><Select size="sm" value={whF} onChange={(e) => setWhF(e.target.value)} aria-label={M.warehouse} options={[{ value: '', label: M.warehouse_all }, ...data.warehouses.map((w) => ({ value: w.id, label: whShort(data, w.id) }))]} /></div>}
-        <Input size="sm" type="date" value={from} onChange={(e) => setFrom(e.target.value)} aria-label={A.orders.dateFrom} className="w-38" />
-        <Input size="sm" type="date" value={to} onChange={(e) => setTo(e.target.value)} aria-label={A.orders.dateTo} className="w-38" />
+        <DateInput size="sm" value={from} onValueChange={setFrom} aria-label={A.orders.dateFrom} className="w-36" />
+        <DateInput size="sm" value={to} onValueChange={setTo} aria-label={A.orders.dateTo} className="w-36" />
         <span className="tnum text-[12.5px] text-ink-3">{rows.length}</span>
       </div>}
       emptyState={<EmptyState compact icon="scroll-text" title={M.empty} hint={M.emptyHint} />} />

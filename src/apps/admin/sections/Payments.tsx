@@ -10,7 +10,7 @@ import type { Company, Order, Payout, Transaction } from '@/domain/types'
 import { AdminConfirm, AdminModal, EscrowBadge, IdLink, Kpi, PayoutStatusBadge, ProviderBadge, SampleBadge, SubStatusBadge } from '../components/ui'
 import { useAccess } from '../lib/sections'
 import { useAct, useSectionLoading } from '../lib/hooks'
-import { fmtTime, pctStr, staffName, sum, userName } from '../lib/format'
+import { fmtTime, pctStr, staffName, sum, userName, fmtDate } from '../lib/format'
 import { A } from '../strings'
 
 export function Payments() {
@@ -40,7 +40,7 @@ export function Payments() {
     { key: 'at', header: A.common.time, sortable: true, width: 130, render: (t) => <span className="text-ink-2">{fmtTime(t.at)}</span> },
     { key: 'provider', header: A.payments.provider, sortable: true, width: 100, render: (t) => <ProviderBadge p={t.provider} />, csv: (t) => t.provider ?? '' },
     { key: 'amountTiyin', header: A.common.amount, sortable: true, align: 'right', width: 140, render: (t) => <Money tiyin={t.amountTiyin} size="sm" />, csv: (t) => t.amountTiyin / 100 },
-    { key: 'refId', header: A.payments.ref, width: 110, render: (t) => t.refId.startsWith('O-') && data.orders.some((o) => o.id === t.refId) ? <IdLink to={`/orders?id=${t.refId}`}>{t.refId}</IdLink> : <span className="tnum text-ink-2">{t.refId}</span> },
+    { key: 'refId', header: A.payments.ref, width: 110, defaultHidden: true, render: (t) => t.refId.startsWith('O-') && data.orders.some((o) => o.id === t.refId) ? <IdLink to={`/orders?id=${t.refId}`}>{t.refId}</IdLink> : <span className="tnum text-ink-2">{t.refId}</span> },
     { key: 'status', header: A.common.status, sortable: true, width: 120, render: (t) => <Badge tone={t.status === 'ok' ? 'green' : t.status === 'pending' ? 'gold' : 'brick'} dot>{A.common.txStatus[t.status]}</Badge>, csv: (t) => t.status },
     { key: 'note', header: A.common.note, render: (t) => <span className="truncate text-ink-2" title={t.note}>{t.note}</span> },
   ]
@@ -57,16 +57,16 @@ export function Payments() {
     { key: 'sellerName', header: A.common.seller, sortable: true, render: (p) => <span>{p.sellerName}<span className="ml-1 text-[11px] text-ink-3">{p.sellerKey.startsWith('c:') ? A.common.source.product : A.common.source.listing}</span></span> },
     { key: 'amountTiyin', header: A.common.amount, sortable: true, align: 'right', width: 150, render: (p) => <Money tiyin={p.amountTiyin} size="sm" />, csv: (p) => p.amountTiyin / 100 },
     { key: 'status', header: A.common.status, sortable: true, width: 200, render: (p) => <span className="flex items-center gap-1.5"><PayoutStatusBadge status={p.status} />{p.status === 'awaiting_second_approval' && <Badge tone="brick" size="sm">{A.payments.dual}</Badge>}{p.status === 'pending' && needsSecondApproval(p.amountTiyin) && <Badge tone="outline" size="sm">{A.payments.dual}</Badge>}</span>, csv: (p) => p.status },
-    { key: 'approvals', header: A.payments.approvals, width: 160, render: (p) => p.approvals.length ? <span className="text-[12.5px] text-ink-2">{p.approvals.map((a) => staffName(data, a.by)).join(', ')}</span> : <span className="text-ink-3">—</span>, csv: (p) => p.approvals.length },
-    { key: 'scheduledFor', header: A.payments.scheduledFor, sortable: true, width: 110, render: (p) => <span className="tnum text-ink-2">{p.paidAt ? fmtTime(p.paidAt) : p.scheduledFor ?? '—'}</span> },
-    { key: 'cardLast4', header: A.payments.card, width: 90, render: (p) => <span className="tnum text-ink-2">****{p.cardLast4}</span> },
+    { key: 'approvals', header: A.payments.approvals, width: 160, defaultHidden: true, render: (p) => p.approvals.length ? <span className="text-[12.5px] text-ink-2">{p.approvals.map((a) => staffName(data, a.by)).join(', ')}</span> : <span className="text-ink-3">—</span>, csv: (p) => p.approvals.length },
+    { key: 'scheduledFor', header: A.payments.scheduledFor, sortable: true, width: 150, render: (p) => <span className="tnum text-ink-2">{p.paidAt ? fmtTime(p.paidAt) : fmtDate(p.scheduledFor)}</span>, csv: (p) => p.paidAt ? fmtTime(p.paidAt) : fmtDate(p.scheduledFor) },
+    { key: 'cardLast4', header: A.payments.card, width: 90, defaultHidden: true, render: (p) => <span className="tnum text-ink-2">****{p.cardLast4}</span> },
     { key: 'act', header: A.common.actions, width: 190, hideable: false, render: (p) => {
       const mine = p.approvals.some((a) => a.by === staffId)
       return (
         <span className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
           {p.status === 'pending' && <Button size="sm" variant="secondary" leading={<CalendarCheck strokeWidth={1.75} />} disabled={!access.edit} loading={pending === p.id} onClick={() => run(p.id, () => api.finance.schedulePayout(p.id), A.payments.scheduled)}>{A.payments.schedule}</Button>}
           {p.status === 'awaiting_second_approval' && <Button size="sm" variant="secondary" disabled={!access.approve || mine} title={mine ? A.payments.sameStaff : undefined} loading={pending === p.id} onClick={() => run(p.id, () => api.finance.secondApprove(p.id), A.payments.approved)}>{A.payments.second}</Button>}
-          {p.status === 'scheduled' && <Button size="sm" variant="gold" leading={<Landmark strokeWidth={1.75} />} disabled={!access.approve} loading={pending === p.id} onClick={() => run(p.id, () => api.finance.payOut(p.id), A.payments.paid)}>{A.payments.pay}</Button>}
+          {p.status === 'scheduled' && <Button size="sm" variant="primary" leading={<Landmark strokeWidth={1.75} />} disabled={!access.approve} loading={pending === p.id} onClick={() => run(p.id, () => api.finance.payOut(p.id), A.payments.paid)}>{A.payments.pay}</Button>}
         </span>
       )
     } },

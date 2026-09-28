@@ -30,7 +30,7 @@ export function Products() {
   const cols: Column<Product>[] = [
     { key: 'title', header: A.common.title, sortable: true, render: (p) => <span className="flex items-center gap-2"><ProductImage id={imgId(p.images[0] ?? '', p.id)} className="h-8 w-8 shrink-0" fill={0.85} /><span className="truncate">{p.title}</span></span> },
     { key: 'companyId', header: A.products.company, sortable: true, width: 160, render: (p) => company(p.companyId), csv: (p) => company(p.companyId), sortValue: (p) => company(p.companyId) },
-    { key: 'sku', header: A.products.sku, width: 110, render: (p) => <span className="tnum text-ink-2">{p.sku}</span> },
+    { key: 'sku', header: A.products.sku, width: 110, defaultHidden: true, render: (p) => <span className="tnum text-ink-2">{p.sku}</span> },
     { key: 'priceTiyin', header: A.common.price, sortable: true, align: 'right', width: 130, render: (p) => <Money tiyin={p.priceTiyin} size="sm" />, csv: (p) => p.priceTiyin / 100 },
     { key: 'marketMedianTiyin', header: A.products.market, sortable: true, align: 'right', width: 130, render: (p) => <Money tiyin={p.marketMedianTiyin} size="sm" className="text-ink-2" />, csv: (p) => p.marketMedianTiyin / 100 },
     { key: 'checkDelta', header: A.products.delta, sortable: true, align: 'right', width: 90, render: (p) => <span className={`tnum ${p.checkDelta > 0 ? 'text-brick' : 'text-green'}`}>{signedPct(p.checkDelta)}</span> },
@@ -41,7 +41,7 @@ export function Products() {
   const bulk = (r: 'passed' | 'overpriced') => run('bulk', async () => { for (const id of sel) await api.admin.productCheck(id, r) }, A.products.checked).then(() => setSel([]))
   return (
     <div className="flex flex-col gap-3 p-5">
-      <DataTable columns={cols} rows={rows} rowKey={(p) => p.id} onRowClick={(p) => setQid(p.id)} selectable selected={sel} onSelectionChange={setSel} pageSize={15} exportFilename="tovarlar" defaultSort={{ key: 'check', dir: 'desc' }}
+      <DataTable columns={cols} rows={rows} rowKey={(p) => p.id} onRowClick={(p) => setQid(p.id)} selectable selected={sel} onSelectionChange={setSel} pageSize={15} exportFilename="tovarlar" defaultSort={{ key: 'checkDelta', dir: 'desc' }}
         toolbarLeft={<div className="flex flex-wrap items-center gap-1.5">{(['all', 'failed', 'lowStock'] as Filter[]).map((f) => <Chip key={f} size="sm" selected={filter === f} onToggle={() => setQf(f === 'all' ? null : f)}>{A.products.filters[f]}</Chip>)}{qc && <Badge tone="blue">{company(qc)}</Badge>}<span className="tnum text-[12.5px] text-ink-3">{rows.length}</span></div>}
         toolbarRight={sel.length > 0 && access.approve && <><Button size="sm" variant="secondary" leading={<X strokeWidth={1.75} />} loading={pending === 'bulk'} onClick={() => bulk('overpriced')}>{A.products.overpriced}</Button><Button size="sm" variant="gold" leading={<Check strokeWidth={1.75} />} loading={pending === 'bulk'} onClick={() => bulk('passed')}>{A.products.pass} ({sel.length})</Button></>}
         emptyState={<EmptyState compact icon="package" title={A.common.empty} hint={A.common.emptyHint} />} />

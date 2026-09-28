@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Badge, Button, DataTable, EmptyState, Field, Input, Money, Select, Textarea, Timeline, Skeleton, exportCsv, type Column } from '@/design'
+import { Badge, Button, DataTable, EmptyState, Field, Money, Select, Textarea, Timeline, Skeleton, exportCsv, type Column, DateInput } from '@/design'
 import { useNow, useStore } from '@/store'
 import { api } from '@/api'
 import { uz } from '@/i18n/uz'
@@ -51,12 +51,12 @@ export function Orders() {
     { key: 'id', header: A.common.id, sortable: true, width: 100, render: (o) => <span className="tnum font-medium">{o.id}</span> },
     { key: 'createdAt', header: A.common.date, sortable: true, width: 130, render: (o) => <span className="text-ink-2">{fmtTime(o.createdAt)}</span> },
     { key: 'buyerId', header: A.common.buyer, sortable: true, render: (o) => userName(data, o.buyerId), csv: (o) => userName(data, o.buyerId), sortValue: (o) => userName(data, o.buyerId) },
-    { key: 'source', header: A.orders.source, width: 80, render: (o) => <Badge tone={o.subOrders[0]?.items[0]?.source === 'product' ? 'blue' : 'neutral'} size="sm">{A.common.source[o.subOrders[0]?.items[0]?.source ?? 'listing']}</Badge>, csv: (o) => o.subOrders[0]?.items[0]?.source ?? '' },
-    { key: 'region', header: A.common.region, sortable: true, width: 140, render: (o) => regionName(data, branchOf(data, o.delivery.branchId)?.regionId), csv: (o) => regionName(data, branchOf(data, o.delivery.branchId)?.regionId), sortValue: (o) => regionName(data, branchOf(data, o.delivery.branchId)?.regionId) },
+    { key: 'source', header: A.orders.source, width: 80, defaultHidden: true, render: (o) => <Badge tone={o.subOrders[0]?.items[0]?.source === 'product' ? 'blue' : 'neutral'} size="sm">{A.common.source[o.subOrders[0]?.items[0]?.source ?? 'listing']}</Badge>, csv: (o) => o.subOrders[0]?.items[0]?.source ?? '' },
+    { key: 'region', header: A.common.region, sortable: true, width: 140, defaultHidden: true, render: (o) => regionName(data, branchOf(data, o.delivery.branchId)?.regionId), csv: (o) => regionName(data, branchOf(data, o.delivery.branchId)?.regionId), sortValue: (o) => regionName(data, branchOf(data, o.delivery.branchId)?.regionId) },
     { key: 'totalTiyin', header: A.common.total, sortable: true, align: 'right', width: 130, render: (o) => <Money tiyin={o.totalTiyin} size="sm" />, csv: (o) => o.totalTiyin / 100 },
-    { key: 'status', header: A.common.status, sortable: true, width: 130, render: (o) => <OrderStatusBadge status={o.status} /> },
+    { key: 'status', header: A.orders.payment, sortable: true, width: 130, render: (o) => <OrderStatusBadge status={o.status} /> },
     { key: 'escrow', header: A.orders.escrow, width: 140, render: (o) => <EscrowBadge status={o.payment.escrow} size="sm" />, csv: (o) => o.payment.escrow },
-    { key: 'subs', header: A.orders.subOrders, width: 150, render: (o) => <span className="flex gap-1">{o.subOrders.slice(0, 2).map((so) => <SubStatusBadge key={so.id} status={so.status} size="sm" />)}{o.subOrders.length > 2 && <Badge size="sm">+{o.subOrders.length - 2}</Badge>}</span>, csv: (o) => o.subOrders.map((s) => s.status).join('|') },
+    { key: 'subs', header: A.orders.delivery, width: 170, render: (o) => <span className="flex gap-1">{o.subOrders.slice(0, 2).map((so) => <SubStatusBadge key={so.id} status={so.status} size="sm" />)}{o.subOrders.length > 2 && <Badge size="sm">+{o.subOrders.length - 2}</Badge>}</span>, csv: (o) => o.subOrders.map((s) => s.status).join('|') },
   ]
   const regions = data.regions.map((r) => ({ value: r.id, label: r.name }))
   const pick = (v: SavedView<F>) => { setF(v.filters); setActiveView(v.name) }
@@ -66,10 +66,10 @@ export function Orders() {
     <div className="flex flex-col gap-3 p-5">
       <Toolbar right={<ViewChips views={views} active={activeView} onPick={pick} onSave={(name, filters) => { save({ name, filters }); setActiveView(name) }} onRemove={remove} current={f} customNames={custom.map((c) => c.name)} />}>
         <div className="w-44"><Select size="sm" value={f.status} onChange={(e) => set({ status: e.target.value })} aria-label={A.common.status} options={[{ value: '', label: `${A.common.status}: ${A.common.all}` }, ...(['paid', 'completed', 'cancelled', 'created'] as const).map((s) => ({ value: s, label: ORDER_STATUS_UZ[s] }))]} /></div>
-        <div className="w-36"><Select size="sm" value={f.source} onChange={(e) => set({ source: e.target.value })} aria-label={A.orders.source} options={[{ value: '', label: `${A.orders.source}: ${A.common.all}` }, { value: 'listing', label: A.common.source.listing }, { value: 'product', label: A.common.source.product }]} /></div>
+        <div className="w-48"><Select size="sm" value={f.source} onChange={(e) => set({ source: e.target.value })} aria-label={A.orders.source} options={[{ value: '', label: `${A.orders.source}: ${A.common.all}` }, { value: 'listing', label: A.common.source.listing }, { value: 'product', label: A.common.source.product }]} /></div>
         <div className="w-44"><Select size="sm" value={f.region} onChange={(e) => set({ region: e.target.value })} aria-label={A.common.region} options={[{ value: '', label: `${A.common.region}: ${A.common.all}` }, ...regions]} /></div>
-        <Input size="sm" type="date" value={f.from} onChange={(e) => set({ from: e.target.value })} aria-label={A.orders.dateFrom} className="w-40" />
-        <Input size="sm" type="date" value={f.to} onChange={(e) => set({ to: e.target.value })} aria-label={A.orders.dateTo} className="w-40" />
+        <DateInput size="sm" value={f.from} onValueChange={(v) => set({ from: v })} aria-label={A.orders.dateFrom} className="w-36" />
+        <DateInput size="sm" value={f.to} onValueChange={(v) => set({ to: v })} aria-label={A.orders.dateTo} className="w-36" />
       </Toolbar>
       <BulkBar count={sel.length} onClear={() => setSel([])}>
         <Button size="sm" variant="gold" onClick={() => exportCsv('buyurtmalar-tanlangan', cols, rows.filter((o) => sel.includes(o.id)))}>{uz.admin.export}</Button>

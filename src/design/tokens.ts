@@ -1,25 +1,27 @@
 /** "Toza bozor" palette as JS constants (for Recharts & inline SVG). Keep in sync with src/index.css. */
 export const CHART = {
-  gold: '#C9930A',
-  goldFill: '#F5B400',
-  ink: '#0F1F3A',
-  brick: '#E0443B',
-  green: '#1E9E6A',
-  blue: '#2F6FED',
-  violet: '#7C5CFF',
-  ink2: '#4A5568',
-  ink3: '#616B7A',
-  paper: '#F3F4F7',
-  paper2: '#E8EBF1',
-  card: '#FFFFFF',
-  line: 'rgba(15,31,58,.09)',
-  lineStrong: 'rgba(15,31,58,.2)',
+  gold: '#B8901E',
+  goldFill: '#E3BE4A',
+  ink: '#1A2430',
+  brick: '#A63A2A',
+  green: '#2E6B4A',
+  /** eski «blue» seriya — endi oltin (Mall = gold-deep); ko'k faqat «Yo'lda» uchun (info) */
+  blue: '#B8901E',
+  info: '#2F5F8F',
+  violet: '#7A828D',
+  ink2: '#4E5763',
+  ink3: '#7A828D',
+  paper: '#F6F3EC',
+  paper2: '#EEE9DD',
+  card: '#FFFDF8',
+  line: '#E7E0D2',
+  lineStrong: '#CFC4AD',
 } as const
 
 export type ChartColor = keyof typeof CHART
 
 /** Ordered categorical series palette (max 6 distinct series before repeating). */
-export const CHART_SERIES: readonly string[] = [CHART.blue, CHART.ink, CHART.goldFill, CHART.green, CHART.brick, CHART.violet]
+export const CHART_SERIES: readonly string[] = [CHART.ink, CHART.goldFill, CHART.gold, CHART.green, CHART.brick, CHART.info]
 
 export const chartTheme = {
   /** Props for Recharts <XAxis tick={...} /> / <YAxis tick={...} /> */

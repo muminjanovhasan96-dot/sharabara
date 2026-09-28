@@ -4,7 +4,7 @@ import { Badge, Button, Card, Countdown, EmptyState, Input, SealBurst, Skeleton 
 import { toast } from '../toast'
 import { api } from '@/api'
 import { useData, useNow } from '@/store'
-import { formatDemoTime, hoursUntil, setHour } from '@/domain/clock'
+import { formatDemoTime, hoursUntil, setHour, manifestLabel } from '@/domain/clock'
 import { t } from '@/i18n/uz'
 import { TID } from '@/lib/testids'
 import { cn } from '@/lib/utils'
@@ -67,7 +67,7 @@ export function Today({ narrow }: { narrow: boolean }) {
           {loading || !m ? <><Skeleton width={160} height={12} /><Skeleton width={280} height={36} /><Skeleton height={120} /></> : (
             <>
               <div className="flex flex-wrap items-start justify-between gap-3">
-                <div><div className="eyebrow">{B.today.eyebrow} · {B.today.manifest} {m.id}</div>
+                <div><div className="eyebrow">{B.today.eyebrow} · {manifestLabel(m.id)}</div>
                   <h2 className="m-0 mt-1 font-display text-[28px] leading-tight">
                     {m.status === 'open' ? (afterCutoff ? B.today.afterCutoff : B.today.packing) : m.status === 'closed' ? B.today.closed : B.today.pickedUp}
                   </h2>

@@ -1,7 +1,14 @@
+import type { HelpContent } from '@/design'
 /** BTS hamkor paneli matnlari — o'zbek (lotin). Katta tugmalar, kam so'z. */
 export const B = {
   title: 'BTS · Sharabara hamkor paneli',
   nav: { today: 'Bugungi partiya', shipments: 'Yuklar', branches: 'Filiallar', history: 'Tarix' },
+  help: {
+    today: { sub: 'Sharabara qadoqlagan kechki partiyani qabul qilasiz.', what: 'Har kuni 17:00 da partiya yopiladi, 19:00 da BTS mashinasi keladi. Yuk xatlarini skanerlab yoki «Hammasini qabul qilish» bilan qabul qilasiz.', steps: ['Partiya yopilishini kuting (17:00)', 'Yuk xatini skanerlang yoki «Hammasini qabul qilish»', 'Yuklar «BTS olib ketdi» holatiga o’tadi'] },
+    shipments: { sub: 'Yo’ldagi va filialdagi yuklar; topshirishni belgilaysiz.', what: 'Har yukning holati: yo’lda → filialda → topshirildi. Muammo bo’lsa belgilab qo’yasiz.', steps: ['Viloyat bo’yicha yuklarni toping', '«Filialga yetdi» yoki «Topshirildi»ni bosing', 'Muammoli yukni belgilang — Sharabara ko’radi'] },
+    branches: { sub: 'BTS filiallari va har birida turgan yuklar.', what: 'Filiallar viloyat bo’yicha, har birida qancha yuk kutayotgani ko’rinadi.', steps: ['Viloyatni tanlang', 'Filialni oching', 'Yuklar ro’yxatiga o’ting'] },
+    history: { sub: 'Oldingi partiyalar va topshirilgan yuklar.', what: 'Kunlar bo’yicha arxiv: nechta yuk, qachon topshirilgan.', steps: ['Kunni tanlang', 'Partiyani oching', 'Yuklar ro’yxatini ko’ring'] },
+  } as Record<'today' | 'shipments' | 'branches' | 'history', HelpContent>,
   today: {
     eyebrow: 'Kechki partiya',
     packing: 'Sharabara hali qadoqlayapti — 17:00 da yopiladi',
@@ -12,7 +19,7 @@ export const B = {
     count: 'Yuklar soni',
     byRegion: 'Viloyatlar bo’yicha',
     status: 'Holat',
-    manifest: 'Manifest',
+    manifest: 'Kechki yuk ro’yxati',
     acceptAll: 'Qabul qildim — hammasini',
     accepted: 'Qabul qilindi',
     acceptedSub: '{n} ta yuk yo’lga chiqdi',

@@ -10,7 +10,7 @@ import { uz } from '@/i18n/uz'
 import { TID } from '@/lib/testids'
 import { cn } from '@/lib/utils'
 import type { Comparable, Listing, Tiyin } from '@/domain/types'
-import { classifyQueue, priceHistogram, PRICE_STEP, type QueueChip } from '@/domain/pricing'
+import { classifyQueue, isPricingQueue, priceHistogram, PRICE_STEP, type QueueChip } from '@/domain/pricing'
 import { calcFee, publishedRuleSet } from '@/domain/fees'
 import { newRetailFor } from '@/domain/checks/models'
 import { formatMoney, formatMoneyCompact } from '@/domain/money'
@@ -34,7 +34,7 @@ export function Pricing() {
   const [qid, setQid] = useQueryParam('id')
   const [chip, setChip] = useState<QueueChip | 'all'>('all')
   const queue = useMemo(() => data.listings
-    .filter((l) => (l.status === 'in_review' || l.status === 'submitted' || l.status === 'ai_checked') && !l.historical)
+    .filter(isPricingQueue)
     .sort((a, b) => (a.status === 'in_review' ? 0 : 1) - (b.status === 'in_review' ? 0 : 1) || (a.submittedAt ?? a.createdAt).localeCompare(b.submittedAt ?? b.createdAt)), [data.listings])
   const filtered = chip === 'all' ? queue : queue.filter((l) => classifyQueue(l) === chip)
   const selected = data.listings.find((l) => l.id === qid) ?? filtered[0]
@@ -104,14 +104,14 @@ function Workbench({ l, canEdit, canApprove, onDone }: { l: Listing; canEdit: bo
   const compCols: Column<Comparable>[] = [
     { key: 'title', header: A.common.title, sortable: true, render: (c) => <span className="truncate" title={c.title}>{c.title}</span> },
     { key: 'condition', header: A.pricing.condition, sortable: true, width: 70, render: (c) => <Badge tone="outline" size="sm">{c.condition}</Badge> },
-    { key: 'regionId', header: A.common.region, sortable: true, width: 120, render: (c) => regionName(data, c.regionId), csv: (c) => regionName(data, c.regionId) },
+    { key: 'regionId', header: A.common.region, sortable: true, width: 120, defaultHidden: true, render: (c) => regionName(data, c.regionId), csv: (c) => regionName(data, c.regionId) },
     { key: 'priceTiyin', header: A.common.price, sortable: true, align: 'right', width: 120, render: (c) => <Money tiyin={c.priceTiyin} size="sm" />, csv: (c) => c.priceTiyin / 100 },
-    { key: 'outcome', header: A.common.status, sortable: true, width: 130, render: (c) => (
+    { key: 'outcome', header: A.common.status, sortable: true, width: 120, render: (c) => (
       <span className={cn('text-[12.5px]', c.outcome === 'sold' ? 'text-green' : c.outcome === 'stale' ? 'text-brick' : 'text-ink-2')}>
         {c.outcome === 'sold' ? tt(A.pricing.outcome.sold, { n: c.daysToSell ?? c.daysListed }) : c.outcome === 'stale' ? tt(A.pricing.outcome.stale, { n: c.daysListed }) : A.pricing.outcome.active}
       </span>
     ), csv: (c) => c.outcome },
-    { key: 'weight', header: A.pricing.weight, sortable: true, align: 'right', width: 60, render: (c) => <span className="tnum text-ink-3">{c.weight}</span> },
+    { key: 'weight', header: A.pricing.weight, sortable: true, align: 'right', width: 60, defaultHidden: true, render: (c) => <span className="tnum text-ink-3">{c.weight}</span> },
   ]
 
   const send = () => { if (price === null || price <= 0) return; void run('send', () => api.listings.sendOffer(l.id, price, note), () => A.pricing.sent).then((r) => { if (r) onDone() }) }
@@ -126,12 +126,11 @@ function Workbench({ l, canEdit, canApprove, onDone }: { l: Listing; canEdit: bo
           </div>
           <div className="flex items-center gap-2"><ListingStatusBadge status={l.status} /><Badge tone="outline">{uz.condition[l.condition]}</Badge><span className="tnum text-[12.5px] text-ink-3">{waitFor(l.submittedAt, now)} {A.pricing.waiting}</span></div>
         </div>
-        <div className="grid grid-cols-[repeat(4,88px)_minmax(0,1fr)] gap-3">
-          {(l.images.length ? l.images : ['x']).slice(0, 4).map((img, i) => <ProductImage key={i} id={imgId(img, `${l.id}-${i}`)} className="h-[88px] w-[88px]" />)}
+        <div className="flex flex-col gap-3">
+          <div className="flex gap-3">{(l.images.length ? l.images : ['x']).slice(0, 4).map((img, i) => <ProductImage key={i} id={imgId(img, `${l.id}-${i}`)} className="h-[88px] w-[88px] shrink-0" />)}</div>
           <div className="min-w-0 rounded-card border border-line bg-card p-3">
-            <SectionTitle>{A.pricing.sellerNote}</SectionTitle>
-            <p className="clamp-2 m-0 text-[13px] leading-snug text-ink-2">{l.description}</p>
-            <div className="mt-2 flex items-baseline gap-2 text-[13px]"><span className="text-ink-2">{A.pricing.asking}</span><Money tiyin={l.askingTiyin} size="md" /></div>
+            <div className="flex flex-wrap items-baseline justify-between gap-2"><SectionTitle>{A.pricing.sellerNote}</SectionTitle><span className="flex items-baseline gap-2 text-[13px]"><span className="text-ink-2">{A.pricing.asking}</span><Money tiyin={l.askingTiyin} size="md" /></span></div>
+            <p className="m-0 text-[13px] leading-snug text-ink-2">{l.description}</p>
           </div>
         </div>
 
@@ -150,7 +149,7 @@ function Workbench({ l, canEdit, canApprove, onDone }: { l: Listing; canEdit: bo
           <>
             <div>
               <SectionTitle right={<span className="text-[12px] text-ink-3">{A.pricing.marketMedian}: <Money tiyin={sug.marketMedianTiyin} size="xs" className="text-ink" /></span>}>{A.pricing.comparables} · {sug.comparables.length}</SectionTitle>
-              <DataTable columns={compCols} rows={sug.comparables} rowKey={(c) => c.listingId} pageSize={6} exportFilename={`oxshash-${l.id}`} defaultSort={{ key: 'weight', dir: 'desc' }} columnsMenu={false} emptyState={<EmptyState compact title={A.pricing.noComparables} />} />
+              <DataTable columns={compCols} rows={sug.comparables} rowKey={(c) => c.listingId} pageSize={6} exportFilename={`oxshash-${l.id}`} defaultSort={{ key: 'weight', dir: 'desc' }} columnsMenu emptyState={<EmptyState compact title={A.pricing.noComparables} />} />
             </div>
             <div className="grid grid-cols-[minmax(0,1fr)_200px] gap-4">
               <div className="rounded-card border border-line bg-card p-3">
@@ -221,9 +220,9 @@ function Workbench({ l, canEdit, canApprove, onDone }: { l: Listing; canEdit: bo
         <div className="border-t border-line pt-3">
           <Field label={A.pricing.moderatorPrice}>
             <div className="flex items-center gap-2">
-              <Button variant="gold" size="icon" aria-label={A.pricing.minus} onClick={() => step(-1)} disabled={!canEdit} className="!h-11 !w-11 shrink-0 !shadow-none"><Minus size={18} strokeWidth={2.25} /></Button>
+              <Button variant="secondary" size="icon" aria-label={A.pricing.minus} onClick={() => step(-1)} disabled={!canEdit} className="!h-11 !w-11 shrink-0 !shadow-none"><Minus size={18} strokeWidth={2.25} /></Button>
               <MoneyInput data-testid={TID.aModeratorPrice} valueTiyin={price} onChangeTiyin={setPrice} size="md" disabled={!canEdit} aria-label={A.pricing.moderatorPrice} className="tnum font-display !text-[20px] font-bold tracking-[-0.01em]" />
-              <Button variant="gold" size="icon" aria-label={A.pricing.plus} onClick={() => step(1)} disabled={!canEdit} className="!h-11 !w-11 shrink-0 !shadow-none"><Plus size={18} strokeWidth={2.25} /></Button>
+              <Button variant="secondary" size="icon" aria-label={A.pricing.plus} onClick={() => step(1)} disabled={!canEdit} className="!h-11 !w-11 shrink-0 !shadow-none"><Plus size={18} strokeWidth={2.25} /></Button>
             </div>
           </Field>
           {sug && price !== null && price !== sug.suggestedTiyin && <div className="mt-1 text-[12px] text-ink-3">{A.pricing.vsAi}: <span className="tnum text-ink">{signedPct((price - sug.suggestedTiyin) / sug.suggestedTiyin)}</span> {sug.suggestedTiyin !== price && <button type="button" className="ml-1 inline-flex items-center gap-1 text-blue hover:underline" onClick={() => setPrice(sug.suggestedTiyin)}><Undo2 size={11} /> AI</button>}</div>}

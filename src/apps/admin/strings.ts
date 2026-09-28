@@ -1,3 +1,5 @@
+import type { AdminSection } from '@/domain/types'
+import type { HelpContent } from '@/design'
 /**
  * Admin paneliga xos qo'shimcha matnlar (uz lotin, ’ U+2019).
  * `src/i18n/uz.ts` da bo'lmagan kalitlar shu yerda.
@@ -15,7 +17,7 @@ export const A = {
     switchRole: 'Rolni almashtirish',
     shortcuts: 'Klaviatura tugmalari',
     shortcutHint: '? — tugmalar ro’yxati',
-    collapse: 'Menyuni yig’ish', expand: 'Menyuni yoyish',
+    collapse: 'Menyuni yig’ish', expand: 'Menyuni yoyish', quick: 'Tez kirish',
     demoClock: 'Demo vaqti',
     openListing: 'E’lon #L-58213 ni och',
     goPricing: 'Narx tahliliga o’t',
@@ -43,7 +45,7 @@ export const A = {
     ago: '{t} oldin', justNow: 'hozirgina', waiting: 'kutmoqda',
     from: 'dan', to: 'gacha', yes: 'Ha', no: 'Yo’q', unknown: '—',
     source: { listing: 'E’lon', product: 'Mall' },
-    escrow: { none: 'Escrow yo’q', held: 'Escrow ushlangan', released: 'Escrow yechilgan', refunded: 'Qaytarilgan', partially_refunded: 'Qisman qaytarilgan' },
+    escrow: { none: 'Himoya yo’q', held: 'Pul himoyada', released: 'Sotuvchiga o’tkazildi', refunded: 'Xaridorga qaytarildi', partially_refunded: 'Qisman qaytarildi' },
     company: { wholesale: 'Ulgurji', warehouse: 'Omborda', self_ship: 'O’zi jo’natadi' },
     companyStatus: { active: 'Faol', onboarding: 'Ulanmoqda', suspended: 'To’xtatilgan' },
     productCheck: { passed: 'O’tdi', overpriced: 'Qimmat', pending: 'Kutilmoqda' },
@@ -57,6 +59,7 @@ export const A = {
     errorAction: 'Amal bajarilmadi',
   },
   dashboard: {
+    todo: 'Bugun qilish kerak', todoCount: '{n} ta vazifa', allClearHint: 'Barcha navbatlar bo’sh — yangi ish kelganda shu yerda chiqadi',
     salesToday: 'Bugungi savdo', orders: 'Buyurtmalar', newListings: 'Yangi e’lonlar', commission: 'Komissiya', review: 'O’rtacha tekshiruv',
     vsTarget: 'maqsadga nisbatan', chart14: 'So’nggi 14 kun savdosi', mall: 'Mall', listings: 'E’lonlar',
     regions: 'Viloyatlar bo’yicha (14 kun)', share: 'Ulush', sales: 'Savdo', topCats: 'Top kategoriyalar (30 kun)', sold: 'sotildi',
@@ -76,7 +79,7 @@ export const A = {
     selectHint: 'Chapdan e’lonni tanlang yoki J/K tugmalarini bosing',
   },
   pricing: {
-    queue: 'Navbat', chips: { all: 'Hammasi', overpriced: 'Qimmat', fair: 'Mos', low_data: 'Kam ma’lumot', imei_issue: 'IMEI muammo' },
+    queue: 'Navbat', chips: { all: 'Hammasi', overpriced: 'Qimmat', fair: 'Mos', low_data: 'O’xshash e’lon kam', imei_issue: 'IMEI muammo' },
     empty: 'Narx navbati bo’sh', emptyHint: 'Sotuvchi yangi e’lon yuborganda shu yerda paydo bo’ladi.',
     asking: 'Sotuvchi narxi', specs: 'AI aniqlagan xususiyatlar', comparables: '30 kunlik o’xshash e’lonlar', newRetail: 'Yangi narx (do’konlar)',
     histogram: 'Narxlar taqsimoti', outcome: { sold: '{n} kunda sotildi', stale: '{n} kun sotilmadi', active: 'faol' },
@@ -100,22 +103,22 @@ export const A = {
     infinity: '∞', sampleHint: 'Raqamlar namuna — investor demo uchun', emptyApprovals: 'Tasdiqlash navbati bo’sh',
   },
   orders: {
-    source: 'Manba', items: 'Tovarlar', subOrders: 'Yuklar', escrow: 'Escrow', delivery: 'Yetkazish', payment: 'To’lov', timeline: 'Vaqt chizig’i',
+    source: 'Manba', items: 'Tovarlar', subOrders: 'Yuklar', escrow: 'Himoyadagi pul', delivery: 'Yetkazish', payment: 'To’lov', timeline: 'Vaqt chizig’i',
     audit: 'Audit yozuvlari', changeStatus: 'Holatni o’zgartirish', newStatus: 'Yangi holat', cancel: 'Buyurtmani bekor qilish', cancelReason: 'Bekor qilish sababi',
-    cancelled: 'Buyurtma bekor qilindi', statusChanged: 'Holat o’zgartirildi', noTransitions: 'Boshqa o’tish yo’q', views: { all: 'Hammasi', today: 'Bugun', escrow: 'Escrow ushlangan', cancelled: 'Bekor qilingan', myQueue: 'Mening navbatim' },
+    cancelled: 'Buyurtma bekor qilindi', statusChanged: 'Holat o’zgartirildi', noTransitions: 'Boshqa o’tish yo’q', views: { all: 'Hammasi', today: 'Bugun', escrow: 'Pul himoyada', cancelled: 'Bekor qilingan', myQueue: 'Mening navbatim' },
     dateFrom: 'Sanadan', dateTo: 'Sanagacha', fee: 'Komissiya', txId: 'Tranzaksiya', rating: 'Baho',
   },
   logistics: {
     cutoff: '17:00 gacha', left: 'qoldi', closed: 'Partiya yopildi', bts19: 'BTS mashinasi 19:00', packed: 'Qadoqlandi', regions: 'Viloyatlar bo’yicha',
     todays: 'Bugungi yuklar', pack: 'Qadoqlandi', print: 'Yuk xatini chop etish', packSel: 'Tanlanganlarni qadoqlash', waybill: 'Yuk xati',
-    manifest: 'Kechki partiya', manifestOpen: 'Ochiq manifest', handToBts: 'Kechki partiyani BTS’ga topshirish', closeManifest: 'Partiyani yopish',
+    manifest: 'Kechki partiya', manifestOpen: 'Ochiq kechki yuk ro’yxati', handToBts: 'Kechki partiyani BTS’ga topshirish', closeManifest: 'Partiyani yopish',
     recent: 'So’nggi partiyalar', packedToast: 'Yuk qadoqlandi', handedToast: 'Partiya BTS’ga topshirildi', closedToast: 'Partiya yopildi',
-    printLabel: 'Chop etish', labelTitle: 'A6 yuk xati', empty: 'Bugun yuk yo’q', handHint: '17:00 dan keyin yoki partiya yopilganda faollashadi',
-    noManifest: 'Ochiq manifest yo’q', items: 'Tovarlar',
+    printLabel: 'Chop etish', printShort: 'Yuk xati', labelTitle: 'A6 yuk xati', empty: 'Bugun yuk yo’q', handHint: '17:00 dan keyin yoki partiya yopilganda faollashadi',
+    noManifest: 'Bugun ochiq kechki partiya yo’q', items: 'Tovarlar',
   },
   payments: {
-    tabs: { income: 'Kirim', escrow: 'Escrow', payouts: 'Sotuvchilarga to’lovlar', companies: 'Kompaniyalar bilan hisob-kitob' },
-    provider: 'Provayder', ref: 'Havola', heldTotal: 'Ushlangan escrow', heldCount: 'Buyurtmalar', card: 'Karta', approvals: 'Tasdiqlar',
+    tabs: { income: 'Kirim', escrow: 'Himoyadagi pul', payouts: 'Sotuvchilarga to’lovlar', companies: 'Kompaniyalar bilan hisob-kitob' },
+    provider: 'Provayder', ref: 'Havola', heldTotal: 'Himoyadagi pul', heldCount: 'Buyurtmalar', card: 'Karta', approvals: 'Tasdiqlar',
     schedule: 'Rejalashtirish', second: 'Ikkinchi tasdiq', pay: 'To’lash', dual: 'qo’sh imzo kerak', sameStaff: 'Boshqa xodim tasdiqlashi kerak',
     payday: 'Juma to’lovi', paydayConfirm: 'Barcha kutilayotgan to’lovlar rejalashtiriladi va to’lanadi. Davom etasizmi?',
     paydayDone: 'Juma to’lovi bajarildi', scheduled: 'Rejalashtirildi', approved: 'Tasdiqlandi', paid: 'To’landi', scheduledFor: 'Sana',
@@ -123,9 +126,9 @@ export const A = {
     emptyPayouts: 'To’lovlar yo’q', pendingBadge: 'kutilmoqda',
   },
   returns: {
-    sla: 'SLA', decision: 'Qaror', full: 'To’liq', partial: 'Qisman', deny: 'Rad', amount: 'Qaytariladigan summa', noteRequired: 'Qaror izohi (majburiy)',
-    escrowEffect: 'Escrow ta’siri', effectFull: '{a} xaridorga qaytariladi, sotuvchiga to’lov bo’lmaydi', effectPartial: '{a} xaridorga qaytariladi, {b} sotuvchiga o’tadi',
-    effectDeny: 'Escrow sotuvchiga to’lovga rejalashtiriladi ({a})', images: 'Xaridor rasmlari', sellerReply: 'Sotuvchi javobi', noReply: 'Sotuvchi hali javob bermagan',
+    sla: 'Javob muddati', decision: 'Qaror', full: 'To’liq', partial: 'Qisman', deny: 'Rad', amount: 'Qaytariladigan summa', noteRequired: 'Qaror izohi (majburiy)',
+    escrowEffect: 'Himoyadagi pulga ta’siri', effectFull: '{a} xaridorga qaytariladi, sotuvchiga to’lov bo’lmaydi', effectPartial: '{a} xaridorga qaytariladi, {b} sotuvchiga o’tadi',
+    effectDeny: 'Himoyadagi pul sotuvchiga to’lovga rejalashtiriladi ({a})', images: 'Xaridor rasmlari', sellerReply: 'Sotuvchi javobi', noReply: 'Sotuvchi hali javob bermagan',
     chat: 'Yozishmalar', noChat: 'Yozishma yo’q', decided: 'Qaror qabul qilindi', empty: 'Qaytarish so’rovlari yo’q', overdue: 'muddat o’tdi', open: 'Ochiq', item: 'Tovar',
   },
   companies: {
@@ -135,7 +138,7 @@ export const A = {
     description: 'Tavsif', shipSpeed: 'Jo’natish, kun',
   },
   products: {
-    filters: { all: 'Hammasi', failed: 'Narx qoidasidan o’tmagan', lowStock: 'Zaxira tugayotgan' }, company: 'Kompaniya', sku: 'SKU', market: 'Bozor mediani', delta: 'Farq',
+    filters: { all: 'Hammasi', failed: 'Narx qoidasidan o’tmagan', lowStock: 'Zaxira tugayotgan' }, company: 'Kompaniya', sku: 'Tovar kodi', market: 'Bozor o’rtachasi', delta: 'Farq',
     stock: 'Zaxira', check: 'Tekshiruv', pass: 'O’tdi', overpriced: 'Qimmat', checked: 'Tekshiruv natijasi saqlandi', priceVsMarket: 'Narx va bozor', warranty: 'Kafolat, oy', returnDays: 'Qaytarish, kun',
     openCompany: 'Kompaniyani ochish', lowStockBadge: 'kam',
   },
@@ -157,7 +160,7 @@ export const A = {
     estimatedReach: 'Taxminiy qamrov', banner: 'Banner', now: 'hozir',
   },
   reports: {
-    range: 'Davr', sales: 'Savdo dinamikasi', sources: 'Daromad manbalari', funnel: 'Voronka', speed: 'Moderatsiya tezligi', ai: 'AI aniqligi',
+    range: 'Davr', sales: 'Savdo dinamikasi', sources: 'Daromad manbalari', funnel: 'Ko’rgandan sotib olgangacha', speed: 'Moderatsiya tezligi', ai: 'AI aniqligi',
     src: { listingsFee: 'Komissiya — e’lonlar', mallFee: 'Komissiya — Mall', boost: 'Ko’tarish', delivery: 'Yetkazish', ads: 'Reklama' },
     funnelSteps: { view: 'Ko’rish', chat: 'Yozish', cart: 'Savat', purchase: 'To’lov' }, minutes: 'daqiqa', within5: '5% ichida', avgDev: 'O’rtacha farq',
     decisions: 'ta qaror', deviation: 'Farq, %', noData: 'Bu davr uchun ma’lumot yo’q',
@@ -175,8 +178,8 @@ export const A = {
     kpi: { total: 'Jami zaxira', value: 'Zaxira qiymati', low: 'Kam qolgan', inToday: 'Bugun kirim', outToday: 'Bugun chiqim', expected: 'Kutilayotgan kirim', days14: '14 kun', mlrd: 'mlrd' },
     tabs: { stock: 'Zaxira', receipts: 'Kirimlar', sales: 'Sotuvlar bo’yicha', movements: 'Harakatlar' },
     stock: {
-      sku: 'SKU', product: 'Tovar', company: 'Kompaniya', warehouse: 'Ombor', qty: 'Zaxira', reserved: 'Band', min: 'Min', sold30: 'Sotildi (30 k)',
-      daily: 'Kunlik', daysLeft: 'Yetadi', daysUnit: 'kun', price: 'Narx', low: 'Kam', onlyLow: 'Faqat kam qolgan', search: 'SKU yoki nom…',
+      sku: 'Tovar kodi', product: 'Tovar', company: 'Kompaniya', warehouse: 'Ombor', qty: 'Zaxira', reserved: 'Band', min: 'Kamida', sold30: 'Sotildi (30 kun)',
+      daily: 'Kunlik', daysLeft: 'Yetadi', daysUnit: 'kun', price: 'Narx', low: 'Kam', onlyLow: 'Faqat kam qolgan', search: 'Tovar kodi yoki nom…',
       company_all: 'Kompaniya: hammasi', category_all: 'Kategoriya: hammasi', empty: 'Zaxira topilmadi', emptyHint: 'Filtrlarni o’zgartiring yoki yangi tovar qo’shing.',
       levels: 'Omborlar bo’yicha', history: 'Harakatlar tarixi (oxirgi 20)', noHistory: 'Harakatlar yo’q',
       adjust: 'Tuzatish', adjustHint: 'Inventarizatsiya farqi: +/− dona', adjustReason: 'Sabab (majburiy)', adjustReasonPh: 'Masalan: inventarizatsiya, buzilgan tovar…', adjusted: 'Zaxira tuzatildi',
@@ -204,7 +207,7 @@ export const A = {
       kind_all: 'Tur: hammasi', channel_all: 'Kanal: hammasi', warehouse_all: 'Ombor: hammasi', system: 'Tizim', empty: 'Harakatlar yo’q', emptyHint: 'Filtrlarni o’zgartiring.',
     },
     product: {
-      company: 'Kompaniya', sku: 'SKU', title: 'Nomi', category: 'Kategoriya', price: 'Narx', cost: 'Tannarx', qty: 'Boshlang’ich miqdor', warehouse: 'Ombor', warranty: 'Kafolat, oy',
+      company: 'Kompaniya', sku: 'Tovar kodi', title: 'Nomi', category: 'Kategoriya', price: 'Narx', cost: 'Tannarx', qty: 'Boshlang’ich miqdor', warehouse: 'Ombor', warranty: 'Kafolat, oy',
       created: 'Tovar qo’shildi', skuPh: 'NE-1234', titlePh: 'Masalan: Samsung Galaxy A55 128GB',
     },
   },
@@ -212,4 +215,26 @@ export const A = {
 
 export function tt(template: string, vars: Record<string, string | number> = {}): string {
   return template.replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined ? String(vars[k]) : `{${k}}`))
+}
+
+/** Har bo'lim uchun «5 soniya qoidasi»: bir gaplik izoh + «?» paneli (nima uchun · 3 qadam · klaviatura). */
+export const HELP: Record<AdminSection, HelpContent> = {
+  dashboard: { sub: 'Bugun nima qilish kerakligi va asosiy raqamlar bir ekranda.', what: 'Har kuni ish shu yerdan boshlanadi: navbatlar, savdo va e’tibor talab qiladigan ishlar.', steps: ['«Bugun qilish kerak» ro’yxatidan ishni tanlang', '«Ochish» — kerakli bo’limga o’tadi', 'Raqamlarni bosib hisobotga o’ting'] },
+  director: { sub: 'Rahbar uchun qisqa ko’rinish: savdo, pul, ombor, muammolar.', what: 'Direktor paneli — bir ekranda butun biznes, telefonda ham ochiladi.', steps: ['Davrni tanlang: bugun / hafta / oy', 'Tab’lar: Savdo, Pul, Ombor, Muammolar', 'Har raqamni bosib tafsilotga o’ting'] },
+  moderation: { sub: 'Yangi e’lonlarni tekshirasiz: tasdiqlaysiz, tahrirga qaytarasiz yoki rad etasiz.', what: 'Har e’lon bozorga chiqishdan oldin shu yerdan o’tadi: rasm, IMEI, taqiqlangan tovar, sifat.', steps: ['Chapdan e’lonni tanlang (yoki J/K)', 'AI belgilari va xavflarni ko’ring', 'A — tasdiqlash, E — tahrir so’rash, R — rad etish'], keys: ['J / K — keyingi / oldingi e’lon', 'A — tasdiqlash', 'E — tahrir so’rash', 'R — rad etish', 'Esc — yopish'] },
+  pricing: { sub: 'Yangi e’lonlar narxini o’xshashlar bilan solishtirib, sotuvchiga taklif yuborasiz.', what: 'AI 30 kunlik o’xshash e’lonlardan narx tavsiya qiladi; siz tasdiqlaysiz yoki ±50 000 ga o’zgartirasiz. Sotuvchi rozi bo’lsa e’lon «Narx tekshirilgan» belgisi bilan chiqadi.', steps: ['Navbatdan e’lonni tanlang', 'O’xshashlar jadvali va AI tavsiyasini ko’ring', '«Sotuvchiga taklif yuborish» tugmasini bosing'] },
+  categories: { sub: 'Kategoriyalar, ularning belgilari va narx qoidalari.', what: 'Har kategoriya uchun Sharabara chegirmasi va yangi narx chegarasi shu yerda belgilanadi.', steps: ['Kategoriyani tanlang', 'Chegirma foizini o’zgartiring', 'Saqlang — narx tahlili darhol yangi qoida bilan ishlaydi'] },
+  orders: { sub: 'Barcha buyurtmalar: to’lov holati, himoyadagi pul, yetkazish.', what: 'Buyurtma — xaridorning to’lovi. Bir buyurtmada bir nechta sotuvchidan yuk bo’lishi mumkin.', steps: ['Filtr yoki saqlangan ko’rinishni tanlang', 'Qatorni bosing — o’ngdan tafsilot ochiladi', 'Kerak bo’lsa holatni o’zgartiring yoki bekor qiling'] },
+  logistics: { sub: 'Bugungi yuklarni qadoqlaysiz va 17:00 da kechki partiyani BTS’ga topshirasiz.', what: 'Sharabara omboridan chiqadigan har yuk shu yerda: qadoqlash, A6 yuk xati, kechki partiya.', steps: ['«Qadoqlandi» tugmasini bosing — yuk xati chiqadi', 'Soat 17:00 — partiya avtomatik yopiladi', '«Kechki partiyani BTS’ga topshirish»'] },
+  warehouse: { sub: 'Ombordagi zaxira, kirim va harakatlar.', what: 'Kompaniyalardan kelgan tovarlar qabul qilinadi, zaxira kuzatiladi, kam qolganlar ko’rsatiladi.', steps: ['Kirimni yarating yoki qabul qiling', 'Zaxirani omborlar bo’yicha ko’ring', 'Kam qolgan tovarlar uchun kompaniyaga xabar bering'] },
+  payments: { sub: 'Kirim, himoyadagi pul va sotuvchilarga to’lovlar.', what: 'Xaridor to’lovi tovar yetguncha himoyada turadi, juma kuni sotuvchilarga o’tkaziladi. 50 mln dan yuqori to’lov ikki imzo talab qiladi.', steps: ['«Sotuvchilarga to’lovlar» tab’ini oching', 'Kutayotganlarni tekshiring va tasdiqlang', '«Juma to’lovi» — hammasini bir tugma bilan o’tkazing'] },
+  fees: { sub: 'Xizmat haqi qoidalari va avtomatik hisoblangan haqlarni tasdiqlash.', what: 'Har sotuvdan Sharabara haqi qoidalar bo’yicha avtomatik hisoblanadi; moliya tasdiqlaydi yoki o’zgartiradi.', steps: ['Tasdiq navbatidagi haqlarni ko’ring', 'Kerak bo’lsa summani o’zgartiring va sabab yozing', 'Yangi qoidani «Sinab ko’rish» bilan tekshirib chop eting'] },
+  returns: { sub: 'Xaridorlarning qaytarish so’rovlari: to’liq, qisman yoki rad.', what: 'Har so’rovga 48 soat ichida javob berish kerak; qaror himoyadagi pulga ta’sir qiladi.', steps: ['Muddati o’tayotgan so’rovni tanlang', 'Rasm va sotuvchi javobini ko’ring', 'Qaror: to’liq / qisman / rad — sabab bilan'] },
+  companies: { sub: 'Mall hamkor kompaniyalari: shartnoma, komissiya, ko’rsatkichlar.', what: 'Har kompaniya o’z modeli (ombor / o’zi yetkazadi / ulgurji) va komissiya foizi bilan ishlaydi.', steps: ['Kompaniyani tanlang', 'Komissiya va holatni ko’ring', 'Tovarlar yoki hisob-kitobga o’ting'] },
+  products: { sub: 'Kompaniya tovarlari va ularning narx tekshiruvi.', what: 'Har tovar narxi bozor o’rtachasi bilan solishtiriladi; 3% dan qimmat bo’lsa qoidadan o’tmaydi.', steps: ['«Narx qoidasidan o’tmagan» filtrini tanlang', 'Tovarni ochib narx va bozorni solishtiring', 'Tasdiqlang yoki kompaniyaga qaytaring'] },
+  users: { sub: 'Xaridor va sotuvchilar: reyting, e’lonlar, bloklash.', what: 'Foydalanuvchi profili, tarixi va tasdiqlangan sotuvchi belgisi shu yerda boshqariladi.', steps: ['Foydalanuvchini qidiring', 'Profil va tarixni ko’ring', 'Kerak bo’lsa bloklang yoki sotuvchini tasdiqlang'] },
+  campaigns: { sub: 'Push va bannerlar: segment tanlab xabar yuborasiz.', what: 'Xaridorlarga viloyat va qiziqish bo’yicha push yoki banner yuboriladi.', steps: ['Yangi kampaniya yarating', 'Segment va matnni tanlang, jonli ko’rinishni tekshiring', 'Yuboring yoki rejalashtiring'] },
+  reports: { sub: 'Savdo, daromad, moderatsiya tezligi va AI aniqligi bo’yicha hisobotlar.', what: 'Davr tanlab grafik va jadvallarni ko’rasiz, CSV yuklab olasiz.', steps: ['Davrni tanlang', 'Kerakli hisobotni oching', 'CSV eksport'] },
+  roles: { sub: 'Qaysi rol qaysi bo’limni ko’rishi va tahrirlashi.', what: 'Rollar matritsasi: o’zgartirsangiz yon menyu darhol o’zgaradi.', steps: ['Rol va bo’limni toping', 'Ko’rish / tahrirlash / tasdiqlash belgilarini o’zgartiring', 'Natijani rolni almashtirib tekshiring'] },
+  audit: { sub: 'Tizimdagi har bir o’zgarish: kim, qachon, nimani.', what: 'Har status va pul o’tishi shu yerda qoladi; ID bo’yicha butun izni ko’rish mumkin.', steps: ['ID yoki matn bo’yicha qidiring', '«Iz» rejimiga o’ting — voqealar tartibda', 'Yozuvni bosib obyektga o’ting'] },
 }

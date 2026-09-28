@@ -81,6 +81,12 @@ export function Moderation() {
             )
           })}
         </div>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-line px-4 py-2 text-[11.5px] text-ink-3" aria-label={A.shell.shortcuts}>
+          <span className="flex items-center gap-1"><Kbd>J</Kbd><Kbd>K</Kbd> {A.shell.kbd.next.toLowerCase()} / {A.shell.kbd.prev.toLowerCase()}</span>
+          <span className="flex items-center gap-1"><Kbd>A</Kbd> {A.shell.kbd.approve.toLowerCase()}</span>
+          <span className="flex items-center gap-1"><Kbd>E</Kbd> {A.shell.kbd.edit.toLowerCase()}</span>
+          <span className="flex items-center gap-1"><Kbd>R</Kbd> {A.shell.kbd.reject.toLowerCase()}</span>
+        </div>
       </aside>
 
       <section className="scroll-thin min-h-0 overflow-y-auto p-5">

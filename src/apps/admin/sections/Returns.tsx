@@ -36,6 +36,7 @@ export function Returns() {
   return (
     <div className="flex flex-col gap-3 p-5">
       <DataTable columns={cols} rows={rows} rowKey={(r) => r.id} onRowClick={(r) => setQid(r.id)} pageSize={12} exportFilename="qaytarishlar" defaultSort={{ key: 'sla', dir: 'asc' }}
+        rowClassName={(r) => (r.status === 'requested' && parseIso(slaOf(r)).getTime() < parseIso(now).getTime() ? 'bg-brick-soft/40 [&_td]:text-brick' : undefined)}
         toolbarLeft={<Segmented size="sm" value={onlyOpen ? 'open' : 'all'} onChange={(v) => setOnlyOpen(v === 'open')} options={[{ value: 'open', label: A.returns.open }, { value: 'all', label: A.common.all }]} aria-label={A.common.filter} />}
         emptyState={<EmptyState compact icon="rotate-ccw" title={A.returns.empty} />} />
       <AdminDrawer open={!!selected} onOpenChange={(o) => !o && setQid(null)} width="lg" eyebrow={uz.admin.sections.returns} title={selected ? <span className="tnum">{selected.id}</span> : undefined} actions={selected && <ReturnStatusBadge status={selected.status} />}>

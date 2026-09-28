@@ -41,7 +41,7 @@ export function Reports() {
 
   return (
     <div>
-      <PageHeader eyebrow={c.name} title={P.reports.title} />
+      <PageHeader eyebrow={c.name} help={P.help.reports} title={P.reports.title} />
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <Card padding="md">
           <CardHeader title={P.reports.byCategory} eyebrow={P.reports.byCategoryHint} />
@@ -52,7 +52,7 @@ export function Reports() {
                   <CartesianGrid horizontal={false} stroke="var(--line)" strokeDasharray="3 5" />
                   <XAxis type="number" tick={chartTheme.axisTick} axisLine={chartTheme.axisLine} tickLine={false} tickFormatter={(v: number) => formatMoney(v, { compact: true, withCurrency: false })} />
                   <YAxis type="category" dataKey="name" tick={chartTheme.axisTick} axisLine={false} tickLine={false} width={130} />
-                  <Tooltip cursor={{ fill: 'var(--blue-soft)', fillOpacity: 0.55 }} content={({ active, payload }) => { if (!active || !payload?.length) return null; const p = payload[0].payload as { name: string; sales: number; sold: number }; return <div className={chartTheme.tooltipClass}><div className={chartTheme.tooltipLabelClass}>{p.name}</div><div className="font-medium">{formatMoney(p.sales)}</div><div className="text-ink-3">{p.sold} {P.common.pcs}</div></div> }} />
+                  <Tooltip cursor={{ fill: 'var(--blue-soft)', fillOpacity: 0.55 }} content={({ active, payload }) => { if (!active || !payload?.length) return null; const p = payload[0].payload as { name: string; sales: number; sold: number }; return <div className={chartTheme.tooltipClass}><div className={chartTheme.tooltipLabelClass}>{p.name}</div><div className="font-medium">{formatMoney(p.sales, { compact: true })}</div><div className="text-ink-3">{p.sold} {P.common.pcs}</div></div> }} />
                   <Bar dataKey="sales" fill="var(--blue)" radius={[0, 6, 6, 0]} maxBarSize={22} isAnimationActive={false}>
                     <LabelList dataKey="sales" position="right" formatter={(v) => formatMoney(Number(v), { compact: true })} style={{ fill: 'var(--ink-2)', fontSize: 11.5, fontVariantNumeric: 'tabular-nums' }} />
                   </Bar>

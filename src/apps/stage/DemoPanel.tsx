@@ -4,6 +4,7 @@
  */
 import { useState } from 'react'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
+import * as Tooltip from '@radix-ui/react-tooltip'
 import { motion, useReducedMotion } from 'framer-motion'
 import { CalendarPlus, Check, ChevronDown, Clock3, Coins, Dices, Monitor, RotateCcw, Settings2, Smartphone, Sparkles, Truck, Zap } from 'lucide-react'
 import { api } from '@/api'
@@ -43,6 +44,7 @@ function RoleSwitcher({ value, onChange }: { value: Role; onChange: (r: Role) =>
       data-testid={TID.stageRole}
       className="no-scrollbar inline-flex max-w-full items-stretch gap-px overflow-x-auto rounded-[11px] border border-paper/12 bg-paper/[.06] p-[3px]"
     >
+      <Tooltip.Provider>
       {STAGE_ROLES.map((r, i) => {
         const active = r === value
         const groupStart = i === 0 || i === 2 || i === 9
@@ -54,12 +56,13 @@ function RoleSwitcher({ value, onChange }: { value: Role; onChange: (r: Role) =>
                 <GroupIcon size={12} strokeWidth={2} />
               </span>
             )}
+            <Tooltip.Root delayDuration={250}>
+            <Tooltip.Trigger asChild>
             <button
               type="button"
               role="radio"
               aria-checked={active}
               data-role={r}
-              title={i < 2 ? `${roleLabel(r)} · ${uz.demo.phonePane}` : `${roleLabel(r)} · ${uz.demo.desktopPane}`}
               onClick={() => { if (!active) onChange(r) }}
               className={cn(
                 'relative h-8 shrink-0 whitespace-nowrap rounded-[8px] px-[8px] text-[11.5px] font-medium leading-none outline-none transition-colors focus-visible:ring-2 focus-visible:ring-gold-fill',
@@ -76,9 +79,18 @@ function RoleSwitcher({ value, onChange }: { value: Role; onChange: (r: Role) =>
               )}
               <span className="relative">{roleLabel(r)}</span>
             </button>
+            </Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content side="bottom" sideOffset={8} className="z-[95] max-w-[300px] rounded-[10px] bg-ink px-3 py-2 text-[12.5px] leading-snug text-paper shadow-soft">
+                {uz.demo.roleHint[r] ?? roleLabel(r)}<span className="mt-0.5 block text-[11px] text-paper/60">{i < 2 ? uz.demo.phonePane : uz.demo.desktopPane}</span>
+                <Tooltip.Arrow className="fill-ink" />
+              </Tooltip.Content>
+            </Tooltip.Portal>
+            </Tooltip.Root>
           </div>
         )
       })}
+      </Tooltip.Provider>
     </div>
   )
 }

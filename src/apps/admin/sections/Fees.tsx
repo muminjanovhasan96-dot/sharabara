@@ -58,7 +58,7 @@ export function Fees() {
     { key: 'act', header: A.common.actions, width: 210, hideable: false, render: (a) => (
       <span className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
         <Button size="sm" variant="secondary" disabled={!access.edit} onClick={() => setAdjusting(a)}>{A.fees.adjust}</Button>
-        <Button size="sm" variant="gold" disabled={!access.approve} loading={pending === a.id} onClick={() => run(a.id, () => api.finance.approveFee(a.id), A.fees.approved)}>{A.fees.approve}</Button>
+        <Button size="sm" variant="primary" disabled={!access.approve} loading={pending === a.id} onClick={() => run(a.id, () => api.finance.approveFee(a.id), A.fees.approved)}>{A.fees.approve}</Button>
       </span>
     ) },
   ]
@@ -74,7 +74,7 @@ export function Fees() {
               <>
                 <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>{A.common.cancel}</Button>
                 <Button size="sm" variant="secondary" leading={<Plus strokeWidth={1.75} />} onClick={() => setRules((rs) => [...rs, { id: uid('fr'), minTiyin: rs.at(-1)?.maxTiyin ?? 0, maxTiyin: null, type: 'percent', rate: 0.03, categoryId: null }])}>{A.fees.addRule}</Button>
-                <Button size="sm" variant="gold" loading={pending === 'save'} onClick={() => run('save', () => api.finance.saveDraftRules(rules, note), A.fees.savedDraft).then((r) => r && setEditing(false))}>{A.fees.saveDraft}</Button>
+                <Button size="sm" variant="secondary" loading={pending === 'save'} onClick={() => run('save', () => api.finance.saveDraftRules(rules, note), A.fees.savedDraft).then((r) => r && setEditing(false))}>{A.fees.saveDraft}</Button>
               </>
             )
           }>
@@ -121,7 +121,7 @@ export function Fees() {
       </div>
 
       <BulkBar count={sel.length} onClear={() => setSel([])}>
-        <Button size="sm" variant="gold" disabled={!access.approve} loading={pending === 'bulk'} onClick={() => run('bulk', () => api.finance.approveFees(sel), A.fees.approved).then(() => setSel([]))}>{A.fees.approveSel} ({sel.length})</Button>
+        <Button size="sm" variant="primary" disabled={!access.approve} loading={pending === 'bulk'} onClick={() => run('bulk', () => api.finance.approveFees(sel), A.fees.approved).then(() => setSel([]))}>{A.fees.approveSel} ({sel.length})</Button>
       </BulkBar>
       <DataTable columns={apprCols} rows={pendingApprovals} rowKey={(a) => a.id} selectable selected={sel} onSelectionChange={setSel} pageSize={10} exportFilename="haq-tasdiqlash" defaultSort={{ key: 'createdAt', dir: 'desc' }}
         toolbarLeft={<><span className="eyebrow">{A.fees.approvals}</span><Badge tone={pendingApprovals.length ? 'gold' : 'neutral'}>{pendingApprovals.length}</Badge></>}

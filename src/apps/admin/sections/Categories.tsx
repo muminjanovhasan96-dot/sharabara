@@ -88,7 +88,7 @@ function CategoryDetail({ c, canEdit, count }: { c: Category; canEdit: boolean; 
         </div>
       </div>
       <div>
-        <SectionTitle right={<Button size="sm" variant="gold" disabled={!canEdit || !dirtyNotes} loading={pending === 'notes'} onClick={() => run('notes', () => api.admin.updateCategory(c.id, { conditionNotes: notes }), A.categories.saved)}>{A.common.save}</Button>}>{A.categories.conditions}</SectionTitle>
+        <SectionTitle right={<Button size="sm" variant="secondary" disabled={!canEdit || !dirtyNotes} loading={pending === 'notes'} onClick={() => run('notes', () => api.admin.updateCategory(c.id, { conditionNotes: notes }), A.categories.saved)}>{A.common.save}</Button>}>{A.categories.conditions}</SectionTitle>
         <div className="grid grid-cols-2 gap-3">
           {(['A', 'B', 'C', 'D'] as Condition[]).map((k) => <Field key={k} label={uz.condition[k]}><Textarea rows={2} value={notes[k]} onChange={(e) => setNotes({ ...notes, [k]: e.target.value })} disabled={!canEdit} /></Field>)}
         </div>

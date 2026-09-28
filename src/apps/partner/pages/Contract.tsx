@@ -34,7 +34,7 @@ export function Contract() {
 
   return (
     <div>
-      <PageHeader eyebrow={c.name} title={P.contract.title} />
+      <PageHeader eyebrow={c.name} help={P.help.contract} title={P.contract.title} />
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
         <div className="flex flex-col gap-4">
           <Card padding="md">

@@ -101,7 +101,7 @@ export function ListingCard({ listing: l, variant = 'grid', reason, className }:
       >
         <ProductImage id={l.images[0] ?? 'ill-phone-1'} sold={sold} className="w-[108px] shrink-0" fill={0.7} badge={tile} />
         <div className="flex min-w-0 flex-1 flex-col">
-          {reason && <div className="clamp-1 text-[11px] font-semibold text-[#5470a8]">{reason}</div>}
+          {reason && <div className="clamp-2 text-[11px] font-semibold leading-[1.25] text-gold-deep">{reason}</div>}
           <Price tiyin={l.priceTiyin} prev={drop ? l.previousPriceTiyin : undefined} size="list" />
           <div className="clamp-2 mt-0.5 text-[14px] leading-[1.25] text-ink">{l.title}</div>
           <div className="mt-auto flex items-center justify-between gap-2 pt-1">
@@ -128,7 +128,7 @@ export function ListingCard({ listing: l, variant = 'grid', reason, className }:
         corner={<HeartButton id={l.id} source="listing" />}
       />
       <div className="flex flex-1 flex-col px-1 pb-1 pt-2">
-        {reason && <div className="clamp-1 mb-0.5 text-[11px] font-semibold text-[#5470a8]">{reason}</div>}
+        {reason && <div className="clamp-2 mb-0.5 text-[11px] font-semibold leading-[1.25] text-gold-deep">{reason}</div>}
         <Price tiyin={l.priceTiyin} prev={drop ? l.previousPriceTiyin : undefined} />
         <div className="clamp-2 mt-1 min-h-[2.5em] text-[14px] leading-[1.25] text-ink">{l.title}</div>
         <div className="mt-1 flex items-center justify-between gap-1">
@@ -176,7 +176,7 @@ export function ProductCard({ product: p, variant = 'grid', reason, className }:
         {out && <span className="absolute inset-x-0 bottom-0 bg-ink/80 py-1 text-center text-[11px] font-semibold text-white">{ms.product.outOfStock}</span>}
       </ProductImage>
       <div className="flex min-w-0 flex-1 flex-col px-1 pb-1 pt-2">
-        {reason && <div className="clamp-1 mb-0.5 text-[11px] font-semibold text-[#5470a8]">{reason}</div>}
+        {reason && <div className="clamp-2 mb-0.5 text-[11px] font-semibold leading-[1.25] text-gold-deep">{reason}</div>}
         <Price tiyin={p.priceTiyin} prev={drop ? p.previousPriceTiyin : undefined} size={list ? 'list' : 'card'} />
         <div className={cn('clamp-2 mt-1 text-[14px] leading-[1.25] text-ink', !list && 'min-h-[2.5em]')}>{p.title}</div>
         <div className="mt-1 flex items-center gap-1 text-[12px] text-ink-3">

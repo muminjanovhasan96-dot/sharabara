@@ -2,6 +2,7 @@ import type { AdminSection, DataSnapshot, Listing, Permission, Role, StaffRole }
 import { uz } from '@/i18n/uz'
 import { useStore } from '@/store'
 import { dateKey } from '@/domain/clock'
+import { isPricingQueue } from '@/domain/pricing'
 
 export const SECTIONS: AdminSection[] = [
   'dashboard', 'director', 'moderation', 'pricing', 'categories', 'orders', 'logistics', 'warehouse', 'payments', 'fees', 'returns',
@@ -66,7 +67,7 @@ export function queueCounts(d: DataSnapshot, now: string): Partial<Record<AdminS
   const openManifest = d.manifests.find((m) => m.status === 'open')
   return {
     moderation: d.listings.filter((l) => (l.status === 'in_review' || l.status === 'submitted') && !l.historical && !isModerated(l)).length,
-    pricing: d.listings.filter((l) => l.status === 'in_review' && !l.historical).length,
+    pricing: d.listings.filter(isPricingQueue).length,
     fees: d.feeApprovals.filter((a) => a.status === 'pending').length,
     orders: subs.filter((x) => x.so.status === 'packing').length,
     logistics: subs.filter((x) => (x.so.status === 'packing' || x.so.status === 'packed') && (dateKey(x.o.createdAt) === today || openManifest?.subOrderIds.includes(x.so.id) || x.so.status === 'packing')).length,

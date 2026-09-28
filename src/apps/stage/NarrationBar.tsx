@@ -3,11 +3,11 @@
  * Oltin yo'l paytida joriy qadam nomi, izohi va boshqaruv tugmalari shu yerda (ekranlarni yopmaydi).
  */
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { ChevronRight, Hand, Pause, Play, Sparkles, Square } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Hand, Pause, Play, Sparkles, Square } from 'lucide-react'
 import { uz, t } from '@/i18n/uz'
 import { TID, TID_EXTRA } from '@/lib/testids'
 import { cn, SPRING } from '@/lib/utils'
-import { Seal } from '@/design'
+import { Seal, Segmented } from '@/design'
 import { GOLDEN_STEPS, goldenRunner, useGolden } from './golden'
 import { stageToast } from './toasts'
 
@@ -65,7 +65,10 @@ export function NarrationBar({ onGolden, className }: { onGolden: () => void; cl
             >
               <div className="flex items-center gap-2.5">
                 <span data-testid={TID_EXTRA.stageGoldenStep} className="eyebrow shrink-0 !text-gold">{t(uz.demo.step, { i: g.index + 1, n: g.total })}</span>
-                <h2 className="m-0 min-w-0 truncate font-display text-[15px] leading-tight text-ink">{step.title}</h2>
+                <h2 className="m-0 min-w-0 truncate font-display text-[16px] leading-tight text-ink">{step.title}</h2>
+                <span className={cn('inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11.5px] font-semibold', g.pane === 'phone' ? 'bg-ink text-paper' : 'bg-gold-fill text-ink')}>
+                  {g.pane === 'phone' ? <ArrowLeft size={12} strokeWidth={2.5} /> : null}{g.pane === 'phone' ? uz.demo.onPhone : uz.demo.onDesktop}{g.pane === 'desktop' ? <ArrowRight size={12} strokeWidth={2.5} /> : null}
+                </span>
               </div>
               <p className="clamp-2 mt-0.5 text-[12.5px] leading-[1.35] text-ink-2">{g.status === 'error' ? `${uz.app.error}: ${g.error}` : step.caption}</p>
             </motion.div>
@@ -82,6 +85,10 @@ export function NarrationBar({ onGolden, className }: { onGolden: () => void; cl
         <div className="flex shrink-0 items-center gap-3">
           <Dots index={g.index} total={g.total} />
           <div className="flex items-center gap-1.5">
+            <Segmented size="sm" aria-label={uz.demo.speed} value={String(g.speed)} onChange={(v) => goldenRunner.setSpeed(Number(v))} options={[{ value: '0.5', label: '0.5x' }, { value: '1', label: '1x' }, { value: '2', label: '2x' }]} className="hidden min-[1500px]:inline-flex" />
+            <button type="button" title={uz.demo.back} onClick={() => goldenRunner.prev()} disabled={g.status === 'error' || g.index === 0} className={BTN_SOLID}>
+              <ChevronLeft size={14} strokeWidth={1.75} /><span className="hidden min-[1600px]:inline">{uz.demo.back}</span>
+            </button>
             <button type="button" data-testid={TID.stageGoldenPause} onClick={() => (g.status === 'paused' ? goldenRunner.resume() : goldenRunner.pause())} disabled={g.status === 'error'} className={BTN_SOLID}>
               {g.status === 'paused' ? <Play size={14} strokeWidth={1.75} /> : <Pause size={14} strokeWidth={1.75} />}
               {g.status === 'paused' ? uz.demo.resume : uz.demo.pause}
@@ -101,7 +108,7 @@ export function NarrationBar({ onGolden, className }: { onGolden: () => void; cl
         <button
           type="button"
           onClick={onGolden}
-          className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-[10px] bg-gold-fill px-3 text-[13px] font-semibold text-ink shadow-[0_8px_18px_-8px_rgba(245,180,0,.75)] outline-none transition hover:brightness-[1.04] focus-visible:ring-2 focus-visible:ring-ink"
+          className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-[10px] border border-line bg-card px-3 text-[13px] font-semibold text-ink outline-none transition hover:bg-paper-2 focus-visible:ring-2 focus-visible:ring-gold-fill"
         >
           <Sparkles size={15} strokeWidth={1.75} />{uz.demo.golden}
         </button>

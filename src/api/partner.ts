@@ -1,3 +1,4 @@
+import { mallCheck } from '@/domain/pricing'
 import { audit, emitLater, currentActor, mutate, now, genId } from './core'
 import { subTransition } from './orders'
 import { findSub } from './logistics'
@@ -16,7 +17,7 @@ export const partner = {
         if (patch.priceTiyin < p.priceTiyin) p.previousPriceTiyin = p.priceTiyin
         // Sharabara price rule check against market median
         p.checkDelta = Math.round(((patch.priceTiyin - p.marketMedianTiyin) / p.marketMedianTiyin) * 1000) / 1000
-        p.check = patch.priceTiyin > p.marketMedianTiyin ? 'overpriced' : 'passed'
+        p.check = mallCheck(patch.priceTiyin, p.marketMedianTiyin)
       }
       if (patch.stock !== undefined && patch.stock !== p.stock) audit(d, actor, 'data', 'product', p.id, 'stock', p.stock, patch.stock)
       Object.assign(p, patch)
@@ -34,7 +35,7 @@ export const partner = {
         if (existing) {
           existing.priceTiyin = r.priceTiyin; existing.stock = r.stock; if (r.title) existing.title = r.title
           existing.checkDelta = Math.round(((r.priceTiyin - existing.marketMedianTiyin) / existing.marketMedianTiyin) * 1000) / 1000
-          existing.check = r.priceTiyin > existing.marketMedianTiyin ? 'overpriced' : 'passed'
+          existing.check = mallCheck(r.priceTiyin, existing.marketMedianTiyin)
           updated++
         } else {
           const cat = r.categoryId ?? d.categories[0].id
@@ -42,7 +43,7 @@ export const partner = {
           d.products.unshift({
             id: genId('P'), companyId: s.id, sku: r.sku, categoryId: cat, title: r.title, description: r.description ?? '', images: [`ill-${cat.replace('cat-', '')}-1`],
             priceTiyin: r.priceTiyin, marketMedianTiyin: market, stock: r.stock, warrantyMonths: r.warrantyMonths ?? 12, returnDays: 14,
-            check: 'pending', checkDelta: Math.round(((r.priceTiyin - market) / market) * 1000) / 1000, attributes: {},
+            check: mallCheck(r.priceTiyin, market), checkDelta: Math.round(((r.priceTiyin - market) / market) * 1000) / 1000, attributes: {},
             stats: { views: 0, saves: 0, chats: 0, viewsByDay: Array(14).fill(0) }, createdAt: now(),
           })
           added++

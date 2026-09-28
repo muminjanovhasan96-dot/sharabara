@@ -9,7 +9,7 @@ import { uz } from 'date-fns/locale'
 import { Boxes, Home, Moon, Sun, TrendingUp, TriangleAlert, Wallet } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { cn, SPRING, haptic } from '@/lib/utils'
-import { IconButton, Seal, initialsOf, useTheme } from '@/design'
+import { HelpPopover, IconButton, Seal, initialsOf, useTheme } from '@/design'
 import { useNow, useStore } from '@/store'
 import { parseIso } from '@/domain/clock'
 import { computeProblems } from './lib/compute'
@@ -137,6 +137,12 @@ function Shell() {
             {!embedded && <div className="hidden items-center gap-2 @3xl:flex">{themeBtn}{avatar}</div>}
           </div>
         </div>
+        {!mobile && (
+          <div className="mx-auto flex w-full max-w-[1200px] items-center gap-1.5 px-4 pb-2 text-[12.5px] text-ink-2">
+            <span className="truncate">{D.help[tab].sub}</span>
+            <HelpPopover size="sm" title={D.tabs[tab]} help={D.help[tab]} />
+          </div>
+        )}
       </header>
 
       <main className={cn('@container min-w-0 flex-1', !embedded && 'scroll-thin min-h-0 overflow-y-auto')}>

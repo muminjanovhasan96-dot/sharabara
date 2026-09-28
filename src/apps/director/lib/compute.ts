@@ -161,7 +161,7 @@ export function feedSentence(d: DataSnapshot, a: AuditEntry): { text: string; to
       const m = d.manifests.find((x) => x.id === id)
       const n = m?.subOrderIds.length
       if (to === 'picked_up') return { text: n ? `BTS ${n} ta yukni olib ketdi` : `BTS kechki partiyani olib ketdi`, to: '/logistics' }
-      if (to === 'closed') return { text: `Kunlik manifest yopildi${a.note ? ` (${a.note})` : ''}`, to: '/logistics' }
+      if (to === 'closed') return { text: `Kechki partiya yopildi${a.note ? ` (${a.note})` : ''}`, to: '/logistics' }
       return { text: `Manifest ${id}: ${to}`, to: '/logistics' }
     }
     case 'order': {

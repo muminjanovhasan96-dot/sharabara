@@ -33,6 +33,7 @@ import Wallet from './screens/Wallet'
 import { BottomBarCtx, Screen } from './components/Screen'
 import { Button } from '@/design'
 import { EmptyState } from './components/Ui'
+import { Onboarding } from './components/Onboarding'
 
 const TAB_ROOTS = new Set(['/', '/catalog', '/sell', '/cart', '/profile'])
 const DEEP = [/^\/listing\//, /^\/product\//, /^\/store\//, /^\/seller\//, /^\/chat\//, /^\/checkout/, /^\/sell\/(new|ai|offer)/, /^\/orders\/./, /^\/search/]
@@ -54,7 +55,7 @@ function usePushBanners() {
   }), [nav])
 }
 
-function Shell() {
+function Shell({ onboarding = false }: { onboarding?: boolean }) {
   useStageNav()
   usePushBanners()
   const { base } = useBase()
@@ -121,6 +122,7 @@ function Shell() {
         </AnimatePresence>
       </div>
       {!deep && <TabBar />}
+      {onboarding && <Onboarding />}
       <Toaster container={container} position="bottom" className="!bottom-[84px]" />
     </div>
     </BottomBarCtx.Provider>
@@ -135,7 +137,7 @@ export default function MobileApp({ embedded = false }: { embedded?: boolean }) 
     return (
       <div className="h-dvh w-full">
         <PhoneFrame variant="bare" theme={theme}>
-          <div className="h-full"><Shell /></div>
+          <div className="h-full"><Shell onboarding /></div>
           <div data-testid={TID.mPush}><PushStack className="!top-2 pt-safe" /></div>
         </PhoneFrame>
       </div>
@@ -146,6 +148,8 @@ export default function MobileApp({ embedded = false }: { embedded?: boolean }) 
 
 /** Desktopda telefon ramkasi ekran balandligiga sig'adigan qilib masshtablanadi. */
 function DesktopFrame({ theme }: { theme: 'light' | 'dark' }) {
+  const now = useStore((s) => s.clock.now)
+  const time = useMemo(() => { const d = new Date(now); return `${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}` }, [now])
   const [scale, setScale] = useState(() => fitScale())
   useEffect(() => {
     const fn = () => setScale(fitScale())
@@ -154,8 +158,8 @@ function DesktopFrame({ theme }: { theme: 'light' | 'dark' }) {
   }, [])
   return (
     <div className="flex h-dvh flex-col items-center justify-center gap-3 overflow-hidden bg-paper-2 px-4 py-4">
-      <PhoneFrame theme={theme} time="14:32" scale={scale}>
-        <Shell />
+      <PhoneFrame theme={theme} time={time} scale={scale}>
+        <Shell onboarding />
       </PhoneFrame>
       <p className="m-0 max-w-[40ch] text-center text-[12.5px] text-ink-3">{ms.hint.desktop}</p>
     </div>

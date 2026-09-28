@@ -6,6 +6,7 @@ import { staffIdForRole, useStore } from '@/store'
 import { stageNav } from '@/lib/router'
 import type { Role } from '@/domain/types'
 import { uz } from '@/i18n/uz'
+import { toast } from '@/design'
 
 export type DesktopApp = 'admin' | 'partner' | 'bts'
 export type StagePane = 'phone' | 'desktop'
@@ -37,6 +38,7 @@ export function paneFor(role: Role): StagePane {
 /** Apply a stage role to the session (the single place that knows the mapping). */
 export function applyRole(role: Role) {
   const s = useStore.getState()
+  toast.clear() // rol almashganda eski xabarlar yig'ilib qolmasin
   if (role === 'buyer') s.setSession({ userId: 'u-buyer', role })
   else if (role === 'seller') s.setSession({ userId: 'u-seller', role })
   else if (role === 'company' || role === 'bts') s.setSession({ role })

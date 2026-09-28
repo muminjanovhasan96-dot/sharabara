@@ -12,7 +12,7 @@ import { parseIso, formatDemoTime } from '@/domain/clock'
 import { AppBase, stageNav, type AppKey } from '@/lib/router'
 import { TID } from '@/lib/testids'
 import { cn } from '@/lib/utils'
-import { uz } from '@/i18n/uz'
+import { uz, t } from '@/i18n/uz'
 import { Avatar, ConfirmDialog, PhoneFrame, PHONE_H, PHONE_W } from '@/design'
 import { DemoPanel } from './DemoPanel'
 import { GoldenOverlay } from './GoldenOverlay'
@@ -193,7 +193,7 @@ export default function StageApp() {
       <div ref={bodyRef} className="relative flex min-h-0 flex-1 gap-4 px-4 pt-3">
         {/* phone column */}
         <section className="flex min-h-0 shrink-0 flex-col items-center" style={{ width: phoneColW }} aria-label={uz.demo.phonePane}>
-          <PaneLabel icon={<Smartphone size={13} strokeWidth={2} />} title={uz.demo.phonePane} name={phoneUser?.name} seed={phoneUser?.id} sub={phoneRole} compact={phoneColW < 360} />
+          <PaneLabel icon={<Smartphone size={13} strokeWidth={2} />} title={t(uz.demo.phoneOf, { r: phoneRole })} name={phoneUser?.name} seed={phoneUser?.id} compact={phoneColW < 290} />
           <div ref={phoneSlotRef} className="flex min-h-0 w-full flex-1 items-center justify-center overflow-hidden">
             <div
               ref={phoneWrapRef}
@@ -201,6 +201,7 @@ export default function StageApp() {
               className={cn('relative transition-shadow duration-300', phoneRing && 'ring-[3px] ring-gold-fill/90 ring-offset-4 ring-offset-paper')}
               style={{ borderRadius: 54 * scale }}
             >
+              {goldenActive && golden.pane === 'desktop' && <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[5] rounded-[inherit] bg-paper/55 transition-opacity duration-300" />}
               <PhoneFrame time={phoneTime} scale={scale} theme={session.theme}>
                 <RouterIsland>
                   <AppBoundary name={uz.demo.phonePane} resetSignal={mobileNav.n}>
@@ -218,7 +219,7 @@ export default function StageApp() {
 
         {/* desktop column */}
         <section className="flex min-h-0 min-w-0 flex-1 flex-col" aria-label={uz.demo.desktopPane}>
-          <PaneLabel icon={<Monitor size={13} strokeWidth={2} />} title={uz.demo.desktopPane} name={desktopUser.name} seed={desktopUser.seed} sub={desktopUser.sub} />
+          <PaneLabel icon={<Monitor size={13} strokeWidth={2} />} title={t(uz.demo.desktopOf, { r: desktopUser.sub })} name={desktopUser.name} seed={desktopUser.seed} />
           <DesktopWindow
             ref={desktopRef}
             data-testid={TID.stageDesktop}
@@ -226,6 +227,7 @@ export default function StageApp() {
             title={DESKTOP_META[desktop].title}
             ring={desktopRing}
           >
+            {goldenActive && golden.pane === 'phone' && <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[5] bg-paper/55 transition-opacity duration-300" />}
             {DESKTOP_APPS.filter((a) => mounted.has(a)).map((app) => (
               <DesktopSlot key={app} app={app} active={desktop === app}>
                 {app === 'admin' ? <AdminApp embedded /> : app === 'partner' ? <PartnerApp embedded /> : <BtsApp embedded />}
@@ -239,7 +241,7 @@ export default function StageApp() {
 
       <NarrationBar onGolden={startGolden} className="mx-4 my-3" />
 
-      <GoldenOverlay />
+      <GoldenOverlay onRestart={startGolden} />
       <StageToasts />
 
       <ConfirmDialog

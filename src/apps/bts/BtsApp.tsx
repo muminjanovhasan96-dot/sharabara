@@ -1,5 +1,5 @@
-import { NavLink, Route, Routes } from 'react-router-dom'
-import { Icon, Toaster } from '@/design'
+import { NavLink, Route, Routes, useLocation } from 'react-router-dom'
+import { HelpPopover, Icon, Toaster } from '@/design'
 import { useData, useNow } from '@/store'
 import { formatDemoTime } from '@/domain/clock'
 import { useBase, useHref, useStageNav } from '@/lib/router'
@@ -31,12 +31,14 @@ export default function BtsApp({ embedded = false }: { embedded?: boolean }) {
   const subs = useAllSubs()
   const branchesCount = useData((d) => d.branches.length)
   const active = subs.filter(({ so }) => ['handed_to_bts', 'in_transit', 'at_branch'].includes(so.status)).length
+  const loc = useLocation()
+  const pageKey = (['shipments', 'branches', 'history'] as const).find((k) => loc.pathname.endsWith(`/${k}`)) ?? 'today'
   const counts: Record<keyof typeof B.nav, number | undefined> = { today: m && m.status !== 'picked_up' ? m.subOrderIds.length : undefined, shipments: active || undefined, branches: branchesCount, history: undefined }
 
   return (
     <div ref={rootRef} className={cn('relative flex flex-col bg-paper text-ink text-[16px]', isEmbedded ? 'h-full min-h-0' : 'h-dvh')} data-app="bts">
       <header className="flex shrink-0 flex-wrap items-center justify-between gap-3 px-5 py-3 text-white" style={{ background: '#0f1f3a' }}>
-        <div className="min-w-0"><div className="text-[10.5px] uppercase tracking-[0.2em] text-white/60">Hamkor · logistika</div><h1 className="m-0 truncate font-display text-[20px] leading-tight text-white">{B.title}</h1></div>
+        <div className="min-w-0"><div className="text-[10.5px] uppercase tracking-[0.2em] text-white/60">Hamkor · logistika</div><div className="flex items-center gap-1.5"><h1 className="m-0 truncate font-display text-[20px] leading-tight text-white">{B.title} · {B.nav[pageKey]}</h1><HelpPopover size="sm" title={B.nav[pageKey]} help={B.help[pageKey]} className="text-white/70 hover:bg-white/10 hover:text-white" /></div><div className="truncate text-[13px] text-white/75">{B.help[pageKey].sub}</div></div>
         <div className="tnum inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[15px]"><span className="h-2 w-2 rounded-full bg-gold-fill" aria-hidden="true" /><span className="text-white/60">{B.common.demoClock}</span><span className="font-semibold">{formatDemoTime(now)}</span></div>
       </header>
       <nav className="flex shrink-0 gap-2 border-b border-line bg-card px-4 py-3" aria-label={B.title}>

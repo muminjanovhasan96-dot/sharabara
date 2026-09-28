@@ -25,13 +25,13 @@ export function Users() {
   const selected = qid ? data.users.find((u) => u.id === qid) : undefined
   const cols: Column<User>[] = [
     { key: 'name', header: A.users.name, sortable: true, render: (u) => <span className="flex items-center gap-2"><Avatar name={u.name} seed={u.id} size={28} /><span className="truncate font-medium">{u.name}</span></span> },
-    { key: 'id', header: A.common.id, width: 100, render: (u) => <span className="tnum text-ink-2">{u.id}</span> },
+    { key: 'id', header: A.common.id, width: 100, defaultHidden: true, render: (u) => <span className="tnum text-ink-2">{u.id}</span> },
     { key: 'regionId', header: A.common.region, sortable: true, width: 150, render: (u) => regionName(data, u.regionId), csv: (u) => regionName(data, u.regionId), sortValue: (u) => regionName(data, u.regionId) },
-    { key: 'rating', header: A.users.rating, sortable: true, align: 'right', width: 90, render: (u) => <span className="tnum">{u.rating.toFixed(1)}</span> },
+    { key: 'rating', header: A.users.rating, sortable: true, align: 'right', width: 90, defaultHidden: true, render: (u) => <span className="tnum">{u.rating.toFixed(1)}</span> },
     { key: 'listings', header: A.users.listings, sortable: true, align: 'right', width: 90, sortValue: (u) => counts.l.get(u.id) ?? 0, render: (u) => <span className="tnum">{counts.l.get(u.id) ?? 0}</span>, csv: (u) => counts.l.get(u.id) ?? 0 },
     { key: 'orders', header: A.users.orders, sortable: true, align: 'right', width: 100, sortValue: (u) => counts.o.get(u.id) ?? 0, render: (u) => <span className="tnum">{counts.o.get(u.id) ?? 0}</span>, csv: (u) => counts.o.get(u.id) ?? 0 },
     { key: 'verifiedSeller', header: A.common.verified, sortable: true, width: 120, render: (u) => u.verifiedSeller ? <Badge tone="green" Icon={ShieldCheck}>{A.common.verified}</Badge> : <span className="text-ink-3">—</span>, csv: (u) => u.verifiedSeller ? 1 : 0 },
-    { key: 'blocked', header: A.common.status, width: 120, sortable: true, sortValue: (u) => (u.blocked ? 1 : 0), render: (u) => u.blocked ? <Badge tone="brick" dot>{A.common.blocked}</Badge> : <Badge tone="green" dot>{A.common.active}</Badge>, csv: (u) => u.blocked ? 'blocked' : 'active' },
+    { key: 'blocked', header: A.common.status, width: 140, sortable: true, sortValue: (u) => (u.blocked ? 1 : 0), render: (u) => u.blocked ? <Badge tone="brick" dot>{A.common.blocked}</Badge> : <Badge tone="green" dot>{A.common.active}</Badge>, csv: (u) => u.blocked ? 'blocked' : 'active' },
   ]
   if (loading) return <div className="p-5"><Skeleton height={480} className="rounded-card" /></div>
   return (

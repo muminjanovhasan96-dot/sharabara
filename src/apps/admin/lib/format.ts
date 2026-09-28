@@ -11,14 +11,20 @@ export function ago(iso: string, now: string): string {
   if (h < 48) return tt(A.common.ago, { t: `${h} ${A.common.hours}` })
   return tt(A.common.ago, { t: `${Math.floor(h / 24)} ${A.common.days}` })
 }
-/** "2 s 14 d" — navbatda kutish */
+/** "2 soat", "35 daqiqa", "hozirgina", "3 kun" — navbatda kutish (qisqartmasiz) */
 export function waitFor(iso: string | undefined, now: string): string {
   if (!iso) return '—'
   const m = Math.max(0, Math.round((parseIso(now).getTime() - parseIso(iso).getTime()) / 60000))
-  if (m < 60) return `${m} d`
+  if (m < 1) return A.common.justNow
+  if (m < 60) return `${m} ${A.common.minutes}`
   const h = Math.floor(m / 60)
-  if (h >= 48) return `${Math.floor(h / 24)} k`
-  return `${h} s ${String(m % 60).padStart(2, '0')} d`
+  if (h >= 48) return `${Math.floor(h / 24)} ${A.common.days}`
+  return `${h} ${A.common.hours}`
+}
+/** ISO sana (yyyy-mm-dd yoki to'liq) → "25-sen, 11:00" / "25-sen" */
+export function fmtDate(iso: string | undefined): string {
+  if (!iso) return '—'
+  return iso.length <= 10 ? formatDemoTime(`${iso}T00:00:00`).replace(/, 00:00$/, '') : formatDemoTime(iso)
 }
 export function fmtTime(iso: string | undefined): string { return iso ? formatDemoTime(iso) : '—' }
 export function pctStr(v: number, digits = 0): string { return `${(v * 100).toFixed(digits).replace('.', ',')}%` }

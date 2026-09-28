@@ -61,7 +61,7 @@ export function Warehouse() {
       <div className="grid gap-3 grid-cols-2 md:grid-cols-3 xl:grid-cols-6">
         <Kpi label={K.total} value={kpi.total} suffix={uz.app.pcs} spark={kpi.sparkStock} hint={K.days14} />
         <Kpi label={K.value} value={kpi.value / 100 / 1e9} format={(v) => v.toFixed(1).replace('.', ',')} suffix={`${K.mlrd} ${uz.app.sum}`} tone="gold" />
-        <Kpi label={K.low} value={kpi.low} suffix="SKU" onClick={() => setQtab('stock')} className={kpi.low > 0 ? 'shadow-[inset_3px_0_0_var(--brick)]' : undefined} />
+        <Kpi label={K.low} value={kpi.low} suffix="tovar" onClick={() => setQtab('stock')} className={kpi.low > 0 ? 'shadow-[inset_3px_0_0_var(--brick)]' : undefined} />
         <Kpi label={K.inToday} value={kpi.inToday} suffix={uz.app.pcs} spark={kpi.sparkIn} hint={K.days14} tone="green" />
         <Kpi label={K.outToday} value={kpi.outToday} suffix={uz.app.pcs} spark={kpi.sparkOut} hint={K.days14} tone="brick" />
         <Kpi label={K.expected} value={kpi.expected} onClick={() => setQtab('receipts')} />

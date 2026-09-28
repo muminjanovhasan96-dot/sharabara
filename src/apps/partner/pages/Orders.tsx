@@ -51,7 +51,7 @@ export function Orders() {
 
   return (
     <div>
-      <PageHeader eyebrow={c.name} title={P.nav.orders}>{t(P.orders.total, { n: subs.length })}</PageHeader>
+      <PageHeader eyebrow={c.name} help={P.help.orders} title={P.nav.orders}>{t(P.orders.total, { n: subs.length })}</PageHeader>
       <DataTable<SubRow>
         columns={columns} rows={rows} rowKey={(r) => r.so.id} loading={loading} onRowClick={(r) => setOpenId(r.so.id)} pageSize={15} exportFilename={`${c.id}-buyurtmalar`}
         emptyState={<EmptyState compact icon="package-open" title={P.orders.empty} hint={P.orders.emptyHint} />}

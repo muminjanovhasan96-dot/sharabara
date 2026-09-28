@@ -11,8 +11,7 @@ import { AC, AC_CURSOR, AC_GRID, Kpi, LegendPills, Panel, BarList, SampleBadge }
 import { useSectionLoading } from '../lib/hooks'
 import { queueCounts, useVisibleSections } from '../lib/sections'
 import { categoryName, mean, pctStr, regionName, sum } from '../lib/format'
-import { A } from '../strings'
-import { uz } from '@/i18n/uz'
+import { A, tt } from '../strings'
 import { cn } from '@/lib/utils'
 
 interface RegionRow { id: string; name: string; sales: number; share: number }
@@ -67,6 +66,22 @@ export function Dashboard() {
 
   return (
     <div className="flex flex-col gap-4 p-5">
+      {/* 1-blok: Bugun qilish kerak — raqamli vazifalar */}
+      <Panel eyebrow={A.dashboard.todo} padding={false} actions={<span className="text-[12px] text-ink-3">{attention.length ? tt(A.dashboard.todoCount, { n: attention.length }) : ''}</span>}>
+        {attention.length === 0 ? <div className="p-4"><EmptyState compact icon="check" title={A.dashboard.allClear} hint={A.dashboard.allClearHint} /></div> : (
+          <ul className="m-0 grid list-none grid-cols-1 p-0 md:grid-cols-2 xl:grid-cols-4 [&>li]:border-b [&>li]:border-r [&>li]:border-line">
+            {attention.map((r) => (
+              <li key={r.key}>
+                <button type="button" onClick={() => nav(r.to)} className="flex h-full w-full items-center gap-3 px-4 py-3 text-left hover:bg-gold-soft/50">
+                  <span className={cn('tnum inline-flex h-9 min-w-9 items-center justify-center rounded-full px-2.5 font-display text-[17px] font-bold', r.key === 'moderation' || r.key === 'returns' ? 'bg-brick-soft text-brick' : 'bg-gold-soft text-ink')}>{r.count}</span>
+                  <span className="min-w-0 flex-1"><span className="block text-[13.5px] font-medium leading-snug text-ink">{r.label}</span><span className="mt-0.5 inline-flex items-center gap-0.5 text-[12px] font-semibold text-gold">{A.shell.open}<ChevronRight size={13} strokeWidth={2} aria-hidden="true" /></span></span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Panel>
+
       <div className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(164px,1fr))]">
         <Kpi label={A.dashboard.salesToday} value={last.listingsSalesTiyin + last.mallSalesTiyin} money compact delta={delta(last.listingsSalesTiyin + last.mallSalesTiyin, prev.map((s) => s.listingsSalesTiyin + s.mallSalesTiyin))} deltaLabel={A.dashboard.vsTarget} spark={spark((s) => s.listingsSalesTiyin + s.mallSalesTiyin)} onClick={() => nav('/reports')} />
         <Kpi label={A.dashboard.orders} value={last.orders} delta={delta(last.orders, prev.map((s) => s.orders))} deltaLabel={A.dashboard.vsTarget} spark={spark((s) => s.orders)} onClick={() => nav('/orders?view=today')} />
@@ -76,7 +91,7 @@ export function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
-        <Panel eyebrow={A.dashboard.chart14} className="xl:col-span-2" bodyClassName="h-[300px] p-3" actions={<LegendPills items={[{ label: A.dashboard.listings, color: AC.navy }, { label: A.dashboard.mall, color: AC.blue }]} />}>
+        <Panel eyebrow={A.dashboard.chart14} className="xl:col-span-3" bodyClassName="h-[300px] flex-none p-3" actions={<LegendPills items={[{ label: A.dashboard.listings, color: AC.navy }, { label: A.dashboard.mall, color: AC.blue }]} />}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chart} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%">
               <CartesianGrid vertical={false} {...AC_GRID} />
@@ -85,28 +100,13 @@ export function Dashboard() {
               <Tooltip cursor={AC_CURSOR} content={({ active, payload, label }) => active && payload?.length ? (
                 <div className={chartTheme.tooltipClass}>
                   <div className={chartTheme.tooltipLabelClass}>{label}</div>
-                  {payload.map((p) => <div key={String(p.dataKey)} className="flex justify-between gap-4"><span className="text-ink-2">{p.dataKey === 'mall' ? A.dashboard.mall : A.dashboard.listings}</span><span className="tnum">{formatMoney(Number(p.value))}</span></div>)}
+                  {payload.map((p) => <div key={String(p.dataKey)} className="flex justify-between gap-4"><span className="text-ink-2">{p.dataKey === 'mall' ? A.dashboard.mall : A.dashboard.listings}</span><span className="tnum">{formatMoney(Number(p.value), { compact: true })}</span></div>)}
                 </div>
               ) : null} />
               <Bar dataKey="listings" stackId="a" fill={AC.navy} stroke="var(--card)" strokeWidth={2} />
               <Bar dataKey="mall" stackId="a" fill={AC.blue} stroke="var(--card)" strokeWidth={2} radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </Panel>
-        <Panel eyebrow={uz.admin.needsAttention} padding={false}>
-          {attention.length === 0 ? <EmptyState compact icon="check" title={A.dashboard.allClear} /> : (
-            <ul className="m-0 list-none divide-y divide-line p-0">
-              {attention.map((r) => (
-                <li key={r.key}>
-                  <button type="button" onClick={() => nav(r.to)} className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-blue-soft/50">
-                    <span className={cn('tnum inline-flex h-7 min-w-7 items-center justify-center rounded-full px-2 text-[13px] font-bold', r.key === 'moderation' || r.key === 'returns' ? 'bg-brick-soft text-brick' : 'bg-blue-soft text-blue')}>{r.count}</span>
-                    <span className="min-w-0 flex-1 text-[13.5px] text-ink">{r.label}</span>
-                    <ChevronRight size={16} strokeWidth={1.75} className="text-ink-3" aria-hidden="true" />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
         </Panel>
       </div>
 

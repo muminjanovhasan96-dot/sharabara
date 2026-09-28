@@ -261,25 +261,26 @@ export function Ring({ value, size = 72, label }: { value: number; size?: number
 }
 
 /* ─── Status badge maps ──────────────────────────────────────────────── */
-const LISTING_TONE: Partial<Record<ListingStatus, BadgeTone>> = { in_review: 'gold', submitted: 'neutral', ai_checked: 'blue', offer_sent: 'blue', published: 'green', sold: 'neutral', reserved: 'gold', rejected_by_admin: 'brick', returned_for_edit: 'brick', declined_by_seller: 'brick', expired: 'outline', removed: 'outline', draft: 'outline', accepted: 'green' }
+/* Status lug'ati: kutmoqda=gold · harakatda=info · tayyor=green · muammo=brick · neytral/tugagan=neutral */
+const LISTING_TONE: Partial<Record<ListingStatus, BadgeTone>> = { in_review: 'gold', submitted: 'gold', ai_checked: 'gold', offer_sent: 'gold', published: 'green', sold: 'neutral', reserved: 'gold', rejected_by_admin: 'brick', returned_for_edit: 'brick', declined_by_seller: 'brick', expired: 'neutral', removed: 'neutral', draft: 'outline', accepted: 'green' }
 export function ListingStatusBadge({ status }: { status: ListingStatus }) { return <Badge tone={LISTING_TONE[status] ?? 'neutral'} dot>{uz.listing.status[status]}</Badge> }
 
-const SUB_TONE: Partial<Record<SubOrderStatus, BadgeTone>> = { packing: 'gold', packed: 'blue', handed_to_bts: 'blue', in_transit: 'blue', at_branch: 'green', delivered: 'green', payout_scheduled: 'gold', payout_paid: 'green', cancelled: 'brick', return_requested: 'brick', return_approved: 'brick', return_denied: 'outline', refunded: 'brick' }
+const SUB_TONE: Partial<Record<SubOrderStatus, BadgeTone>> = { packing: 'gold', packed: 'gold', handed_to_bts: 'info', in_transit: 'info', at_branch: 'green', delivered: 'green', payout_scheduled: 'gold', payout_paid: 'green', cancelled: 'neutral', return_requested: 'brick', return_approved: 'brick', return_denied: 'neutral', refunded: 'brick' }
 export function SubStatusBadge({ status, size }: { status: SubOrderStatus; size?: 'sm' | 'md' }) { return <Badge size={size} tone={SUB_TONE[status] ?? 'neutral'} dot>{uz.orders.status[status]}</Badge> }
 
-const ORDER_TONE: Record<OrderStatus, BadgeTone> = { created: 'neutral', paid: 'green', completed: 'blue', cancelled: 'brick' }
+const ORDER_TONE: Record<OrderStatus, BadgeTone> = { created: 'gold', paid: 'green', completed: 'green', cancelled: 'neutral' }
 export function OrderStatusBadge({ status }: { status: OrderStatus }) { return <Badge tone={ORDER_TONE[status]} dot>{ORDER_STATUS_UZ[status]}</Badge> }
 
-const ESCROW_TONE: Record<EscrowStatus, BadgeTone> = { none: 'outline', held: 'gold', released: 'green', refunded: 'brick', partially_refunded: 'brick' }
+const ESCROW_TONE: Record<EscrowStatus, BadgeTone> = { none: 'neutral', held: 'gold', released: 'green', refunded: 'brick', partially_refunded: 'brick' }
 export function EscrowBadge({ status, size }: { status: EscrowStatus; size?: 'sm' | 'md' }) { return <Badge size={size} tone={ESCROW_TONE[status]}>{A.common.escrow[status]}</Badge> }
 
-const PAYOUT_TONE: Record<PayoutStatus, BadgeTone> = { pending: 'neutral', scheduled: 'gold', awaiting_second_approval: 'brick', paid: 'green' }
+const PAYOUT_TONE: Record<PayoutStatus, BadgeTone> = { pending: 'gold', scheduled: 'gold', awaiting_second_approval: 'brick', paid: 'green' }
 export function PayoutStatusBadge({ status }: { status: PayoutStatus }) { return <Badge tone={PAYOUT_TONE[status]} dot>{PAYOUT_STATUS_UZ[status]}</Badge> }
 
-const RETURN_TONE: Record<ReturnStatus, BadgeTone> = { requested: 'brick', approved_full: 'gold', approved_partial: 'gold', denied: 'outline', refunded: 'green' }
+const RETURN_TONE: Record<ReturnStatus, BadgeTone> = { requested: 'brick', approved_full: 'gold', approved_partial: 'gold', denied: 'neutral', refunded: 'green' }
 export function ReturnStatusBadge({ status }: { status: ReturnStatus }) { return <Badge tone={RETURN_TONE[status]} dot>{RETURN_STATUS_UZ[status]}</Badge> }
 
-const MANIFEST_TONE: Record<ManifestStatus, BadgeTone> = { open: 'gold', closed: 'blue', picked_up: 'green' }
+const MANIFEST_TONE: Record<ManifestStatus, BadgeTone> = { open: 'gold', closed: 'neutral', picked_up: 'info' }
 export function ManifestStatusBadge({ status }: { status: ManifestStatus }) { return <Badge tone={MANIFEST_TONE[status]} dot>{MANIFEST_STATUS_UZ[status]}</Badge> }
 
 const COMPANY_TONE: Record<CompanyStatus, BadgeTone> = { active: 'green', onboarding: 'gold', suspended: 'brick' }
@@ -288,12 +289,12 @@ export function CompanyStatusBadge({ status }: { status: CompanyStatus }) { retu
 const CHECK_TONE: Record<ProductCheck, BadgeTone> = { passed: 'green', overpriced: 'brick', pending: 'gold' }
 export function CheckBadge({ check }: { check: ProductCheck }) { return <Badge tone={CHECK_TONE[check]} dot>{A.common.productCheck[check]}</Badge> }
 
-const AUDIT_TONE: Record<AuditKind, BadgeTone> = { status: 'neutral', money: 'gold', price: 'gold', fee: 'brick', data: 'neutral', auth: 'blue' }
+const AUDIT_TONE: Record<AuditKind, BadgeTone> = { status: 'neutral', money: 'gold', price: 'gold', fee: 'brick', data: 'neutral', auth: 'info' }
 export function AuditKindBadge({ kind }: { kind: AuditKind }) { return <Badge tone={AUDIT_TONE[kind]} size="sm">{A.audit.kinds[kind]}</Badge> }
 
 export function ProviderBadge({ p }: { p: 'payme' | 'click' | 'cash' | undefined }) {
   if (!p) return <span className="text-ink-3">—</span>
-  return <Badge tone={p === 'payme' ? 'blue' : p === 'click' ? 'green' : 'outline'} size="sm">{A.common.payment[p]}</Badge>
+  return <Badge tone={p === 'payme' ? 'info' : p === 'click' ? 'green' : 'outline'} size="sm">{A.common.payment[p]}</Badge>
 }
 
 /* ─── Error boundary ─────────────────────────────────────────────────── */

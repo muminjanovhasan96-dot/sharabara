@@ -53,7 +53,7 @@ test('Oltin yo’l avtopilot oxirigacha boradi va raqamlar qulflangan', async ({
   const statuses = trail.filter((a) => a.field === 'status').map((a) => a.to)
   for (const s of ['submitted', 'in_review', 'offer_sent', 'published', 'reserved', 'sold']) expect(statuses).toContain(s)
 
-  await page.getByTestId('stage-golden-done').getByRole('button', { name: 'Yopish' }).click()
+  await page.getByTestId('stage-golden-done').getByRole('button', { name: /sinab/ }).click()
   await expect(page.getByTestId('stage-golden-done')).toHaveCount(0)
   expect(errors).toEqual([])
 })

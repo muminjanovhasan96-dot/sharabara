@@ -7,7 +7,6 @@ import { useAppNavigate } from '@/lib/router'
 import { TID } from '@/lib/testids'
 import { cn } from '@/lib/utils'
 import { uz, t } from '@/i18n/uz'
-import { CONDITION_K } from '@/domain/pricing'
 import { Avatar, Badge, BottomSheet, Button, ErrorState, Illustration, Ledger, LedgerRow, Modal, Money, PriceVerified, ProductImage, Skeleton, Stamp, toast, usePhoneContainer } from '@/design'
 import type { Listing as L } from '@/domain/types'
 import { ms } from '../strings'
@@ -50,7 +49,8 @@ export function Gallery({ images, sold, title }: { images: string[]; sold?: bool
 export function WhyFairSheet({ listing, open, onOpenChange }: { listing: L; open: boolean; onOpenChange: (o: boolean) => void }) {
   const container = usePhoneContainer()
   const s = listing.suggestion
-  const ref = s ? Math.round(s.marketMedianTiyin * CONDITION_K[listing.condition]) : 0
+  // bozor medianiga nisbatan: 6 900 000 → 6 200 000 = 10%
+  const ref = s ? s.marketMedianTiyin : 0
   const pct = s && ref > 0 ? Math.max(0, Math.round(((ref - listing.priceTiyin) / ref) * 100)) : 0
   return (
     <BottomSheet open={open} onOpenChange={onOpenChange} container={container} snap="auto" eyebrow={ms.listing.whySub} title={uz.listing.whyFair}>
@@ -118,7 +118,7 @@ export default function ListingScreen() {
   const isMine = l.sellerId === meId
   const drop = l.previousPriceTiyin !== undefined && l.previousPriceTiyin > l.priceTiyin
   const disabled = sold || isMine
-  const pct = l.suggestion ? Math.max(0, Math.round(((Math.round(l.suggestion.marketMedianTiyin * CONDITION_K[l.condition]) - l.priceTiyin) / Math.round(l.suggestion.marketMedianTiyin * CONDITION_K[l.condition])) * 100)) : 0
+  const pct = l.suggestion && l.suggestion.marketMedianTiyin > 0 ? Math.max(0, Math.round(((l.suggestion.marketMedianTiyin - l.priceTiyin) / l.suggestion.marketMedianTiyin) * 100)) : 0
 
   const addToCart = async () => {
     if (inCart) { nav('/cart'); return }

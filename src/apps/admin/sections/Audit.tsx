@@ -9,6 +9,8 @@ import { useAppNavigate } from '@/lib/router'
 import { AuditKindBadge, IdLink } from '../components/ui'
 import { useQueryParam, useSectionLoading } from '../lib/hooks'
 import { fmtTime } from '../lib/format'
+import { manifestLabel } from '@/domain/clock'
+import { auditEntity, auditField, auditValue } from '../lib/audit'
 import { A, tt } from '../strings'
 
 const KINDS: AuditKind[] = ['status', 'money', 'price', 'fee', 'data', 'auth']
@@ -74,10 +76,10 @@ export function Audit() {
     { key: 'at', header: A.common.time, sortable: true, width: 130, render: (a) => <span className="tnum text-ink-2">{fmtTime(a.at)}</span> },
     { key: 'actorName', header: A.audit.actor, sortable: true, width: 170, render: (a) => <span className="flex flex-col leading-tight"><span className="truncate">{a.actorName}</span><span className="text-[11px] text-ink-3">{uz.admin.roles[a.role] ?? a.role}</span></span> },
     { key: 'kind', header: A.audit.kind, sortable: true, width: 100, render: (a) => <AuditKindBadge kind={a.kind} />, csv: (a) => a.kind },
-    { key: 'entity', header: A.audit.entity, sortable: true, width: 100, render: (a) => <span className="text-ink-2">{a.entity}</span> },
-    { key: 'entityId', header: A.audit.entityId, sortable: true, width: 120, render: (a) => { const to = entityTarget(a.entity, a.entityId); return to ? <IdLink to={to}>{a.entityId}</IdLink> : <span className="tnum">{a.entityId}</span> } },
-    { key: 'field', header: A.audit.field, sortable: true, width: 110, render: (a) => <span className="tnum">{a.field}</span> },
-    { key: 'change', header: A.audit.change, render: (a) => <span className="tnum"><span className="text-ink-3">{a.from ?? '—'}</span> → <span className={cn('font-medium', (a.kind === 'money' || a.kind === 'price') && 'text-gold', a.kind === 'fee' && 'text-brick', a.kind === 'auth' && 'text-blue')}>{a.to ?? '—'}</span></span>, csv: (a) => `${a.from ?? ''} → ${a.to ?? ''}` },
+    { key: 'entity', header: A.audit.entity, sortable: true, width: 110, render: (a) => <span className="text-ink-2">{auditEntity(a.entity)}</span>, csv: (a) => auditEntity(a.entity) },
+    { key: 'entityId', header: A.audit.entityId, sortable: true, width: 120, render: (a) => { const to = entityTarget(a.entity, a.entityId); const label = a.entity === 'manifest' ? manifestLabel(a.entityId) : a.entityId; return to ? <IdLink to={to}>{label}</IdLink> : <span className="tnum">{label}</span> } },
+    { key: 'field', header: A.audit.field, sortable: true, width: 120, render: (a) => <span>{auditField(a.field)}</span>, csv: (a) => auditField(a.field) },
+    { key: 'change', header: A.audit.change, render: (a) => <span className="tnum"><span className="text-ink-3">{auditValue(a, a.from)}</span> → <span className={cn('font-medium', (a.kind === 'money' || a.kind === 'price') && 'text-gold', a.kind === 'fee' && 'text-brick', a.kind === 'auth' && 'text-blue')}>{auditValue(a, a.to)}</span></span>, csv: (a) => `${auditValue(a, a.from)} → ${auditValue(a, a.to)}` },
     { key: 'note', header: A.audit.note, render: (a) => <span className="truncate text-ink-2" title={a.note}>{a.note ?? ''}</span> },
   ]
 
@@ -90,7 +92,7 @@ export function Audit() {
           <input type="search" role="searchbox" value={text} onChange={(e) => setText(e.target.value)} placeholder={A.audit.search} aria-label={A.audit.search} className="h-9 w-64 rounded-[10px] border border-line bg-card px-3 text-[13.5px] text-ink outline-none placeholder:text-ink-3 focus:border-blue/50 focus:ring-2 focus:ring-blue/20" />
         </form>
         <div className="w-40"><Select size="sm" value={kind} onChange={(e) => { setKind(e.target.value); setPage(0) }} aria-label={A.audit.kind} options={[{ value: '', label: `${A.audit.kind}: ${A.common.all}` }, ...KINDS.map((k) => ({ value: k, label: A.audit.kinds[k] }))]} /></div>
-        <div className="w-44"><Select size="sm" value={entity} onChange={(e) => { setEntity(e.target.value); setPage(0) }} aria-label={A.audit.entity} options={[{ value: '', label: `${A.audit.entity}: ${A.common.all}` }, ...entities.map((k) => ({ value: k, label: k }))]} /></div>
+        <div className="w-44"><Select size="sm" value={entity} onChange={(e) => { setEntity(e.target.value); setPage(0) }} aria-label={A.audit.entity} options={[{ value: '', label: `${A.audit.entity}: ${A.common.all}` }, ...entities.map((k) => ({ value: k, label: auditEntity(k) }))]} /></div>
         <div className="w-52"><Select size="sm" value={actor} onChange={(e) => { setActor(e.target.value); setPage(0) }} aria-label={A.audit.actor} options={[{ value: '', label: `${A.audit.actor}: ${A.common.all}` }, ...actors.map(([id, name]) => ({ value: id, label: name }))]} /></div>
         <span className="tnum text-[12.5px] text-ink-3">{tt(A.audit.entries, { n: rows.length })}</span>
       </div>
@@ -114,7 +116,7 @@ export function Audit() {
                         <span aria-hidden="true" className={cn('absolute left-0 top-1.5 h-[15px] w-[15px] rounded-full border-[2px] bg-card', a.kind === 'money' || a.kind === 'price' ? 'border-gold-fill bg-gold-soft' : a.kind === 'fee' ? 'border-brick bg-brick-soft' : a.kind === 'auth' ? 'border-blue bg-blue-soft' : 'border-line-strong')} />
                         <span className="tnum w-[100px] shrink-0 pt-0.5 text-[12px] text-ink-3">{fmtTime(a.at)}</span>
                         <div className="min-w-0 flex-1">
-                          <div className="flex flex-wrap items-center gap-2 text-[13.5px]"><AuditKindBadge kind={a.kind} /><Badge tone="outline" size="sm">{a.entity}</Badge>{to ? <button type="button" onClick={() => nav(to)} className="tnum font-medium text-blue hover:underline">{a.entityId}</button> : <span className="tnum font-medium">{a.entityId}</span>}<span className="text-ink-2">{a.field}:</span><span className="tnum text-ink-3">{a.from ?? '—'}</span><span>→</span><span className={cn('tnum font-semibold', (a.kind === 'money' || a.kind === 'price') && 'text-gold', a.kind === 'fee' && 'text-brick')}>{a.to ?? '—'}</span></div>
+                          <div className="flex flex-wrap items-center gap-2 text-[13.5px]"><AuditKindBadge kind={a.kind} /><Badge tone="outline" size="sm">{auditEntity(a.entity)}</Badge>{to ? <button type="button" onClick={() => nav(to)} className="tnum font-medium text-blue hover:underline">{a.entity === 'manifest' ? manifestLabel(a.entityId) : a.entityId}</button> : <span className="tnum font-medium">{a.entity === 'manifest' ? manifestLabel(a.entityId) : a.entityId}</span>}<span className="text-ink-2">{auditField(a.field)}:</span><span className="tnum text-ink-3">{auditValue(a, a.from)}</span><span>→</span><span className={cn('tnum font-semibold', (a.kind === 'money' || a.kind === 'price') && 'text-gold', a.kind === 'fee' && 'text-brick')}>{auditValue(a, a.to)}</span></div>
                           <div className="mt-0.5 text-[12.5px] text-ink-2">{a.actorName} <span className="text-ink-3">· {uz.admin.roles[a.role] ?? a.role}</span>{a.note && <span> · {a.note}</span>}</div>
                         </div>
                       </li>

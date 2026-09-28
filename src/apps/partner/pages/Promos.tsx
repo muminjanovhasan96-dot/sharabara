@@ -39,7 +39,7 @@ export function Promos() {
 
   return (
     <div>
-      <PageHeader eyebrow={c.name} title={P.promos.title}>{active.length} {P.promos.active.toLowerCase()}</PageHeader>
+      <PageHeader eyebrow={c.name} help={P.help.promos} title={P.promos.title}>{active.length} {P.promos.active.toLowerCase()}</PageHeader>
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <div>
           {loading ? <div className="grid gap-3 sm:grid-cols-2">{Array.from({ length: 4 }, (_, i) => <Skeleton key={i} height={120} />)}</div> : active.length === 0 ? (

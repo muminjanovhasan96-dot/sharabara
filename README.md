@@ -94,14 +94,20 @@ src/e2e      Playwright
 | Veb mobil ilova | React Native (Expo) — `domain/` va `api/` kontrakt qayta ishlatiladi |
 | Seed ma'lumot | Haqiqiy narx bazasi: 30 kunlik taqqoslash tarixi hisoblab boriladi |
 
+## v2 (2026-09-28): tushunarlilik + dizayn + audit tuzatishlari
+
+Batafsil: [docs/audit-v2/REPORT.md](docs/audit-v2/REPORT.md) va [docs/audit-v2/README.md](docs/audit-v2/README.md) (oldin/keyin skrinshotlar, 15 band, tushunarlilik jadvali).
+Qisqacha: har ekranda bir gaplik izoh va «?» paneli, jargon yo’q, bitta oltin tugma, admin «Bugun qilish kerak», sahnada tezlik/orqaga/spotlight, mobil tanishtiruv, iliq oq + oltin tokenlar, Bitter sarlavhalar, seed’da har kategoriya uchun 30 kunlik taqqoslash.
+
 ## Sifat holati (2026-09-28)
 
 | Tekshiruv | Natija |
 |---|---|
 | `tsc --noEmit` | toza |
 | `oxlint src` | toza |
-| Vitest | 121 test o'tdi; `src/domain` qamrovi: lines 99%, branches 97% |
+| Vitest | 121 test o'tdi |
 | Playwright e2e | 7/7: Oltin yo'l boshidan oxirigacha + 6 ta smoke (konsol xatosiz) |
+| Tushunarlilik skripti | 50 ekran: sarlavha, izoh/«?», oltin tugma, jargon — `docs/audit-v2/_ux-check.json` |
 | Lighthouse, admin (desktop) | Performance 99 · Accessibility 100 · Best practices 100 · CLS 0.017 |
 | Lighthouse, mobil `/m` (mobil emulyatsiya, sekin 4G) | Performance 85 · Accessibility 100 · Best practices 100 · CLS 0.001 · LCP 3.3 s |
 

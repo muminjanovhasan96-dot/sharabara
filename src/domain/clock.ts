@@ -52,7 +52,14 @@ export function formatDemoTime(iso: ISODate): string {
   const d = parseIso(iso)
   const day = format(d, 'd', { locale: uz })
   const month = format(d, 'MMM', { locale: uz }).toLowerCase().replace(/\.$/, '')
-  return `${day} ${month}, ${format(d, 'HH:mm')}`
+  return `${day}-${month}, ${format(d, 'HH:mm')}`
+}
+
+/** Kechki partiya identifikatori odam tilida: M-20260924 → «24-sen partiyasi» (ID o'zgarmaydi, faqat ko'rinish) */
+export function manifestLabel(id: string): string {
+  const m = /^M-(\d{4})(\d{2})(\d{2})$/.exec(id)
+  if (!m) return id
+  return `${formatDemoTime(`${m[1]}-${m[2]}-${m[3]}T00:00:00`).replace(/, 00:00$/, '')} partiyasi`
 }
 
 /** "27 sentabr" */

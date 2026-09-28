@@ -78,11 +78,11 @@ describe('suggestPrice — golden path', () => {
     expect(rows[3]).toMatchObject({ label: 'Tavsiya etilgan narx', amountTiyin: 620_000_000 })
     expect(breakdownIsConsistent(s)).toBe(true)
   })
-  it('confidence 0.85–0.89, n ≥ 10, fair flag', () => {
+  it('confidence 0.85–0.89, n ≥ 10, overpriced flag (6 600 000 is 6,5% above 6 200 000)', () => {
     expect(s.comparables.length).toBeGreaterThanOrEqual(10)
     expect(s.confidence).toBeGreaterThanOrEqual(0.85)
     expect(s.confidence).toBeLessThanOrEqual(0.89)
-    expect(s.flags).toEqual(['fair'])
+    expect(s.flags).toEqual(['overpriced'])
     expect(s.newRetailTiyin).toBe(950_000_000)
     expect(s.computedAt).toBe(NOW)
   })

@@ -1,4 +1,4 @@
-import { forwardRef, useId } from 'react'
+import { forwardRef, useId, useState } from 'react'
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react'
 import * as RSwitch from '@radix-ui/react-switch'
 import * as RCheckbox from '@radix-ui/react-checkbox'
@@ -399,5 +399,49 @@ export function RangeSlider({ value, onValueChange, onValueCommit, min, max, ste
         ))}
       </RSlider.Root>
     </div>
+  )
+}
+
+
+/* ─── DateInput: "kk.oo.yyyy" matn kiritish, qiymat ISO (yyyy-mm-dd) ─────── */
+export interface DateInputProps extends Omit<InputProps, 'value' | 'onChange' | 'type'> {
+  /** ISO sana yoki bo'sh */
+  value: string
+  onValueChange: (iso: string) => void
+}
+const isoToUz = (iso: string) => (/^\d{4}-\d{2}-\d{2}$/.test(iso) ? `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(0, 4)}` : '')
+const uzToIso = (v: string): string | null => {
+  const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(v.trim())
+  if (!m) return null
+  const d = Number(m[1]); const mo = Number(m[2]); const y = Number(m[3])
+  if (d < 1 || d > 31 || mo < 1 || mo > 12 || y < 2000 || y > 2100) return null
+  return `${m[3]}-${m[2]}-${m[1]}`
+}
+/** Brauzerning "dd/mm/yyyy" o'rniga o'zbekcha "kk.oo.yyyy" — nuqtalar o'zi qo'yiladi, bo'sh qoldirsa filtr o'chadi. */
+export function DateInput({ value, onValueChange, placeholder = 'kk.oo.yyyy', ...rest }: DateInputProps) {
+  const [text, setText] = useState(() => isoToUz(value))
+  const [seen, setSeen] = useState(value)
+  if (value !== seen) { setSeen(value); setText(isoToUz(value)) }
+  const commit = (v: string) => {
+    if (v.trim() === '') { if (value) onValueChange(''); return }
+    const iso = uzToIso(v)
+    if (iso && iso !== value) onValueChange(iso)
+  }
+  return (
+    <Input
+      {...rest}
+      type="text"
+      inputMode="numeric"
+      placeholder={placeholder}
+      value={text}
+      maxLength={10}
+      onChange={(e) => {
+        const digits = e.target.value.replace(/[^0-9]/g, '').slice(0, 8)
+        const v = digits.length > 4 ? `${digits.slice(0, 2)}.${digits.slice(2, 4)}.${digits.slice(4)}` : digits.length > 2 ? `${digits.slice(0, 2)}.${digits.slice(2)}` : digits
+        setText(v)
+        if (v.length === 10 || v === '') commit(v)
+      }}
+      onBlur={() => commit(text)}
+    />
   )
 }

@@ -26,7 +26,7 @@ export function Campaigns() {
   return (
     <div className="grid h-full min-h-0 grid-cols-[320px_minmax(0,1fr)]">
       <aside className="flex min-h-0 flex-col border-r border-line bg-card">
-        <div className="flex items-center justify-between border-b border-line px-3 py-2.5"><span className="eyebrow">{uz.admin.sections.campaigns} · {data.campaigns.length}</span><Button size="sm" variant="gold" leading={<Plus strokeWidth={1.75} />} disabled={!access.edit} onClick={() => setQid(null)}>{A.campaigns.new}</Button></div>
+        <div className="flex items-center justify-between border-b border-line px-3 py-2.5"><span className="eyebrow">{uz.admin.sections.campaigns} · {data.campaigns.length}</span><Button size="sm" variant="primary" leading={<Plus strokeWidth={1.75} />} disabled={!access.edit} onClick={() => setQid(null)}>{A.campaigns.new}</Button></div>
         <div className="scroll-thin min-h-0 flex-1 overflow-y-auto">
           {data.campaigns.length === 0 && <EmptyState compact icon="megaphone" title={A.campaigns.empty} />}
           {data.campaigns.map((c) => (

@@ -3,20 +3,21 @@ import type { HTMLAttributes, ReactNode } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-export type BadgeTone = 'neutral' | 'gold' | 'brick' | 'green' | 'blue' | 'ink' | 'outline'
+export type BadgeTone = 'neutral' | 'gold' | 'brick' | 'green' | 'blue' | 'info' | 'ink' | 'outline'
 export type BadgeSize = 'sm' | 'md'
 
 const TONE: Record<BadgeTone, string> = {
   neutral: 'bg-paper-2 text-ink-2 border-transparent',
-  gold: 'bg-gold-soft text-[#8a6400] border-transparent',
+  gold: 'bg-gold-soft text-[#7a5f10] border-transparent',
   brick: 'bg-brick-soft text-brick border-transparent',
   green: 'bg-green-soft text-green border-transparent',
   blue: 'bg-blue-soft text-blue border-transparent',
+  info: 'bg-info-soft text-info border-transparent',
   ink: 'bg-ink text-card border-ink',
   outline: 'bg-transparent text-ink-2 border-line-strong',
 }
 const DOT: Record<BadgeTone, string> = {
-  neutral: 'bg-ink-3', gold: 'bg-gold', brick: 'bg-brick', green: 'bg-green', blue: 'bg-blue', ink: 'bg-paper', outline: 'bg-ink-2',
+  neutral: 'bg-ink-3', gold: 'bg-gold', brick: 'bg-brick', green: 'bg-green', blue: 'bg-blue', info: 'bg-info', ink: 'bg-paper', outline: 'bg-ink-2',
 }
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {

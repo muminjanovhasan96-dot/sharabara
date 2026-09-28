@@ -1,3 +1,4 @@
+import type { HelpContent } from '@/design'
 /** Direktor paneli matnlari (uz lotin, ’ U+2019). */
 export const D = {
   title: 'Direktor paneli',
@@ -9,6 +10,13 @@ export const D = {
   periodLong: { bugun: 'bugun', hafta: 'so’nggi 7 kun', oy: 'so’nggi 30 kun' } as const,
   vsPrev: { bugun: 'kechaga nisbatan', hafta: 'o’tgan haftaga nisbatan', oy: '30 kunlik jami' } as const,
   tabs: { umumiy: 'Umumiy', savdo: 'Savdo', pul: 'Pul', ombor: 'Ombor', muammolar: 'Muammolar' } as const,
+  help: {
+    umumiy: { sub: 'Bugungi savdo, pul va muammolar — bir qarashda.', what: 'Rahbar uchun kunlik ko’rinish: nima sotildi, qancha pul himoyada, nima e’tibor talab qiladi.', steps: ['Davrni tanlang: bugun / hafta / oy', 'Raqamni bosib tafsilotga o’ting', '«Muammolar» sonini tekshiring'] },
+    savdo: { sub: 'Savdo kanallar, viloyatlar va kategoriyalar bo’yicha.', what: 'Qaysi kanal (Mall yoki e’lonlar), qaysi viloyat va kategoriya ko’proq sotyapti.', steps: ['Davrni tanlang', 'Grafik va reytinglarni ko’ring', 'Kerak bo’lsa admin hisobotiga o’ting'] },
+    pul: { sub: 'Pul oqimi: kirim, himoyadagi pul, sotuvchilarga to’lovlar.', what: 'Xaridor to’lovi tovar yetguncha himoyada turadi; juma kuni sotuvchilarga o’tkaziladi.', steps: ['Himoyadagi pul va to’langanini solishtiring', 'Kassa va karta kirimini ko’ring', 'Kutayotgan to’lovlar bo’lsa moliyaga o’ting'] },
+    ombor: { sub: 'Zaxira, kam qolgan tovarlar va aylanma.', what: 'Ombordagi tovar qancha kunga yetadi, nimalar tugayapti.', steps: ['Kam qolganlar ro’yxatini ko’ring', 'Tez sotiladigan tovarlarni tekshiring', 'Kompaniyaga kirim buyurtma bering'] },
+    muammolar: { sub: 'E’tibor talab qiladigan hamma narsa bir ro’yxatda.', what: 'Muddati o’tgan qaytarishlar, qadoqlanmagan yuklar, tasdiqlanmagan to’lovlar, narx qoidasidan o’tmagan tovarlar.', steps: ['Guruhni oching', 'Har bandni bosib admin bo’limiga o’ting', 'Hal bo’lganlar ro’yxatdan o’zi chiqadi'] },
+  } as Record<'umumiy' | 'savdo' | 'pul' | 'ombor' | 'muammolar', HelpContent>,
   theme: 'Tungi rejim',
   demoClock: 'Demo vaqti',
   all: 'Barchasi',
@@ -27,7 +35,7 @@ export const D = {
     mall: 'Mall',
     listings: 'E’lonlar',
     commission: 'Komissiya daromadi',
-    escrow: 'Escrow’dagi pul',
+    escrow: 'Himoyadagi pul',
     escrowHint: 'xaridor to’lagan, sotuvchiga hali o’tmagan',
     paidOut: { bugun: 'Bugun to’langan', hafta: 'Haftada to’langan', oy: 'Oyda to’langan' } as const,
     paidOutHint: 'sotuvchilarga o’tkazildi',
@@ -79,7 +87,7 @@ export const D = {
   money: {
     income: 'Kirim',
     incomeHint: 'xaridorlar to’lovi',
-    escrow: 'Escrow',
+    escrow: 'Himoyadagi pul',
     escrowHint: 'ushlab turilgan',
     outcome: 'Chiqim',
     outcomeHint: 'sotuvchilarga to’lovlar',
@@ -147,7 +155,7 @@ export const D = {
       overpriced: 'Kompaniya narxni bozor darajasiga tushirsin, aks holda tovar yopiladi.',
       moderation: 'Moderator navbatni tozalasin — sotuvchi kutmoqda.',
     } as const,
-    sla: 'SLA',
+    sla: 'Javob muddati',
     slaLeft: '{h} soat qoldi',
     slaOver: '{h} soat o’tib ketdi',
     daysInTransit: '{n} kun yo’lda',

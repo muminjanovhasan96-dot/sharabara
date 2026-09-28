@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Badge, type BadgeTone } from '@/design'
+import { Badge, HelpPopover, type BadgeTone, type HelpContent } from '@/design'
 import { percent } from '@/domain/money'
 import type { Product, SubOrderStatus, PayoutStatus } from '@/domain/types'
 import { uz } from '@/i18n/uz'
@@ -7,13 +7,14 @@ import { cn } from '@/lib/utils'
 import { P } from './strings'
 
 /** Sahifa sarlavhasi: eyebrow + Inter title + o'ng tomonda amallar. */
-export function PageHeader({ eyebrow, title, actions, children }: { eyebrow?: ReactNode; title: ReactNode; actions?: ReactNode; children?: ReactNode }) {
+export function PageHeader({ eyebrow, title, actions, children, help }: { eyebrow?: ReactNode; title: ReactNode; actions?: ReactNode; children?: ReactNode; help?: HelpContent }) {
   return (
     <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
       <div className="min-w-0">
         {eyebrow && <div className="eyebrow mb-1">{eyebrow}</div>}
-        <h1 className="m-0 font-display text-[24px] leading-tight tracking-[-0.02em] text-ink">{title}</h1>
-        {children && <div className="mt-1 text-[14px] text-ink-2">{children}</div>}
+        <div className="flex items-center gap-1.5"><h1 className="m-0 font-display text-[24px] leading-tight tracking-[-0.02em] text-ink">{title}</h1>{help && <HelpPopover title={typeof title === 'string' ? title : ''} help={help} />}</div>
+        {help && <div className="mt-1 text-[14px] text-ink-2">{help.sub}</div>}
+        {children && <div className="mt-1 text-[13px] text-ink-3">{children}</div>}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
     </div>

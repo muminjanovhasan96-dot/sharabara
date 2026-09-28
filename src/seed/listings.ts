@@ -1,9 +1,9 @@
 import type { Category, Condition, ISODate, Listing, ListingStatus, User } from '../domain/types'
-import { MODEL_DICTIONARY, type ModelEntry } from '../domain/checks/models'
+import { MODEL_DICTIONARY, findModel, type ModelEntry } from '../domain/checks/models'
 import { recognize } from '../domain/checks/recognize'
 import { suggestPrice, fromA, CONDITION_K } from '../domain/pricing'
 import { calcFee } from '../domain/fees'
-import { addDays, addHours, setHour } from '../domain/clock'
+import { addDays, addHours, addMinutes, setHour } from '../domain/clock'
 import { mulRate, roundToStep } from '../domain/money'
 import type { Rng } from './rng'
 import { CATEGORY_SLUG, CONDITION_PHRASE, DISTRICTS, PHONE_COLORS, TEMPLATES } from './static'
@@ -13,11 +13,21 @@ import type { FeeRuleSet } from '../domain/types'
 const S = 100
 const STORAGES = ['64 GB', '128 GB', '256 GB', '512 GB']
 
-/** Status plan for the 160 catalogue listings (~45% published). */
+/** Status plan for the 160 catalogue listings (~45% published). Navbat (in_review) 34 ta — aralash: mos / qimmat / o'xshash kam / IMEI. */
 const STATUS_PLAN: [ListingStatus, number][] = [
-  ['published', 72], ['sold', 20], ['in_review', 14], ['offer_sent', 10], ['submitted', 10], ['expired', 10],
-  ['reserved', 6], ['rejected_by_admin', 6], ['returned_for_edit', 6], ['ai_checked', 3], ['draft', 3],
+  ['published', 72], ['sold', 20], ['in_review', 34], ['offer_sent', 10], ['expired', 10],
+  ['reserved', 6], ['rejected_by_admin', 4], ['returned_for_edit', 4],
 ]
+/** Narx tahlili navbatidagi rol: ~40% mos, ~30% qimmat, ~20% o'xshash e'lon kam, ~10% IMEI muammo. */
+type QueueRole = 'fair' | 'over' | 'low' | 'imei'
+const QUEUE_MIX: QueueRole[] = [...Array<QueueRole>(14).fill('fair'), ...Array<QueueRole>(10).fill('over'), ...Array<QueueRole>(7).fill('low'), ...Array<QueueRole>(3).fill('imei')]
+const DICT_CATS = ['telefonlar', 'noutbuklar', 'televizorlar', 'maishiy']
+const NO_DICT_CATS = ['mebel', 'kiyim', 'sport', 'bolalar']
+/** Sarlavhadagi xotira belgisi — pricing.storageOf bilan bir xil qoida. */
+function storageToken(title: string): string | undefined {
+  const m = /\b(\d{1,4})\s?(gb|tb)\b/i.exec(title)
+  return m ? `${m[1]} ${m[2].toUpperCase()}` : undefined
+}
 
 export function imagesFor(categoryId: string, r: Rng, n = 3): string[] {
   const slug = CATEGORY_SLUG[categoryId] ?? 'phone'
@@ -138,17 +148,30 @@ export function makeListings(r: Rng, now: ISODate, users: User[], categories: Ca
   const iphone13max = MODEL_DICTIONARY.find((m) => m.id === 'iphone-13-pro-max')!
 
   const listings: Listing[] = []
+  const queueRole = new Map<string, QueueRole>()
+  const queueMix = r.shuffle(QUEUE_MIX)
+  let queued = 0
   for (let i = 0; i < 160; i++) {
     const status = shuffledStatuses[i]
     let categoryId = catPlan[i]
     let force: ModelEntry | undefined
     if (i < 8) { categoryId = 'telefonlar'; force = i < 6 ? iphone13 : iphone13max }
-    const d = draftFor(categoryId, r, force)
     const forcedStatus: ListingStatus = i < 8 ? 'published' : status
+    // navbatdagi e'lon: rolga qarab kategoriya (o'xshash e'lon kam → lug'atsiz kategoriya, IMEI → telefon)
+    let role: QueueRole | undefined
+    if (forcedStatus === 'in_review') {
+      role = queueMix[queued % queueMix.length]; queued += 1
+      if (role === 'low') categoryId = NO_DICT_CATS[queued % NO_DICT_CATS.length]
+      else if (role === 'imei') categoryId = 'telefonlar'
+      else if (!DICT_CATS.includes(categoryId)) categoryId = DICT_CATS[queued % DICT_CATS.length]
+    }
+    const d = draftFor(categoryId, r, force)
     const seller = r.pick(sellers)
     const regionId = seller.regionId
-    const ageDays = r.int(0, 60)
-    const createdAt = setHour(addDays(now, -ageDays), r.int(8, 22), r.int(0, 59))
+    // navbatdagilar 5 daqiqa – 6 soat oldin yuborilgan; qolganlari 60 kungacha
+    const inQueue = forcedStatus === 'in_review'
+    const ageDays = inQueue ? 0 : r.int(0, 60)
+    const createdAt = inQueue ? addMinutes(now, -r.int(5, 360)) : setHour(addDays(now, -ageDays), r.int(8, 22), r.int(0, 59))
     const id = `L-${String(10_000 + i * 37 + r.int(0, 30)).padStart(5, '0')}`
     const asking = d.askingSum * S
     const l: Listing = {
@@ -158,20 +181,34 @@ export function makeListings(r: Rng, now: ISODate, users: User[], categories: Ca
       createdAt, stats: stats(r, Math.min(ageDays, 14)),
     }
     if (d.imei) l.imei = d.imei
+    if (role === 'imei' && l.imei) l.imei = `${l.imei.slice(0, 14)}0`
+    else if (role && l.imei && l.imei.endsWith('0')) l.imei = `${l.imei.slice(0, 14)}7`
+    if (role) queueRole.set(id, role)
     const districts = DISTRICTS[regionId]
     if (districts) l.district = r.pick(districts)
-    if (forcedStatus !== 'draft') l.submittedAt = addHours(createdAt, r.int(0, 3))
+    if (forcedStatus !== 'draft') l.submittedAt = inQueue ? addMinutes(createdAt, r.int(1, 4)) : addHours(createdAt, r.int(0, 3))
     listings.push(l)
   }
+
+  // 30 kunlik taqqoslash tarixi: lug'atdagi har (model, xotira) uchun 5–8 ta o'xshash e'lon
+  const catHistory = makeCategoryHistory(r, now, sellers.map((u) => u.id), listings)
+  const history = [...listings, ...catHistory]
 
   // Second pass: recognition, suggestions, offers, publication timestamps.
   for (const l of listings) {
     const cat = catById.get(l.categoryId)!
-    if (l.status === 'draft' || l.status === 'submitted') continue
+    if (l.status === 'draft') continue
     l.specs = recognize(l, cat, MODEL_DICTIONARY)
-    if (l.status === 'ai_checked') continue
     const entry = MODEL_DICTIONARY.find((m) => m.model === l.specs?.model)
-    const suggestion = suggestPrice({ listing: l, category: cat, history: listings, newRetailTiyin: entry?.newRetailTiyin ?? null, now })
+    let suggestion = suggestPrice({ listing: l, category: cat, history, newRetailTiyin: entry?.newRetailTiyin ?? null, now })
+    // navbatdagi e'lonning so'ralgan narxi rolga mos: «mos» ±2,5%, «qimmat» +5…+20%
+    const role = queueRole.get(l.id)
+    if (role === 'fair' || role === 'imei' || role === 'over') {
+      const k = role === 'over' ? 1 + r.float(0.05, 0.2) : 1 + r.float(-0.025, 0.025)
+      l.askingTiyin = roundToStep(mulRate(suggestion.suggestedTiyin, k), 1_000_000)
+      l.priceTiyin = l.askingTiyin
+      suggestion = suggestPrice({ listing: l, category: cat, history, newRetailTiyin: entry?.newRetailTiyin ?? null, now })
+    }
     l.suggestion = suggestion
     if (l.status === 'in_review' || l.status === 'returned_for_edit' || l.status === 'rejected_by_admin') {
       if (l.status === 'rejected_by_admin') l.rejectReason = r.pick(['Rasmlar internetdan olingan', "IMEI ro'yxatda shubhali", 'Taqiqlangan tovar'])
@@ -203,7 +240,58 @@ export function makeListings(r: Rng, now: ISODate, users: User[], categories: Ca
 
   const historical = makeHistoricalComparables(r, now, sellers.map((u) => u.id))
   const golden = makeGolden(now)
-  return { listings: [...listings, ...historical, golden], golden }
+  return { listings: [...listings, ...catHistory, ...historical, golden], golden }
+}
+
+/**
+ * Har kategoriya uchun 30 kunlik taqqoslash tarixi. Katalogdagi lug'at modeli bor har (model, xotira) juftligi
+ * uchun 5–8 ta sotilgan/faol/eskirgan o'xshash e'lon; A holatga keltirilgan narxlar yangi narxning
+ * 60–72% atrofida ±6% tarqoqlik bilan — narx tahlili «O'xshash e'lon kam» emas, haqiqiy taqqoslash beradi.
+ */
+export function makeCategoryHistory(r: Rng, now: ISODate, sellerIds: string[], catalogue: Listing[]): Listing[] {
+  const keys = new Map<string, { entry: ModelEntry; sample: Listing }>()
+  for (const l of catalogue) {
+    if (!DICT_CATS.includes(l.categoryId)) continue
+    const entry = findModel(l.title, MODEL_DICTIONARY)
+    if (!entry || entry.id === 'iphone-13-pro') continue
+    const key = `${entry.model}|${storageToken(l.title) ?? ''}`
+    if (!keys.has(key)) keys.set(key, { entry, sample: l })
+  }
+  const out: Listing[] = []
+  let n = 0
+  const conds: Condition[] = ['A', 'B', 'B', 'B', 'C', 'A', 'B', 'C']
+  const kinds: ('sold' | 'active' | 'stale')[] = ['sold', 'sold', 'active', 'sold', 'stale', 'active', 'sold', 'sold']
+  for (const { entry, sample } of keys.values()) {
+    const ratio = r.float(0.6, 0.72)
+    const targetA = roundToStep(mulRate(entry.newRetailTiyin, ratio), 1_000_000)
+    const count = r.int(5, 8)
+    for (let i = 0; i < count; i++) {
+      n += 1
+      const cond = conds[(i + n) % conds.length]
+      const kind = kinds[(i + n) % kinds.length]
+      const priceA = roundToStep(mulRate(targetA, 1 + r.float(-0.06, 0.06)), 1_000_000)
+      const price = fromA(priceA, cond)
+      const daysAgo = kind === 'stale' ? r.int(16, 28) : r.int(2, 14)
+      const published = setHour(addDays(now, -daysAgo), r.int(9, 21), r.int(0, 59))
+      const status: ListingStatus = kind === 'sold' ? 'sold' : kind === 'active' ? 'published' : (n % 2 ? 'expired' : 'published')
+      // sarlavha: model va xotira namunaviy e'londan (taqqoslash kaliti bir xil), holat iborasi va rang o'zgaradi
+      let title = sample.title.replace(/, [^,]*$/, `, ${r.pick(CONDITION_PHRASE[cond])}`)
+      if (sample.categoryId === 'telefonlar') { const color = r.pick(PHONE_COLORS); title = title.replace(/, ([^,]*), ([^,]*)$/, `, ${color}, $2`) }
+      const l: Listing = {
+        id: `HC-${String(n).padStart(3, '0')}`, sellerId: sellerIds[n % sellerIds.length], categoryId: sample.categoryId,
+        title, description: `${entry.model}. ${cond} holat. Tarixiy o'xshash e'lon (namuna).`,
+        images: imagesFor(sample.categoryId, r, 2), attributes: { ...sample.attributes },
+        regionId: r.pick(['toshkent_sh', 'toshkent_sh', 'samarqand', 'andijon', 'fargona', 'namangan', 'buxoro']), condition: cond,
+        askingTiyin: price, priceTiyin: price, status, priceVerified: true,
+        createdAt: addHours(published, -5), submittedAt: addHours(published, -4), publishedAt: published,
+        stats: { views: 30 + n, saves: n % 5, chats: n % 3, viewsByDay: viewsByDay(r, 30 + n) },
+        historical: true,
+      }
+      if (status === 'sold') l.soldAt = addDays(published, Math.min(daysAgo, 1 + (n % 5)))
+      out.push(l)
+    }
+  }
+  return out
 }
 
 /**

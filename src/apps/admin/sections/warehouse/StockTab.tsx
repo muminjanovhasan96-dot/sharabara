@@ -71,7 +71,7 @@ export function StockTab({ wh, canEdit }: { wh: WhFilter; canEdit: boolean }) {
         toolbarLeft={<div className="flex flex-wrap items-center gap-2">
           <SearchInput size="sm" value={q} onChange={setQ} placeholder={S.search} className="w-52" aria-label={S.search} />
           <div className="w-48"><Select size="sm" value={company} onChange={(e) => setCompany(e.target.value)} aria-label={S.company} options={[{ value: '', label: S.company_all }, ...data.companies.map((c) => ({ value: c.id, label: c.name }))]} /></div>
-          <div className="w-48"><Select size="sm" value={cat} onChange={(e) => setCat(e.target.value)} aria-label={A.common.category} options={[{ value: '', label: S.category_all }, ...data.categories.filter((c) => data.products.some((p) => p.categoryId === c.id)).map((c) => ({ value: c.id, label: c.name }))]} /></div>
+          <div className="w-60"><Select size="sm" value={cat} onChange={(e) => setCat(e.target.value)} aria-label={A.common.category} options={[{ value: '', label: S.category_all }, ...data.categories.filter((c) => data.products.some((p) => p.categoryId === c.id)).map((c) => ({ value: c.id, label: c.name }))]} /></div>
           <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-[10px] border border-line bg-card px-2.5 text-[13px] text-ink"><Switch size="sm" checked={onlyLow} onCheckedChange={setOnlyLow} aria-label={S.onlyLow} />{S.onlyLow}{lowCount > 0 && <Badge tone="brick" size="sm">{lowCount}</Badge>}</label>
           <span className="tnum text-[12.5px] text-ink-3">{filtered.length} / {rows.length}</span>
         </div>}

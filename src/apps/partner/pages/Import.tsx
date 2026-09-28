@@ -65,7 +65,7 @@ function ImportInner() {
 
   return (
     <div>
-      <PageHeader eyebrow={c.name} title={P.import.title} actions={<Button variant="secondary" leading={<Download />} onClick={downloadTemplate}>{P.import.template}</Button>}>{P.import.lead}</PageHeader>
+      <PageHeader eyebrow={c.name} help={P.help.import} title={P.import.title} actions={<Button variant="secondary" leading={<Download />} onClick={downloadTemplate}>{P.import.template}</Button>}>{P.import.lead}</PageHeader>
 
       <ol className="mb-5 flex list-none flex-wrap gap-2 p-0" aria-label="Qadamlar">
         {P.import.steps.map((s, i) => (
@@ -94,11 +94,11 @@ function ImportInner() {
           </Card>
           <Card padding="md" className="flex flex-col gap-3">
             <CardHeader eyebrow="Demo" title={P.import.sample} />
-            <p className="m-0 text-[14px] leading-relaxed text-ink-2">24 qatorli namuna fayl: 18 ta yangi tovar, 4 ta mavjud SKU (yangilanadi) va 3 ta xatoli qator. Fayl xotirada yaratiladi va oddiy yuklash kabi ishlanadi.</p>
+            <p className="m-0 text-[14px] leading-relaxed text-ink-2">24 qatorli namuna fayl: 18 ta yangi tovar, 4 ta mavjud tovar kodi (yangilanadi) va 3 ta xatoli qator. Fayl xotirada yaratiladi va oddiy yuklash kabi ishlanadi.</p>
             <Button variant="secondary" leading={<FlaskConical />} onClick={useSample}>{P.import.sample}</Button>
             <div className="mt-2 border-t border-line pt-3 text-[13px] text-ink-3">
               <div className="eyebrow mb-1">Shablon ustunlari</div>
-              SKU · Nomi · Narx (so’m) · Zaxira · Kategoriya · Kafolat (oy) · Tavsif
+              Tovar kodi · Nomi · Narx (so’m) · Zaxira · Kategoriya · Kafolat (oy) · Tavsif
             </div>
           </Card>
         </div>

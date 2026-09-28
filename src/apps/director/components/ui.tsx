@@ -196,7 +196,7 @@ export function Donut({ data, children, className }: {
             {data.map((c) => <Cell key={c.key} fill={c.color} />)}
           </Pie>
           <Tooltip content={({ active, payload }) => active && payload?.length ? (
-            <div className={chartTheme.tooltipClass}><div className={chartTheme.tooltipLabelClass}>{String(payload[0].name)}</div><div className="tnum">{formatMoney(Number(payload[0].value))}</div></div>
+            <div className={chartTheme.tooltipClass}><div className={chartTheme.tooltipLabelClass}>{String(payload[0].name)}</div><div className="tnum">{formatMoney(Number(payload[0].value), { compact: true })}</div></div>
           ) : null} />
         </PieChart>
       </ResponsiveContainer>

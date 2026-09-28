@@ -66,8 +66,8 @@ export function Shipments({ narrow }: { narrow: boolean }) {
                       </div>
                     </div>
                     <div className={cn('flex shrink-0 gap-2', narrow && 'flex-wrap')}>
-                      {so.status === 'in_transit' && <Button data-testid={TID.bAtBranch} data-id={so.id} size="lg" variant="gold" leading={<Building2 />} loading={busy} onClick={() => void run(so.id, () => api.logistics.btsArrivedAtBranch(so.id), B.shipments.atBranchDone)} className="!h-14 !text-[16px]">{B.shipments.atBranch}</Button>}
-                      {so.status === 'at_branch' && <Button data-testid={TID.bDelivered} data-id={so.id} size="lg" variant="gold" leading={<CircleCheck />} loading={busy} onClick={() => void run(so.id, () => api.logistics.btsDelivered(so.id), B.shipments.deliveredDone)} className="!h-14 !text-[16px]">{B.shipments.delivered}</Button>}
+                      {so.status === 'in_transit' && <Button data-testid={TID.bAtBranch} data-id={so.id} size="lg" variant="primary" leading={<Building2 />} loading={busy} onClick={() => void run(so.id, () => api.logistics.btsArrivedAtBranch(so.id), B.shipments.atBranchDone)} className="!h-14 !text-[16px]">{B.shipments.atBranch}</Button>}
+                      {so.status === 'at_branch' && <Button data-testid={TID.bDelivered} data-id={so.id} size="lg" variant="primary" leading={<CircleCheck />} loading={busy} onClick={() => void run(so.id, () => api.logistics.btsDelivered(so.id), B.shipments.deliveredDone)} className="!h-14 !text-[16px]">{B.shipments.delivered}</Button>}
                       {so.status !== 'delivered' && <Button size="lg" variant="secondary" leading={<TriangleAlert />} disabled={busy} onClick={() => setProblemId(so.id)} className="!h-14 !text-[16px] text-brick">{B.shipments.problem}</Button>}
                     </div>
                   </div>

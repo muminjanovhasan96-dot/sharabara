@@ -1,0 +1,488 @@
+[
+ {
+  "name": "d-landing",
+  "gold": [],
+  "h1": [
+   "Sharabara"
+  ],
+  "help": 0,
+  "jargon": []
+ },
+ {
+  "name": "d-stage",
+  "gold": [
+   "Oltin yo’l",
+   "Tekshirilganlarni ko’rish"
+  ],
+  "h1": [
+   "Boshqaruv paneli"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-admin-dashboard",
+  "gold": [],
+  "h1": [
+   "Boshqaruv paneli"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-admin-director",
+  "gold": [],
+  "h1": [
+   "Direktor paneli"
+  ],
+  "help": 2,
+  "jargon": []
+ },
+ {
+  "name": "d-admin-moderation",
+  "gold": [
+   "TasdiqlashA"
+  ],
+  "h1": [
+   "Moderatsiya"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-admin-pricing",
+  "gold": [
+   "Sotuvchiga taklif yuborish"
+  ],
+  "h1": [
+   "Narx tahlili"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-admin-categories",
+  "gold": [
+   "Saqlash"
+  ],
+  "h1": [
+   "Kategoriyalar"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-admin-orders",
+  "gold": [],
+  "h1": [
+   "Buyurtmalar"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-admin-logistics",
+  "gold": [
+   "Kechki partiyani BTS’ga topshi"
+  ],
+  "h1": [
+   "Logistika · BTS"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-admin-warehouse",
+  "gold": [
+   "Yangi tovar"
+  ],
+  "h1": [
+   "Ombor"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-admin-payments",
+  "gold": [
+   "Juma to’lovi"
+  ],
+  "h1": [
+   "To’lovlar"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-admin-fees",
+  "gold": [
+   "E’lon qilish"
+  ],
+  "h1": [
+   "Xizmat haqi qoidalari"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-admin-returns",
+  "gold": [],
+  "h1": [
+   "Qaytarish va nizolar"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-admin-companies",
+  "gold": [
+   "Yangi kompaniya"
+  ],
+  "h1": [
+   "Kompaniyalar"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-admin-products",
+  "gold": [],
+  "h1": [
+   "Tovarlar va zaxira"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-admin-users",
+  "gold": [],
+  "h1": [
+   "Foydalanuvchilar"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-admin-campaigns",
+  "gold": [
+   "Hozir yuborish"
+  ],
+  "h1": [
+   "Push va bannerlar"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-admin-reports",
+  "gold": [],
+  "h1": [
+   "Hisobotlar"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-admin-roles",
+  "gold": [],
+  "h1": [
+   "Rollar"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-admin-audit",
+  "gold": [],
+  "h1": [
+   "Audit log"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-direktor-umumiy",
+  "gold": [],
+  "h1": [
+   "Xayrli kun, Jahongir"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-direktor-savdo",
+  "gold": [],
+  "h1": [
+   "Xayrli kun, Jahongir"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-direktor-pul",
+  "gold": [],
+  "h1": [
+   "Xayrli kun, Jahongir"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-direktor-ombor",
+  "gold": [],
+  "h1": [
+   "Xayrli kun, Jahongir"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-direktor-muammolar",
+  "gold": [],
+  "h1": [
+   "Xayrli kun, Jahongir"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-partner-overview",
+  "gold": [],
+  "h1": [
+   "Umumiy ko’rinish"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-partner-products",
+  "gold": [],
+  "h1": [
+   "Tovarlar va zaxira"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-partner-import",
+  "gold": [
+   "Fayl tanlash"
+  ],
+  "h1": [
+   "Excel orqali yuklash"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-partner-orders",
+  "gold": [],
+  "h1": [
+   "Buyurtmalar"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-partner-promos",
+  "gold": [
+   "Aksiya yaratish"
+  ],
+  "h1": [
+   "Aksiyalar"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-partner-billing",
+  "gold": [
+   "Akt-sverka"
+  ],
+  "h1": [
+   "Hisob-kitob"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-partner-reports",
+  "gold": [],
+  "h1": [
+   "Hisobotlar"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-partner-api",
+  "gold": [
+   "Yangi kalit"
+  ],
+  "h1": [
+   "API kalitlari"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-partner-contract",
+  "gold": [],
+  "h1": [
+   "Shartnoma va hujjatlar"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-bts-today",
+  "gold": [
+   "Qabul qilish"
+  ],
+  "h1": [
+   "BTS · Sharabara hamkor paneli · Bugungi partiya"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-bts-shipments",
+  "gold": [],
+  "h1": [
+   "BTS · Sharabara hamkor paneli · Yuklar"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-bts-branches",
+  "gold": [],
+  "h1": [
+   "BTS · Sharabara hamkor paneli · Filiallar"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "d-bts-history",
+  "gold": [],
+  "h1": [
+   "BTS · Sharabara hamkor paneli · Tarix"
+  ],
+  "help": 1,
+  "jargon": []
+ },
+ {
+  "name": "m-home",
+  "gold": [
+   "Tekshirilganlarni ko’rish"
+  ],
+  "h1": [],
+  "help": 0,
+  "jargon": []
+ },
+ {
+  "name": "m-catalog",
+  "gold": [],
+  "h1": [
+   "Katalog"
+  ],
+  "help": 0,
+  "jargon": []
+ },
+ {
+  "name": "m-listing",
+  "gold": [
+   "Savatga"
+  ],
+  "h1": [
+   "Telefonlar",
+   "iPhone 13 Pro, 256 GB, Sierra Blue"
+  ],
+  "help": 0,
+  "jargon": []
+ },
+ {
+  "name": "m-cart",
+  "gold": [],
+  "h1": [
+   "Savat"
+  ],
+  "help": 0,
+  "jargon": []
+ },
+ {
+  "name": "m-checkout",
+  "gold": [],
+  "h1": [
+   "Rasmiylashtirish"
+  ],
+  "help": 0,
+  "jargon": []
+ },
+ {
+  "name": "m-orders",
+  "gold": [],
+  "h1": [
+   "Buyurtmalarim"
+  ],
+  "help": 0,
+  "jargon": []
+ },
+ {
+  "name": "m-sell",
+  "gold": [
+   "E’lon joylash"
+  ],
+  "h1": [
+   "Sotish"
+  ],
+  "help": 0,
+  "jargon": []
+ },
+ {
+  "name": "m-wallet",
+  "gold": [
+   "Yechib olish"
+  ],
+  "h1": [
+   "Hamyon"
+  ],
+  "help": 0,
+  "jargon": []
+ },
+ {
+  "name": "m-profile",
+  "gold": [],
+  "h1": [
+   "Profil"
+  ],
+  "help": 0,
+  "jargon": []
+ },
+ {
+  "name": "m-notifications",
+  "gold": [],
+  "h1": [
+   "Bildirishnomalar"
+  ],
+  "help": 0,
+  "jargon": []
+ },
+ {
+  "name": "m-mall",
+  "gold": [],
+  "h1": [
+   "Sharabara Mall"
+  ],
+  "help": 0,
+  "jargon": []
+ },
+ {
+  "name": "m-search",
+  "gold": [],
+  "h1": [],
+  "help": 0,
+  "jargon": []
+ }
+]

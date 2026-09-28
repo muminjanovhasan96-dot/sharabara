@@ -27,7 +27,7 @@ export interface ToastAction { label: string; onClick: () => void }
 export interface ToastOptions {
   description?: ReactNode
   tone?: ToastTone
-  /** ms; default 3500 (errors 5000) */
+  /** ms; default 5000 */
   duration?: number
   action?: ToastAction
   id?: string
@@ -45,7 +45,7 @@ export interface PushItem { id: string; title: ReactNode; body?: ReactNode; app:
 export const pushStore = createStore<PushItem>()
 
 /** Bir vaqtda ko'rinadigan toastlar soni (sahnada ustma-ust yig'ilib qolmasin). */
-const MAX_VISIBLE = 2
+const MAX_VISIBLE = 3
 
 function base(channel: string, title: ReactNode, opts: ToastOptions = {}, tone: ToastTone = opts.tone ?? 'neutral'): string {
   const id = opts.id ?? uid('t')
@@ -53,7 +53,7 @@ function base(channel: string, title: ReactNode, opts: ToastOptions = {}, tone: 
   // keep the newest MAX_VISIBLE per channel
   const same = toastStore.getSnapshot().filter((t) => t.channel === ch)
   for (const old of same.slice(0, Math.max(0, same.length - (MAX_VISIBLE - 1)))) toastStore.remove(old.id)
-  toastStore.add({ id, title, description: opts.description, tone, duration: opts.duration ?? (tone === 'error' ? 5000 : 3500), action: opts.action, channel: ch }, 12)
+  toastStore.add({ id, title, description: opts.description, tone, duration: opts.duration ?? 5000, action: opts.action, channel: ch }, 12)
   return id
 }
 
@@ -87,8 +87,8 @@ export function usePushes(): PushItem[] { return useSyncExternalStore(pushStore.
 
 /* ─── Toast card ─────────────────────────────────────────────────────── */
 const TONE_ICON: Record<ToastTone, LucideIcon | null> = { neutral: null, success: CircleCheck, info: Info, error: CircleAlert, gold: null }
-const TONE_COLOR: Record<ToastTone, string> = { neutral: 'text-ink-2', success: 'text-green', info: 'text-blue', error: 'text-brick', gold: 'text-gold' }
-const TONE_BAR: Record<ToastTone, string> = { neutral: 'bg-ink-3', success: 'bg-green', info: 'bg-blue', error: 'bg-brick', gold: 'bg-gold' }
+const TONE_COLOR: Record<ToastTone, string> = { neutral: 'text-ink-2', success: 'text-green', info: 'text-info', error: 'text-brick', gold: 'text-gold' }
+const TONE_BAR: Record<ToastTone, string> = { neutral: 'bg-ink-3', success: 'bg-green', info: 'bg-info', error: 'bg-brick', gold: 'bg-gold' }
 
 function ToastCard({ item, onDismiss, closeLabel }: { item: ToastItem; onDismiss: () => void; closeLabel: string }) {
   useEffect(() => {

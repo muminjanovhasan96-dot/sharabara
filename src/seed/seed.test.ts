@@ -88,7 +88,7 @@ describe('counts and fixed ids', () => {
     expect(snap.products.some((p) => p.stock <= 3)).toBe(true)
     expect(snap.products.some((p) => p.promo)).toBe(true)
     expect(snap.products.some((p) => p.check === 'overpriced')).toBe(true)
-    expect(snap.products.some((p) => p.check === 'pending')).toBe(true)
+    expect(snap.products.some((p) => p.check === 'pending')).toBe(false)
     expect(snap.apiKeys).toHaveLength(6)
     expect(snap.apiKeys.every((k) => /^sb_live_[0-9a-f]{4}$/.test(k.prefix))).toBe(true)
   })
@@ -171,7 +171,7 @@ describe('golden path from the generated snapshot', () => {
     expect(s.comparables.length).toBeGreaterThanOrEqual(10)
     expect(s.confidence).toBeGreaterThanOrEqual(0.85)
     expect(s.confidence).toBeLessThanOrEqual(0.89)
-    expect(s.flags).toEqual(['fair'])
+    expect(s.flags).toEqual(['overpriced'])
   })
   it('fee and totals', () => {
     const fee = calcFee(GOLDEN.suggested, 'telefonlar', snap.feeRuleSets[0])

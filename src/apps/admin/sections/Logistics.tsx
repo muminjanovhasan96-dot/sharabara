@@ -6,12 +6,12 @@ import { useNow, useStore } from '@/store'
 import { api } from '@/api'
 import { uz } from '@/i18n/uz'
 import { TID } from '@/lib/testids'
-import { dateKey, setHour, parseIso } from '@/domain/clock'
+import { dateKey, manifestLabel, setHour, parseIso } from '@/domain/clock'
 import type { Manifest, Order, SubOrder } from '@/domain/types'
 import { AdminModal, BulkBar, IdLink, ManifestStatusBadge, Panel, SubStatusBadge } from '../components/ui'
 import { useAccess } from '../lib/sections'
 import { useAct, useQueryParam, useSectionLoading } from '../lib/hooks'
-import { branchOf, regionName, userName, sellerLabel } from '../lib/format'
+import { branchOf, fmtDate, regionName, userName, sellerLabel } from '../lib/format'
 import { A } from '../strings'
 
 interface Row { so: SubOrder; o: Order }
@@ -50,16 +50,16 @@ export function Logistics() {
 
   const cols: Column<Row>[] = [
     { key: 'id', header: A.orders.subOrders, sortable: true, width: 110, sortValue: (r) => r.so.id, render: (r) => <span className="tnum font-medium">{r.so.id}</span>, csv: (r) => r.so.id },
-    { key: 'order', header: uz.admin.sections.orders, width: 100, render: (r) => <IdLink to={`/orders?id=${r.o.id}`}>{r.o.id}</IdLink>, csv: (r) => r.o.id },
-    { key: 'buyer', header: A.common.buyer, width: 150, render: (r) => userName(data, r.o.buyerId), csv: (r) => userName(data, r.o.buyerId) },
+    { key: 'order', header: uz.admin.sections.orders, width: 100, defaultHidden: true, render: (r) => <IdLink to={`/orders?id=${r.o.id}`}>{r.o.id}</IdLink>, csv: (r) => r.o.id },
+    { key: 'buyer', header: A.common.buyer, width: 150, defaultHidden: true, render: (r) => userName(data, r.o.buyerId), csv: (r) => userName(data, r.o.buyerId) },
     { key: 'branch', header: A.common.branch, sortable: true, sortValue: (r) => branchOf(data, r.so.branchId)?.name ?? '', render: (r) => { const b = branchOf(data, r.so.branchId); return b ? <span>{b.name} <span className="text-ink-3">· {regionName(data, b.regionId)}</span></span> : <span className="text-ink-3">—</span> }, csv: (r) => branchOf(data, r.so.branchId)?.name ?? '' },
     { key: 'items', header: A.logistics.items, width: 220, render: (r) => <span className="truncate" title={r.so.items.map((i) => i.title).join(', ')}>{r.so.items.map((i) => i.title).join(', ')}</span>, csv: (r) => r.so.items.map((i) => i.title).join('; ') },
     { key: 'waybill', header: A.logistics.waybill, width: 150, render: (r) => r.so.waybill ? <span className="tnum">{r.so.waybill}</span> : <span className="text-ink-3">—</span>, csv: (r) => r.so.waybill ?? '' },
     { key: 'status', header: A.common.status, sortable: true, width: 130, sortValue: (r) => r.so.status, render: (r) => <SubStatusBadge status={r.so.status} />, csv: (r) => r.so.status },
-    { key: 'act', header: A.common.actions, width: 300, hideable: false, render: (r) => (
+    { key: 'act', header: A.common.actions, width: 230, hideable: false, render: (r) => (
       <span className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-        {r.so.status === 'packing' && <Button data-testid={TID.aPack} data-id={r.so.id} size="sm" variant="gold" leading={<PackageCheck strokeWidth={1.75} />} disabled={!access.edit} loading={pending === r.so.id} onClick={() => run(r.so.id, () => api.logistics.pack(r.so.id), A.logistics.packedToast)}>{A.logistics.pack}</Button>}
-        {r.so.waybill && <Button data-testid={TID.aPrintWaybill} data-id={r.so.id} size="sm" variant="secondary" leading={<Printer strokeWidth={1.75} />} onClick={() => setLabel(r)}>{A.logistics.print}</Button>}
+        {r.so.status === 'packing' && <Button data-testid={TID.aPack} data-id={r.so.id} size="sm" variant="primary" leading={<PackageCheck strokeWidth={1.75} />} disabled={!access.edit} loading={pending === r.so.id} onClick={() => run(r.so.id, () => api.logistics.pack(r.so.id), A.logistics.packedToast)}>{A.logistics.pack}</Button>}
+        {r.so.waybill && <Button data-testid={TID.aPrintWaybill} data-id={r.so.id} size="sm" variant="secondary" title={A.logistics.print} leading={<Printer strokeWidth={1.75} />} onClick={() => setLabel(r)}>{A.logistics.printShort}</Button>}
       </span>
     ) },
   ]
@@ -86,7 +86,7 @@ export function Logistics() {
             <div className="flex flex-wrap gap-1.5">{byRegion.map(([r, n]) => <Badge key={r} tone="neutral">{regionName(data, r)} <span className="tnum ml-1 font-semibold text-ink">{n}</span></Badge>)}</div>
           )}
         </Panel>
-        <Panel eyebrow={A.logistics.manifest} title={manifest ? <span className="tnum">{manifest.id}</span> : A.logistics.noManifest} actions={manifest && <ManifestStatusBadge status={manifest.status} />}>
+        <Panel eyebrow={A.logistics.manifest} title={manifest ? <span className="tnum">{manifestLabel(manifest.id)}</span> : A.logistics.noManifest} actions={manifest && <ManifestStatusBadge status={manifest.status} />}>
           {manifest ? (
             <div className="flex flex-col gap-2">
               <div className="flex flex-wrap items-center gap-2 text-[12.5px] text-ink-2"><span className="tnum font-display text-[20px] font-bold text-ink">{manifest.subOrderIds.length}</span><span>{A.orders.subOrders.toLowerCase()}</span>{Object.entries(manifest.byRegion).map(([r, n]) => <Badge key={r} size="sm" tone="blue">{regionName(data, r)} · {n}</Badge>)}</div>
@@ -101,7 +101,7 @@ export function Logistics() {
       </div>
 
       <BulkBar count={sel.length} onClear={() => setSel([])}>
-        {packable.length > 0 && <Button size="sm" variant="gold" leading={<PackageCheck strokeWidth={1.75} />} disabled={!access.edit} loading={pending === 'bulk'} onClick={() => run('bulk', () => api.logistics.packMany(packable), A.logistics.packedToast).then(() => setSel([]))}>{A.logistics.packSel} ({packable.length})</Button>}
+        {packable.length > 0 && <Button size="sm" variant="primary" leading={<PackageCheck strokeWidth={1.75} />} disabled={!access.edit} loading={pending === 'bulk'} onClick={() => run('bulk', () => api.logistics.packMany(packable), A.logistics.packedToast).then(() => setSel([]))}>{A.logistics.packSel} ({packable.length})</Button>}
       </BulkBar>
       <DataTable columns={cols} rows={rows} rowKey={(r) => r.so.id} selectable selected={sel} onSelectionChange={setSel} pageSize={12} exportFilename={`yuklar-${today}`}
         rowClassName={(r) => (highlight === r.so.id ? 'bg-blue-soft shadow-[inset_3px_0_0_var(--blue)]' : undefined)}
@@ -109,9 +109,9 @@ export function Logistics() {
         emptyState={<EmptyState compact icon="truck" title={A.logistics.empty} />} />
 
       <Panel eyebrow={A.logistics.recent} padding={false}>
-        <ul className="m-0 grid list-none grid-cols-2 gap-x-6 p-0 xl:grid-cols-4">
-          {[...data.manifests].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 8).map((m: Manifest) => (
-            <li key={m.id} className="flex items-center gap-3 border-b border-line px-4 py-2 text-[13px]"><span className="tnum text-ink-2">{m.date}</span><span className="tnum flex-1 truncate">{m.id}</span><span className="tnum text-ink-3">{m.subOrderIds.length}</span><ManifestStatusBadge status={m.status} /></li>
+        <ul className="m-0 grid list-none grid-cols-1 gap-x-6 p-0 md:grid-cols-2 2xl:grid-cols-3">
+          {[...data.manifests].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6).map((m: Manifest) => (
+            <li key={m.id} className="flex items-center gap-3 border-b border-line px-4 py-2 text-[13px]"><span className="tnum flex-1 whitespace-nowrap font-medium">{manifestLabel(m.id)}</span><span className="tnum shrink-0 text-ink-3">{m.subOrderIds.length} {A.orders.subOrders.toLowerCase()}</span><ManifestStatusBadge status={m.status} /></li>
           ))}
         </ul>
       </Panel>
@@ -157,7 +157,7 @@ function Label({ row, print = false }: { row: Row; print?: boolean }) {
       <ul className="m-0 list-none p-0 text-[12px]">{row.so.items.map((i) => <li key={i.key} className="flex justify-between gap-2"><span className="truncate">{i.title} × {i.qty}</span><Money tiyin={i.priceTiyin * i.qty} size="xs" className="text-black" /></li>)}</ul>
       <div className="mt-3 text-black"><Barcode value={row.so.waybill ?? row.so.id} /></div>
       <div className="tnum mt-1 text-center text-[11px] tracking-[0.2em]">{row.so.waybill}</div>
-      <div className="mt-2 flex justify-between text-[10px] text-black/60"><span className="tnum">{row.o.id} / {row.so.id}</span><span>{row.o.createdAt.slice(0, 10)}</span></div>
+      <div className="mt-2 flex justify-between text-[10px] text-black/60"><span className="tnum">{row.o.id} / {row.so.id}</span><span>{fmtDate(row.o.createdAt)}</span></div>
     </div>
   )
 }

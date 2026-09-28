@@ -28,7 +28,7 @@ describe('clock', () => {
     expect(nextFriday('2026-09-25T10:00:00')).toBe('2026-09-25T10:00:00')
   })
   it('formatDemoTime uses uz locale lowercase month', () => {
-    expect(formatDemoTime(NOW)).toBe('27 sen, 14:32')
+    expect(formatDemoTime(NOW)).toBe('27-sen, 14:32')
     expect(formatDemoDate(NOW)).toBe('27 sentabr')
   })
   it('dateKey', () => {
