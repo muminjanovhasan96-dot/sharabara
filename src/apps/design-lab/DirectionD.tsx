@@ -147,12 +147,12 @@ export function AdminD() {
             </Row>
           </Row>
           <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12, flex: 1, minHeight: 0 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '2.2fr 1fr 1fr 1fr', gap: 12 }}>
-              {/* B: siyoh hero KPI */}
-              <div style={{ background: `linear-gradient(135deg, ${D.ink} 0%, ${D.ink2} 100%)`, borderRadius: 18, padding: '12px 16px', color: '#fff', position: 'relative', overflow: 'hidden', height: 90, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
+              {/* B: siyoh hero KPI — ikki ustun */}
+              <div style={{ gridColumn: 'span 2', background: `linear-gradient(135deg, ${D.ink} 0%, ${D.ink2} 100%)`, borderRadius: 18, padding: '12px 16px', color: '#fff', position: 'relative', overflow: 'hidden', height: 90, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div style={{ position: 'absolute', right: -40, bottom: -60, width: 170, height: 170, borderRadius: '50%', background: 'radial-gradient(circle, rgba(227,190,74,.28), rgba(227,190,74,0) 70%)' }} />
                 <Row between><span style={{ fontSize: 11.5, color: 'rgba(255,255,255,.65)', whiteSpace: 'nowrap' }}>Tushum · sentabr</span><span style={{ fontSize: 10.5, fontWeight: 700, color: D.gold, whiteSpace: 'nowrap', ...tnum }}>+12,1 %</span></Row>
-                <Row between style={{ alignItems: 'flex-end' }}><span style={{ ...display, fontSize: 26, color: D.gold, letterSpacing: -0.8, whiteSpace: 'nowrap', ...tnum }}>1,92 <span style={{ fontSize: 12, color: 'rgba(255,255,255,.7)', fontFamily: D.font, fontWeight: 500, letterSpacing: 0 }}>mlrd so’m</span></span><Sparkline data={revenue14} color={D.gold} w={72} h={30} fill glow /></Row>
+                <Row between style={{ alignItems: 'flex-end' }}><span style={{ ...display, fontSize: 26, color: D.gold, letterSpacing: -0.8, whiteSpace: 'nowrap', ...tnum }}>1,92 <span style={{ fontSize: 12, color: 'rgba(255,255,255,.7)', fontFamily: D.font, fontWeight: 500, letterSpacing: 0 }}>mlrd so’m</span></span><Sparkline data={revenue14} color={D.gold} w={110} h={34} fill glow /></Row>
               </div>
               {kpis.filter(k => k.label !== 'Tushum').map(k => (
                 <div key={k.label} style={{ ...card, borderRadius: 18, padding: '12px 14px', height: 90, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
