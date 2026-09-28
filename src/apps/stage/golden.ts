@@ -44,6 +44,10 @@ export interface GoldenStep {
   id: string
   title: string
   caption: string
+  /** hikoya rejimi: kim harakat qilyapti */
+  who: string
+  /** hikoya rejimi: Sharabara uchun nima uchun muhim (biznes) */
+  why: string
   pane: StagePane
   /** rough seconds for the progress hint */
   duration: number
@@ -75,6 +79,8 @@ async function waitForStatus(statuses: string[], timeoutMs: number, signal: Abor
 export const GOLDEN_STEPS: GoldenStep[] = [
   {
     id: 'buyer-home', pane: 'phone', duration: 3,
+    who: 'Xaridor · Aziz',
+    why: 'Shaxsiy lenta: xaridor kecha ko’rgan modelini birinchi ko’radi — ilovaga qaytish uchun sabab.',
     title: 'Xaridor bosh sahifada',
     caption: 'Aziz kecha iPhone 13 ko’rgan edi — «Siz uchun» blokida shu model birinchi turadi. Tavsiya izohi: «Siz iPhone 13 ko’rgansiz».',
     async run(c) {
@@ -84,6 +90,8 @@ export const GOLDEN_STEPS: GoldenStep[] = [
   },
   {
     id: 'seller-sell', pane: 'phone', duration: 12,
+    who: 'Sotuvchi · Dilnoza',
+    why: 'E’lon joylash bepul, AI 1 daqiqada tekshiradi — sotuvchi uchun to’siq yo’q, Sharabara uchun toza baza.',
     title: 'Sotuvchi e’lon beradi',
     caption: 'Dilnoza «Sotish»da iPhone 13 Pro, 4 rasm, IMEI va 6 600 000 so’m kiritadi. AI tahlili modelni taniydi, IMEI’ni tekshiradi — e’lon «Tekshiruvda».',
     async run(c) {
@@ -106,6 +114,8 @@ export const GOLDEN_STEPS: GoldenStep[] = [
   },
   {
     id: 'admin-pricing', pane: 'desktop', duration: 5,
+    who: 'Narx tahlilchisi · Otabek',
+    why: 'AI 30 kunlik o’xshashlardan narx tavsiya qiladi, odam tasdiqlaydi. Natija — «Narx tekshirilgan» belgisi, xaridor ishonchi.',
     title: 'Narx tahlilchisi taqqoslaydi',
     caption: 'Admin → Narx tahlili: o’xshash e’lonlar jadvali, holat va bozor o’rtachasi. AI tavsiyasi 6 200 000 so’m, ishonch 87%. Tahlilchi sotuvchiga taklif yuboradi.',
     async run(c) {
@@ -119,6 +129,8 @@ export const GOLDEN_STEPS: GoldenStep[] = [
   },
   {
     id: 'seller-offer', pane: 'phone', duration: 5,
+    who: 'Sotuvchi · Dilnoza',
+    why: 'Xizmat haqi 3% (186 000 so’m) faqat sotilganda olinadi — sotuvchi rozi bo’ladi, Sharabara daromad manbai shu.',
     title: 'Sotuvchiga taklif keldi',
     caption: 'Telefonda push: 6 200 000 so’m. Xizmat haqi 186 000, qo’lga 6 014 000 so’m. Dilnoza «Roziman, joylash»ni bosadi — e’lon «Narx tekshirilgan» muhri bilan chiqadi.',
     async run(c) {
@@ -131,6 +143,8 @@ export const GOLDEN_STEPS: GoldenStep[] = [
   },
   {
     id: 'buyer-push', pane: 'phone', duration: 5,
+    who: 'Xaridor · Aziz',
+    why: 'Push aniq nishonga: qiziqqan model tekshirilgan narxda chiqdi. Reklama xarajatisiz qaytgan xaridor.',
     title: 'Xaridorga push',
     caption: 'Tavsiya triggeri ishladi: Aziz qiziqqan model tekshirilgan narxda sotuvga chiqdi. E’lonni ochadi — «Bu narx nega adolatli» varag’i.',
     async run(c) {
@@ -142,6 +156,8 @@ export const GOLDEN_STEPS: GoldenStep[] = [
   },
   {
     id: 'buyer-checkout', pane: 'phone', duration: 8,
+    who: 'Xaridor · Aziz',
+    why: 'Pul tovar yetguncha Sharabara himoyasida — ishonchli savdo. Yetkazish BTS orqali 35 000 so’m, o’z kuryeri kerak emas.',
     title: 'Savat va rasmiylashtirish',
     caption: 'Xaritadan BTS Namangan Markaz filiali, Payme. Jami 6 235 000 so’m (35 000 yetkazish). To’lov escrow’da — muhr animatsiyasi.',
     async run(c) {
@@ -171,6 +187,8 @@ export const GOLDEN_STEPS: GoldenStep[] = [
   },
   {
     id: 'admin-logistics', pane: 'desktop', duration: 7,
+    who: 'Logistika · Shahnoza',
+    why: 'Kunda bitta kechki partiya: 17:00 da yopiladi, yuk xati avtomatik. Kam xodim bilan ko’p yuk.',
     title: 'Logistika: qadoqlash va kechki partiya',
     caption: 'Logist «Qadoqlandi»ni bosadi — BTS yuk xati (A6) chiqadi. Demo soati 17:00 — partiya yopiladi; 19:00 — kechki BTS mashinasi olib ketadi.',
     async run(c) {
@@ -188,6 +206,8 @@ export const GOLDEN_STEPS: GoldenStep[] = [
   },
   {
     id: 'bts-accept', pane: 'desktop', duration: 4,
+    who: 'BTS hamkori',
+    why: '45 filialli hamkor tarmog’i: Sharabara ombor va kuryerga pul sarflamaydi.',
     title: 'BTS partiyani qabul qildi',
     caption: 'BTS paneli: «Partiyani qabul qildim». Xaridor telefonida buyurtma timeline’ida «BTS olib ketdi» paydo bo’ladi.',
     async run(c) {
@@ -203,6 +223,8 @@ export const GOLDEN_STEPS: GoldenStep[] = [
   },
   {
     id: 'bts-delivered', pane: 'desktop', duration: 4,
+    who: 'BTS hamkori',
+    why: 'Topshirilgach e’lon «Sotildi», xaridor baholaydi, sotuvchiga to’lov rejalashtiriladi — nizo kam.',
     title: '+1 kun: filialda → topshirildi',
     caption: 'Ertasi kuni yuk Namangan filialida. BTS «Topshirildi» — e’lon «Sotildi», xaridorga baholash so’rovi, sotuvchiga juma to’lovi rejalashtirildi.',
     async run(c) {
@@ -219,6 +241,8 @@ export const GOLDEN_STEPS: GoldenStep[] = [
   },
   {
     id: 'finance-payday', pane: 'desktop', duration: 5,
+    who: 'Moliya · Rustam',
+    why: 'Juma to’lovi bir tugma bilan: 3% Sharabara’da qoladi, qolgani sotuvchiga. Katta summalar ikki imzo bilan.',
     title: 'Moliya: juma to’lovi',
     caption: 'To’lovlar bo’limi: rejalashtirilgan to’lovlar bir tugma bilan. Sotuvchi hamyonida 6 014 000 so’m «To’landi».',
     async run(c) {
@@ -233,6 +257,8 @@ export const GOLDEN_STEPS: GoldenStep[] = [
   },
   {
     id: 'audit', pane: 'desktop', duration: 3,
+    who: 'Super admin · Bekzod',
+    why: 'Har qadam izi: kim, qachon, nimani o’zgartirgan. Investor va nazorat organlari uchun shaffoflik.',
     title: 'Yakun: audit log',
     caption: 'Super admin audit logda L-58213 ni qidiradi — yuborilganidan to’lovgacha har bir o’tish, kim va qachon.',
     async run(c) {
@@ -256,12 +282,14 @@ export interface GoldenState {
   fast: boolean
   /** 0.5 = 2 barobar sekin, 2 = 2 barobar tez */
   speed: number
+  /** taqdimotchi rejimi: har qadamdan keyin «Keyingi» kutiladi */
+  manual: boolean
 }
 
 type PaneRects = Partial<Record<StagePane, () => DOMRect | null>>
 
 class GoldenRunner {
-  private state: GoldenState = { status: 'idle', index: 0, total: GOLDEN_STEPS.length, error: null, cursor: { x: -100, y: -100, visible: false, clicks: 0 }, pane: 'phone', fast: false, speed: 1 }
+  private state: GoldenState = { status: 'idle', index: 0, total: GOLDEN_STEPS.length, error: null, cursor: { x: -100, y: -100, visible: false, clicks: 0 }, pane: 'phone', fast: false, speed: 1, manual: false }
   private listeners = new Set<() => void>()
   private skip: AbortController | null = null
   private stopped = false
@@ -278,6 +306,7 @@ class GoldenRunner {
   registerPane(pane: StagePane, rect: () => DOMRect | null) { this.panes[pane] = rect }
   setFast(v: boolean) { this.set({ fast: v }) }
   setSpeed(v: number) { this.set({ speed: v }) }
+  setManual(v: boolean) { this.set({ manual: v }); if (!v && this.paused && this.state.status === 'paused') this.resume() }
 
   // controls
   pause() { if (this.state.status === 'running') { this.paused = true; this.set({ status: 'paused' }) } }
@@ -345,6 +374,8 @@ class GoldenRunner {
         }
         await step.run(ctx)
         this.set({ cursor: { ...this.state.cursor, visible: false } })
+        // taqdimotchi rejimi: qadam tugadi — «Keyingi» yoki «Orqaga» kutiladi
+        if (this.state.manual && this.jump === null && !this.stopped && i < GOLDEN_STEPS.length - 1) { this.paused = true; this.set({ status: 'paused' }); await this.gate(); if (this.stopped) throw new GoldenStopped() }
         if (this.jump !== null) { i = this.jump - 1; this.jump = null }
       }
       this.set({ status: 'done', index: GOLDEN_STEPS.length - 1 })

@@ -17,7 +17,7 @@ export const A = {
     switchRole: 'Rolni almashtirish',
     shortcuts: 'Klaviatura tugmalari',
     shortcutHint: '? — tugmalar ro’yxati',
-    collapse: 'Menyuni yig’ish', expand: 'Menyuni yoyish', quick: 'Tez kirish',
+    collapse: 'Menyuni yig’ish', expand: 'Menyuni yoyish', quick: 'Tez kirish', allSections: 'Barcha bo’limlar', coreSections: 'Faqat asosiylar', coreHint: 'Demo uchun 6 asosiy bo’lim',
     demoClock: 'Demo vaqti',
     openListing: 'E’lon #L-58213 ni och',
     goPricing: 'Narx tahliliga o’t',

@@ -11,6 +11,7 @@ const BtsApp = lazy(() => import('@/apps/bts/BtsApp'))
 const StageApp = lazy(() => import('@/apps/stage/StageApp'))
 const DesignLab = lazy(() => import('@/apps/design-lab/DesignLab'))
 const DirectorApp = lazy(() => import('@/apps/director/DirectorApp'))
+const StoryApp = lazy(() => import('@/apps/story/StoryApp'))
 
 function Fallback() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="/bts/*" element={<AppBase base="/bts" app="bts"><BtsApp /></AppBase>} />
         <Route path="/direktor/*" element={<AppBase base="/direktor" app="director"><DirectorApp /></AppBase>} />
         <Route path="/stage" element={<StageApp />} />
+        <Route path="/hikoya" element={<StoryApp />} />
         <Route path="/dizayn" element={<DesignLab />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

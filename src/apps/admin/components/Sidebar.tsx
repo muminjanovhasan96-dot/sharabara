@@ -17,6 +17,9 @@ const URGENT: ReadonlySet<AdminSection> = new Set<AdminSection>(['moderation', '
 /** Super admin uchun eng ko'p ishlatiladigan 5 bo'lim — menyu tepasida «Tez kirish». */
 const QUICK: AdminSection[] = ['pricing', 'moderation', 'logistics', 'payments', 'audit']
 const COLLAPSE_KEY = 'sb-admin-nav-collapsed'
+/** Demo rejimi: standart holatda faqat hikoyaga kerakli 6 bo'lim; qolganlari «Barcha bo'limlar» ostida. */
+const CORE: AdminSection[] = ['dashboard', 'pricing', 'moderation', 'logistics', 'payments', 'audit']
+const SHOW_ALL_KEY = 'sb-admin-show-all'
 
 export function Sidebar({ active, compact, onToggle, onNavigate, pulses }: {
   active: AdminSection | null; compact: boolean; onToggle: () => void; onNavigate: (s: AdminSection) => void; pulses: Partial<Record<AdminSection, number>>
@@ -28,8 +31,15 @@ export function Sidebar({ active, compact, onToggle, onNavigate, pulses }: {
   const counts = useMemo(() => queueCounts(data, now), [data, now])
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>(() => { try { return JSON.parse(localStorage.getItem(COLLAPSE_KEY) ?? '{}') as Record<string, boolean> } catch { return {} } })
   const toggleGroup = (k: string) => setCollapsed((c) => { const n = { ...c, [k]: !c[k] }; try { localStorage.setItem(COLLAPSE_KEY, JSON.stringify(n)) } catch { /* noop */ } return n })
+  const [showAll, setShowAll] = useState<boolean>(() => { try { return localStorage.getItem(SHOW_ALL_KEY) === '1' } catch { return false } })
+  const toggleAll = () => setShowAll((v) => { try { localStorage.setItem(SHOW_ALL_KEY, v ? '0' : '1') } catch { /* noop */ } return !v })
+  const core = CORE.filter((s) => visible.includes(s))
+  const hiddenCount = visible.filter((s) => !CORE.includes(s)).length
   const quick = role === 'super_admin' ? QUICK.filter((s) => visible.includes(s)) : []
-  const groups = quick.length ? [{ key: 'quick', label: A.shell.quick, items: quick }, ...NAV_GROUPS] : NAV_GROUPS
+  // faol bo'lim asosiylar ichida bo'lmasa (masalan Direktor), uni ham ko'rsatamiz
+  const coreItems = active && !core.includes(active) && visible.includes(active) ? [...core, active] : core
+  const coreMode = !showAll && !compact && hiddenCount > 0
+  const groups = coreMode ? [{ key: 'core', label: null, items: coreItems }] : quick.length ? [{ key: 'quick', label: A.shell.quick, items: quick }, ...NAV_GROUPS] : NAV_GROUPS
   return (
     <Tooltip.Provider delayDuration={200}>
       <nav
@@ -118,6 +128,13 @@ export function Sidebar({ active, compact, onToggle, onNavigate, pulses }: {
             )
           })}
         </div>
+        {!compact && hiddenCount > 0 && (
+          <div className="px-2 pb-1">
+            <button type="button" onClick={toggleAll} className="flex h-9 w-full items-center gap-2 rounded-[10px] px-2.5 text-[12.5px] font-medium text-ink-2 hover:bg-paper-2 hover:text-ink" title={coreMode ? A.shell.allSections : A.shell.coreHint}>
+              <ChevronDown size={14} strokeWidth={2} className={cn('transition-transform', !coreMode && 'rotate-180')} />{coreMode ? `${A.shell.allSections} (${hiddenCount})` : A.shell.coreSections}
+            </button>
+          </div>
+        )}
         <div className="border-t border-line p-2">
           {!compact && (
             <div className="mx-1 mb-1 flex items-center gap-2 rounded-[10px] bg-paper px-2.5 py-1.5">

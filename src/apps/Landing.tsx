@@ -1,59 +1,86 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Gauge, LayoutDashboard, Monitor, Smartphone, Store, Truck, ArrowRight, Sparkles, Clock3 } from 'lucide-react'
+import { ArrowRight, Gauge, LayoutDashboard, LayoutPanelLeft, Monitor, Palette, Smartphone, Sparkles, Store, Truck } from 'lucide-react'
+import QRCode from 'qrcode'
 import { Seal } from '@/design'
 
-/** Tavsiya etilgan tartib: 1 Demo sahnasi → 2 Mijoz → 3 Admin → 4 Direktor → 5 Kompaniya → 6 BTS. Har karta: kim uchun · nimani ko'rsatadi · qancha vaqt. */
-const CARDS = [
-  { to: '/stage', title: 'Demo sahnasi', who: 'Investor va hamkorlar uchun', what: 'Telefon va xodim kompyuteri yonma-yon. «Oltin yo’l» tugmasi bitta savdoni 11 qadamda o’zi ko’rsatadi: e’lon → narx tahlili → xarid → yetkazish → to’lov.', time: '3 daqiqa', Icon: Monitor, primary: true },
-  { to: '/m', title: 'Mijoz ilovasi', who: 'Xaridor va sotuvchi uchun', what: '«Narx tekshirilgan» e’lonlar, sotish ustasi, savat, buyurtma kuzatuvi, hamyon.', time: '2 daqiqa', Icon: Smartphone },
-  { to: '/admin', title: 'Admin panel', who: 'Sharabara jamoasi uchun', what: 'Narx tahlili, moderatsiya, logistika, to’lovlar, audit. 8 rol, har rol o’z bo’limlarini ko’radi.', time: '5 daqiqa', Icon: LayoutDashboard },
-  { to: '/direktor', title: 'Direktor paneli', who: 'Rahbariyat uchun', what: 'Bugungi savdo, pul, ombor va muammolar — bir ekranda, telefonda ham.', time: '1 daqiqa', Icon: Gauge },
-  { to: '/partner', title: 'Kompaniya kabineti', who: 'Mall hamkorlari uchun', what: 'Tovar va zaxira, Excel yuklash, narx tekshiruvi, hisob-kitob, API kalitlari.', time: '2 daqiqa', Icon: Store },
-  { to: '/bts', title: 'BTS paneli', who: 'Yetkazish hamkori uchun', what: 'Kechki partiyani qabul qilish, yuk holatlari, filiallar. Planshetga mo’ljallangan.', time: '1 daqiqa', Icon: Truck },
+/** Bosh sahifa: 3 ta katta yo'l — Hikoya (asosiy), Telefon, Kompyuter. Qolgani kichik havolalar. */
+const MORE = [
+  { to: '/direktor', title: 'Direktor paneli', Icon: Gauge },
+  { to: '/partner', title: 'Kompaniya kabineti', Icon: Store },
+  { to: '/bts', title: 'BTS paneli', Icon: Truck },
+  { to: '/stage', title: 'Ekspert sahna (ikki ekran)', Icon: LayoutPanelLeft },
+  { to: '/dizayn', title: 'Dizayn namunalari', Icon: Palette },
 ]
 
+function useQr(url: string) {
+  const [svg, setSvg] = useState('')
+  useEffect(() => { let on = true; QRCode.toString(url, { type: 'svg', margin: 1, width: 132, color: { dark: '#1a2430', light: '#0000' } }).then((s) => { if (on) setSvg(s) }).catch(() => {}); return () => { on = false } }, [url])
+  return svg
+}
+
 export function Landing() {
+  const phoneUrl = typeof window !== 'undefined' ? `${window.location.origin}${import.meta.env.BASE_URL}m` : ''
+  const qr = useQr(phoneUrl)
   return (
     <main className="min-h-dvh bg-paper text-ink">
       <div className="mx-auto max-w-5xl px-4 py-8 sm:py-12">
-        <header className="paper-texture mb-6 flex flex-col gap-5 rounded-[22px] bg-ink p-6 text-white shadow-soft sm:flex-row sm:items-center sm:p-8">
-          <Seal variant="gold" icon="check" size={80} />
-          <div className="min-w-0 flex-1">
-            <p className="eyebrow !text-white/60">Investor demo · veb-prototip</p>
-            <h1 className="font-display text-3xl sm:text-4xl">Sharabara</h1>
-            <p className="mt-1 text-white/80">Narx bilan yutamiz. Har e’lon tekshiriladi, har so’m ko’rinadi.</p>
+        <header className="mb-8 flex items-center gap-4">
+          <Seal variant="gold" icon="check" size={56} />
+          <div className="min-w-0">
+            <h1 className="m-0 font-display text-[30px] leading-tight sm:text-[36px]">Sharabara</h1>
+            <p className="m-0 mt-0.5 text-[15px] text-ink-2">Narx bilan yutadigan marketpleys · investor demo</p>
           </div>
         </header>
 
-        {/* Birinchi marta? */}
-        <Link to="/stage" className="mb-6 flex items-center gap-4 rounded-[18px] border border-gold/40 bg-gold-soft p-4 text-ink transition-transform hover:-translate-y-0.5 sm:p-5">
-          <Seal variant="gold" icon="sparkles" size={56} />
-          <span className="min-w-0 flex-1">
-            <span className="block font-display text-[19px] leading-tight">Birinchi marta? «Demo sahnasi»dan boshlang</span>
-            <span className="mt-1 block text-[14px] text-ink-2">Ochilgach, yuqori o’ngdagi <b className="text-ink">«Oltin yo’l»</b> tugmasini bosing — 3 daqiqada butun jarayonni o’zi ko’rsatadi. Keyin qolgan ekranlarni pastdagi tartibda oching.</span>
-          </span>
-          <span className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-[12px] bg-gold-fill px-4 text-[14px] font-semibold text-ink shadow-[0_8px_18px_-8px_rgba(227,190,74,.8)]"><Sparkles size={16} strokeWidth={2} />Boshlash</span>
+        {/* 1. Hikoya — asosiy */}
+        <Link to="/hikoya" className="paper-texture group relative mb-4 flex flex-col gap-5 overflow-hidden rounded-[24px] bg-ink p-6 text-white shadow-soft transition-transform hover:-translate-y-0.5 sm:flex-row sm:items-center sm:p-8">
+          <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full" style={{ background: 'radial-gradient(circle, rgba(227,190,74,.35) 0%, rgba(227,190,74,0) 70%)' }} aria-hidden="true" />
+          <Seal variant="gold" icon="sparkles" size={80} />
+          <div className="relative min-w-0 flex-1">
+            <div className="eyebrow !text-gold-fill">1 · Shu yerdan boshlang</div>
+            <div className="mt-1 font-display text-[28px] leading-tight sm:text-[32px]">Hikoyani ko’rish</div>
+            <p className="m-0 mt-2 max-w-[560px] text-[15px] leading-snug text-white/80">Bitta savdo, 11 qadam, 3 daqiqa. Har qadamda faqat bitta ekran: yoki telefon, yoki kompyuter — va Sharabara bundan nima topishi.</p>
+          </div>
+          <span className="relative inline-flex h-12 shrink-0 items-center gap-2 self-start rounded-[14px] bg-gold-fill px-5 text-[15px] font-semibold text-ink shadow-[0_10px_24px_-10px_rgba(227,190,74,.9)] sm:self-center"><Sparkles size={18} strokeWidth={2} />Boshlash<ArrowRight size={18} strokeWidth={2} className="transition-transform group-hover:translate-x-0.5" /></span>
         </Link>
 
-        <ol className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2">
-          {CARDS.map(({ to, title, who, what, time, Icon, primary }, i) => (
-            <li key={to} className={primary ? 'sm:col-span-2' : ''}>
-              <Link to={to} className="group flex h-full gap-4 rounded-[18px] border border-line bg-card p-5 shadow-soft transition-transform hover:-translate-y-0.5 active:scale-[.99]">
-                <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-paper-2 text-ink shadow-[inset_0_0_0_1px_var(--line)]">
-                  <Icon size={22} strokeWidth={1.75} />
-                  <span className="tnum absolute -left-1.5 -top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-gold-fill text-[12px] font-bold text-ink">{i + 1}</span>
+        {/* 2–3. Telefon va Kompyuter */}
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Link to="/m" className="group flex gap-4 rounded-[22px] border border-line bg-card p-5 shadow-soft transition-transform hover:-translate-y-0.5">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-paper-2 text-ink shadow-[inset_0_0_0_1px_var(--line)]"><Smartphone size={22} strokeWidth={1.75} /></span>
+            <span className="min-w-0 flex-1">
+              <span className="eyebrow">2 · Xaridor va sotuvchi uchun</span>
+              <span className="mt-0.5 block font-display text-[22px] leading-tight">Telefon ilovasi</span>
+              <span className="mt-1 block text-[14px] leading-snug text-ink-2">«Narx tekshirilgan» e’lonlar, sotish ustasi, savat, buyurtma, hamyon. Kompyuterda telefon ramkasida ochiladi.</span>
+              {qr && (
+                <span className="mt-3 flex items-center gap-3 rounded-[14px] bg-paper p-2.5">
+                  <span className="h-[96px] w-[96px] shrink-0 rounded-[8px] bg-white p-1 [&>svg]:h-full [&>svg]:w-full" dangerouslySetInnerHTML={{ __html: qr }} aria-hidden="true" />
+                  <span className="text-[12.5px] leading-snug text-ink-2">O’z telefoningizda oching: kamera bilan skanerlang — ilova to’liq ekranda ishlaydi.</span>
                 </span>
-                <span className="min-w-0 flex-1">
-                  <span className="eyebrow">{who}</span>
-                  <span className="mt-0.5 flex items-center gap-2 font-display text-xl">{title}<ArrowRight size={18} className="text-gold opacity-0 transition-opacity group-hover:opacity-100" /></span>
-                  <span className="mt-1 block text-[14px] leading-snug text-ink-2">{what}</span>
-                  <span className="mt-2 inline-flex items-center gap-1 text-[12.5px] font-medium text-ink-3"><Clock3 size={13} strokeWidth={2} />{time}</span>
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ol>
-        <p className="mt-8 text-xs text-ink-3">Barcha kompaniya nomlari, filiallar va raqamlar shartli (namuna). Backend yo’q — ma’lumot brauzerda saqlanadi. Dizayn namunalari: <Link to="/dizayn" className="text-gold underline-offset-2 hover:underline">/dizayn</Link></p>
+              )}
+            </span>
+          </Link>
+          <Link to="/admin" className="group flex gap-4 rounded-[22px] border border-line bg-card p-5 shadow-soft transition-transform hover:-translate-y-0.5">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-paper-2 text-ink shadow-[inset_0_0_0_1px_var(--line)]"><Monitor size={22} strokeWidth={1.75} /></span>
+            <span className="min-w-0 flex-1">
+              <span className="eyebrow">3 · Sharabara jamoasi uchun</span>
+              <span className="mt-0.5 block font-display text-[22px] leading-tight">Kompyuter: admin panel</span>
+              <span className="mt-1 block text-[14px] leading-snug text-ink-2">Narx tahlili, moderatsiya, logistika, to’lovlar, audit. Standart holatda faqat 6 asosiy bo’lim; qolganlari «Barcha bo’limlar» ostida.</span>
+              <span className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-semibold text-gold"><LayoutDashboard size={14} strokeWidth={2} />Ochish<ArrowRight size={14} strokeWidth={2} /></span>
+            </span>
+          </Link>
+        </div>
+
+        <div className="mt-8">
+          <div className="eyebrow mb-2">Qo’shimcha ekranlar</div>
+          <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
+            {MORE.map(({ to, title, Icon }) => (
+              <li key={to}><Link to={to} className="inline-flex h-10 items-center gap-2 rounded-[12px] border border-line bg-card px-3.5 text-[13.5px] font-medium text-ink-2 hover:text-ink"><Icon size={15} strokeWidth={1.9} />{title}</Link></li>
+            ))}
+          </ul>
+        </div>
+        <p className="mt-8 text-xs text-ink-3">Barcha kompaniya nomlari, filiallar va raqamlar shartli (namuna). Backend yo’q — ma’lumot brauzerda saqlanadi.</p>
       </div>
     </main>
   )

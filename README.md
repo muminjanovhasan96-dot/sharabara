@@ -1,6 +1,6 @@
 # Sharabara — to'liq ishlaydigan demo
 
-**Jonli demo:** https://muminjanovhasan96-dot.github.io/sharabara/ · sahna: https://muminjanovhasan96-dot.github.io/sharabara/stage
+**Jonli demo:** https://muminjanovhasan96-dot.github.io/sharabara/ · hikoya: https://muminjanovhasan96-dot.github.io/sharabara/hikoya · ekspert sahna: https://muminjanovhasan96-dot.github.io/sharabara/stage
 **Kod:** https://github.com/muminjanovhasan96-dot/sharabara (har `main` push GitHub Pages'ga avtomatik chiqadi)
 
 Investor va hamkorlarga ko'rsatiladigan, **har bir tugmasi ishlaydigan** veb-prototip.
@@ -28,8 +28,9 @@ npm run lint         # oxlint
 
 | Yo'l | Nima |
 |---|---|
-| `/` | Interfeys tanlash |
-| `/stage` | **Demo sahnasi**: chapda mijoz telefoni, o'ngda xodim kompyuteri (brauzer oynasi), pastda izoh paneli. Yuqorida: rollar, vaqt menyusi, sozlamalar, Oltin yo'l |
+| `/` | Bosh sahifa: 3 yo'l — Hikoya, Telefon, Kompyuter |
+| `/hikoya` | **Hikoya rejimi (asosiy taqdimot)**: har qadamda bitta ekran, «kim · nima · Sharabara uchun nima uchun muhim», taqdimotchi «Keyingi» bilan boshqaradi yoki avtopilot |
+| `/stage` | Ekspert sahna: telefon va kompyuter yonma-yon, rollar, vaqt menyusi, Oltin yo'l |
 | `/m` | Mijoz ilovasi (desktopda iPhone ramkasida, telefonda to'liq ekran / PWA) |
 | `/admin` | Admin panel |
 | `/partner` | Kompaniya kabineti |
