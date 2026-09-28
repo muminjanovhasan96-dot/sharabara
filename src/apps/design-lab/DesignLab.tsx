@@ -2,6 +2,7 @@ import type { CSSProperties, ReactNode } from 'react'
 import { A, AdminA, DirectorA, HomeA } from './DirectionA'
 import { AdminB, B, DirectorB, HomeB } from './DirectionB'
 import { AdminC, C, DirectorC, HomeC } from './DirectionC'
+import { AdminD, D, DirectorD, HomeD } from './DirectionD'
 
 /* ─── Sahifa uslubi (neytral, yo’nalishlardan mustaqil) ─────────────────── */
 const P = {
@@ -10,7 +11,9 @@ const P = {
 }
 
 interface Direction {
-  id: 'A' | 'B' | 'C'
+  id: 'A' | 'B' | 'C' | 'D'
+  /** tavsiya etilgan yo'nalish */
+  recommended?: boolean
   name: string
   pitch: string
   accent: string
@@ -23,6 +26,15 @@ interface Direction {
 }
 
 const directions: Direction[] = [
+  {
+    id: 'D', recommended: true, name: 'Aralashma: A + B', pitch: 'A’ning tanish marketpleys tartibi (oq kartochkalar, katta rasm, narx birinchi) + B’ning siyoh-oltin brendi (serif narxlar, qorong’i admin menyusi, oltin muhr) + C’dan yumshoq burchak va iliq oq fon.',
+    accent: D.ink, accentFg: D.gold,
+    swatches: [{ hex: D.page, label: 'Fon · iliq oq' }, { hex: D.card, label: 'Karta' }, { hex: D.ink, label: 'Siyoh' }, { hex: D.gold, label: 'Oltin · CTA' }, { hex: D.goldDeep, label: 'Oltin · to’q' }, { hex: D.green, label: 'Ishonch' }, { hex: D.red, label: 'Chegirma' }],
+    type: { display: D.display, body: D.font, sample: '6 200 000 so’m', names: 'Narx va sarlavha: Bitter (serif) · Matn: Inter, 15px' },
+    why: 'Foydalanuvchi Uzum/Ozon’dan o’rganib qolgan tartibni oladi (A), lekin har ekranda Sharabara’ning siyoh-oltin xarakteri sezilib turadi (B): hero-blok, narxlar va admin menyusi. Yumshoq burchaklar va iliq fon (C) «sovuq SaaS» hissini olib tashlaydi. Hozirgi jonli demo aynan shu yo’nalishga o’tkazilgan.',
+    familiar: 'Uzum Market tartibi + Apple Card / Revolut ishonch hissi.',
+    mockups: [<HomeD key="h" />, <AdminD key="a" />, <DirectorD key="d" />],
+  },
   {
     id: 'A', name: 'Toza bozor', pitch: 'Oq kartochkalar, katta rasm, narx birinchi — foydalanuvchi o’rganib qolgan marketpleys tartibi.',
     accent: A.gold, accentFg: A.navy,
@@ -54,12 +66,12 @@ const directions: Direction[] = [
 
 const captions = ['Mijoz ilovasi · Bosh sahifa', 'Admin · Boshqaruv paneli', 'Direktor paneli · mobil']
 
-const scores: { label: string; a: number; b: number; c: number }[] = [
-  { label: 'O’qilishi', a: 5, b: 4, c: 5 },
-  { label: 'Ishonch tuyg’usi', a: 4, b: 5, c: 3 },
-  { label: 'Tanishlik', a: 5, b: 3, c: 4 },
-  { label: 'Brend o’ziga xosligi', a: 3, b: 5, c: 4 },
-  { label: 'Mobil qulaylik', a: 5, b: 4, c: 5 },
+const scores: { label: string; d: number; a: number; b: number; c: number }[] = [
+  { label: 'O’qilishi', d: 5, a: 5, b: 4, c: 5 },
+  { label: 'Ishonch tuyg’usi', d: 5, a: 4, b: 5, c: 3 },
+  { label: 'Tanishlik', d: 5, a: 5, b: 3, c: 4 },
+  { label: 'Brend o’ziga xosligi', d: 4, a: 3, b: 5, c: 4 },
+  { label: 'Mobil qulaylik', d: 5, a: 5, b: 4, c: 5 },
 ]
 
 function Dots({ n, color }: { n: number; color: string }) {
@@ -81,6 +93,7 @@ function Section({ d }: { d: Direction }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
               <span style={{ width: 44, height: 44, borderRadius: 12, background: d.accent, color: d.accentFg, display: 'grid', placeItems: 'center', fontSize: 22, fontWeight: 900, fontFamily: P.font }}>{d.id}</span>
               <h2 style={{ ...h2, fontSize: 32, margin: 0 }}>{d.name}</h2>
+              {d.recommended && <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: 1, textTransform: 'uppercase', background: D.gold, color: D.ink, padding: '5px 10px', borderRadius: 999 }}>Tavsiya</span>}
             </div>
             <p style={{ fontSize: 17, lineHeight: 1.5, color: P.text2, margin: '14px 0 0', maxWidth: 620 }}>{d.pitch}</p>
           </div>
@@ -140,7 +153,7 @@ export default function DesignLab() {
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: A.gold }} />Dizayn laboratoriyasi · 28-sentabr, 2026
         </div>
         <h1 style={{ ...h2, fontSize: 44, margin: '14px 0 0', lineHeight: 1.05 }}>Sharabara — dizayn yo’nalishlari</h1>
-        <p style={{ fontSize: 20, color: P.text2, margin: '10px 0 0' }}>3 ta namuna, birini tanlang</p>
+        <p style={{ fontSize: 20, color: P.text2, margin: '10px 0 0' }}>4 ta namuna: D — A va B aralashmasi (tavsiya), keyin A, B, C</p>
         <p style={{ fontSize: 15.5, lineHeight: 1.55, color: P.text2, margin: '18px 0 0', maxWidth: 760 }}>
           Har bir yo’nalishda uchta haqiqiy ekran ko’rsatilgan: mijoz ilovasining bosh sahifasi, adminning «Boshqaruv paneli» va direktor uchun mobil panel.
           Kontent, narxlar va raqamlar hammasida bir xil — faqat uslub farq qiladi, shuning uchun taqqoslash oson.
@@ -176,6 +189,7 @@ export default function DesignLab() {
                 {scores.map(s => (
                   <tr key={s.label} style={{ borderTop: `1px solid ${P.line}` }}>
                     <td style={{ padding: '14px 18px', fontSize: 15, fontWeight: 600 }}>{s.label}</td>
+                    <td style={{ padding: '14px 18px' }}><Dots n={s.d} color={D.goldDeep} /></td>
                     <td style={{ padding: '14px 18px' }}><Dots n={s.a} color={A.navy} /></td>
                     <td style={{ padding: '14px 18px' }}><Dots n={s.b} color={B.goldDeep} /></td>
                     <td style={{ padding: '14px 18px' }}><Dots n={s.c} color={C.green} /></td>
@@ -184,7 +198,7 @@ export default function DesignLab() {
               </tbody>
             </table>
           </div>
-          <p style={{ fontSize: 22, fontWeight: 700, letterSpacing: -0.3, margin: '40px 0 0', color: P.text }}>Tanlaganingizni ayting: A, B yoki C — butun ilova shu uslubga o’tkaziladi.</p>
+          <p style={{ fontSize: 22, fontWeight: 700, letterSpacing: -0.3, margin: '40px 0 0', color: P.text }}>Tanlaganingizni ayting: D, A, B yoki C — butun ilova shu uslubga o’tkaziladi. Hozirgi demo D bo’yicha qurilgan.</p>
         </div>
       </section>
     </div>
