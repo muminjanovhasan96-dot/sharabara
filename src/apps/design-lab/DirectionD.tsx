@@ -1,8 +1,7 @@
 /**
- * D yo'nalishi — A («Toza bozor») va B («Siyoh va oltin») aralashmasi, C'dan yumshoq burchak va katta matn.
- * A'dan: oq kartochkalar, katta rasm, narx birinchi, oq tab-bar, oddiy tartib.
- * B'dan: siyoh sarlavha-blok, Bitter serif narx va sarlavhalar, oltin muhr va qalqon belgisi, qorong'i admin menyusi.
- * C'dan: 22–24px burchaklar, 15px matn, iliq oq fon.
+ * D yo'nalishi — asos B («Siyoh va oltin»), A («Toza bozor») dan faqat uslub aksentlari.
+ * B (asos): siyoh sarlavha-blok bosh sahifa tepasida, qorong'i tab-bar va admin menyusi, Bitter serif narx/sarlavhalar, oltin urg'u.
+ * A (aksent): oq kartochkalarda katta rasm va narx birinchi, 4×2 kategoriya plitkalari, yorug' admin kontenti va oq KPI kartalar.
  */
 import type { CSSProperties } from 'react'
 import { BarChart3, Bell, Boxes, Camera, ChevronDown, ChevronRight, Heart, Home, LayoutGrid, MapPin, MessageCircle, PackageX, Plus, Search, Settings, ShieldCheck, TriangleAlert, User, Wallet } from 'lucide-react'
@@ -39,7 +38,7 @@ function ProductCardD({ p, w = 164, peek = false }: { p: Product; w?: number; pe
         <div style={{ position: 'absolute', top: 6, right: 6, width: 30, height: 30, borderRadius: '50%', background: 'rgba(255,253,248,.92)', display: 'grid', placeItems: 'center' }}><Heart size={15} color={D.text2} /></div>
       </div>
       <div style={{ padding: '10px 6px 4px' }}>
-        <div style={{ ...display, fontSize: 19, color: D.text, ...tnum }}>{p.price.replace(' so’m', '')} <span style={{ fontSize: 11, fontFamily: D.font, fontWeight: 500, color: D.text3, letterSpacing: 0 }}>so’m</span></div>
+        <div style={{ ...display, fontSize: 19, color: D.ink, ...tnum }}>{p.price.replace(' so’m', '')} <span style={{ fontSize: 11, fontFamily: D.font, fontWeight: 500, color: D.text3, letterSpacing: 0 }}>so’m</span></div>
         {p.old ? <div style={{ fontSize: 11.5, color: D.text3, textDecoration: 'line-through', ...tnum }}>{p.old} so’m</div> : <div style={{ fontSize: 11.5 }}>&nbsp;</div>}
         <div style={{ fontSize: 13.5, color: D.text, lineHeight: '17px', marginTop: 4, height: 34, overflow: 'hidden' }}>{p.name}</div>
         <Ellipsis style={{ fontSize: 11.5, color: D.text3, marginTop: 4 }}>{p.region} · {p.time}</Ellipsis>
@@ -63,46 +62,50 @@ function SectionHeadD({ title, sub }: { title: string; sub?: string }) {
 /* ─── 1. Mijoz ilovasi — Bosh sahifa ─────────────────────────────────────── */
 export function HomeD() {
   return (
-    <Phone screenBg={D.page} font={D.font}>
-      <div style={{ paddingTop: 58, color: D.text }}>
-        <Row between style={{ padding: '0 16px', height: 40 }}>
-          <Row gap={4} style={{ fontSize: 15, fontWeight: 600 }}><MapPin size={16} color={D.goldDeep} />Toshkent<ChevronDown size={16} color={D.text3} /></Row>
-          <div style={{ position: 'relative' }}><Bell size={22} /><span style={{ position: 'absolute', top: -2, right: -2, width: 9, height: 9, borderRadius: '50%', background: D.red, border: `2px solid ${D.page}` }} /></div>
+    <Phone screenBg={D.page} statusDark font={D.font}>
+      {/* B: siyoh sarlavha-blok — logotip, qidiruv, hero bitta blokda */}
+      <div style={{ background: `linear-gradient(180deg, ${D.ink} 0%, #22303F 100%)`, padding: '58px 16px 18px', color: '#fff', borderRadius: '0 0 28px 28px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', right: -60, top: 10, width: 220, height: 220, borderRadius: '50%', background: 'radial-gradient(circle, rgba(227,190,74,.24), rgba(227,190,74,0) 70%)' }} />
+        <Row between style={{ height: 40, position: 'relative' }}>
+          <Row gap={8}><Seal size={26} gold={D.gold} ink={D.ink} ring={false} /><span style={{ ...display, fontSize: 22, color: D.gold, letterSpacing: -0.4 }}>Sharabara</span></Row>
+          <Row gap={10}><Row gap={3} style={{ fontSize: 13, color: 'rgba(255,255,255,.75)' }}><MapPin size={14} color={D.gold} />Toshkent</Row><div style={{ position: 'relative' }}><Bell size={22} color="#fff" /><span style={{ position: 'absolute', top: -2, right: -2, width: 9, height: 9, borderRadius: '50%', background: D.gold, border: `2px solid ${D.ink}` }} /></div></Row>
         </Row>
-        <div style={{ margin: '4px 16px 12px', height: 46, borderRadius: 16, background: D.card, boxShadow: '0 1px 2px rgba(26,36,48,.05)', display: 'flex', alignItems: 'center', gap: 10, padding: '0 14px', color: D.text3, fontSize: 15 }}>
-          <Search size={18} color={D.goldDeep} /><span style={{ flex: 1 }}>iPhone, divan, velosiped…</span><Camera size={18} />
+        <div style={{ marginTop: 8, height: 46, borderRadius: 14, background: 'rgba(255,255,255,.08)', border: '1px solid rgba(255,255,255,.12)', display: 'flex', alignItems: 'center', gap: 10, padding: '0 14px', color: 'rgba(255,255,255,.6)', fontSize: 15, position: 'relative' }}>
+          <Search size={18} color={D.gold} /><span style={{ flex: 1 }}>iPhone, divan, velosiped…</span><Camera size={18} color="rgba(255,255,255,.6)" />
         </div>
-        {/* B: siyoh hero, A: sahifa ichida karta sifatida */}
-        <div style={{ margin: '0 16px 16px', borderRadius: 22, background: `linear-gradient(112deg, ${D.ink} 0%, #24303F 62%, #2B3A4A 100%)`, padding: '18px 18px 16px', color: '#fff', position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ position: 'absolute', right: -40, top: -50, width: 180, height: 180, borderRadius: '50%', background: 'radial-gradient(circle, rgba(227,190,74,.35), rgba(227,190,74,0) 70%)' }} />
-          <div style={{ position: 'relative' }}>
-            <div style={{ ...display, fontSize: 24, lineHeight: 1.05, letterSpacing: -0.5 }}>Narx bilan<br />yutamiz</div>
-            <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,.72)', marginTop: 6 }}>12 480 ta e’londa narx tekshirilgan</div>
+        <Row between style={{ marginTop: 16, position: 'relative' }}>
+          <div>
+            <div style={{ ...display, fontSize: 27, lineHeight: 1.05, letterSpacing: -0.7 }}>Narx bilan<br />yutamiz</div>
+            <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,.7)', marginTop: 6 }}>12 480 ta e’londa narx tekshirilgan</div>
             <div style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: 6, background: D.gold, color: D.ink, fontSize: 12.5, fontWeight: 700, padding: '7px 12px', borderRadius: 10 }}><ShieldCheck size={14} strokeWidth={2.4} />Tekshirilganlarni ko’rish</div>
           </div>
-          <Seal size={72} gold={D.gold} ink={D.ink} />
-        </div>
-        {/* C: yumshoq doira plitkalar, A: 4x2 tartib */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', rowGap: 12, padding: '0 12px', marginBottom: 18 }}>
+          <Seal size={84} gold={D.gold} ink={D.ink} />
+        </Row>
+      </div>
+      <div style={{ color: D.text }}>
+        {/* A aksenti: 4×2 kategoriya plitkalari (B'ning to'q ikon rangi) */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', rowGap: 10, padding: '16px 12px 14px' }}>
           {categories.map(c => (
             <div key={c.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-              <div style={{ width: 60, height: 60, borderRadius: '50%', background: D.card, boxShadow: `inset 0 0 0 1px ${D.line}`, display: 'grid', placeItems: 'center' }}><c.icon size={25} color={D.ink} strokeWidth={1.7} /></div>
+              <div style={{ width: 56, height: 56, borderRadius: 18, background: D.card, boxShadow: `inset 0 0 0 1px ${D.line}`, display: 'grid', placeItems: 'center' }}><c.icon size={24} color={D.ink} strokeWidth={1.7} /></div>
               <span style={{ fontSize: 11.5, fontWeight: 500, color: D.text }}>{c.label}</span>
             </div>
           ))}
         </div>
-        <SectionHeadD title="Siz uchun tanlandi" sub="Siz iPhone 13 ko’rgansiz" />
+        <SectionHeadD title="Tekshirilgan narxlar" sub="Bugun 312 ta yangi e’lon" />
+        {/* A aksenti: oq kartochka, katta rasm, narx birinchi */}
         <div style={{ display: 'flex', gap: 12, padding: '0 16px', overflow: 'hidden', maskImage: 'linear-gradient(to right, #000 86%, transparent)', WebkitMaskImage: 'linear-gradient(to right, #000 86%, transparent)' }}>
           {[products[0], products[6], products[4]].map((p, i) => <ProductCardD key={p.name} p={p} peek={i === 2} />)}
         </div>
-        <div style={{ height: 18 }} />
+        <div style={{ height: 16 }} />
         <SectionHeadD title="Sharabara Mall" sub="Kompaniyalardan yangi tovarlar" />
         <div style={{ display: 'flex', gap: 12, padding: '0 16px', overflow: 'hidden', maskImage: 'linear-gradient(to right, #000 86%, transparent)', WebkitMaskImage: 'linear-gradient(to right, #000 86%, transparent)' }}>
           {[products[1], products[3], products[2]].map((p, i) => <ProductCardD key={p.name} p={p} peek={i === 2} />)}
         </div>
       </div>
+      {/* B: qorong'i tab-bar, oltin faol */}
       <TabBar
-        active={0} bg={D.card} border={D.line} color={D.text3} activeColor={D.ink}
+        active={0} bg={D.ink} border={D.lineDark} color="rgba(255,255,255,.55)" activeColor={D.gold}
         items={[{ label: 'Bosh', icon: <Home size={22} /> }, { label: 'Katalog', icon: <LayoutGrid size={22} /> }, { label: 'Xabarlar', icon: <MessageCircle size={22} /> }, { label: 'Profil', icon: <User size={22} /> }]}
         raised={{ label: 'Sotish', icon: <Plus size={26} strokeWidth={2.6} />, color: D.gold, fg: D.ink }}
       />
@@ -214,8 +217,8 @@ export function DirectorD() {
           <div><div style={{ ...display, fontSize: 24, letterSpacing: -0.5 }}>Xayrli tong, Hasan</div><div style={{ fontSize: 13, color: D.text3 }}>Yakshanba, 28-sentabr · 09:41</div></div>
           <div style={{ width: 40, height: 40, borderRadius: '50%', background: `linear-gradient(135deg, ${D.gold}, ${D.ink})` }} />
         </Row>
-        <div style={{ display: 'flex', background: '#EEE9DD', borderRadius: 999, padding: 3 }}>
-          {['Bugun', 'Hafta', 'Oy'].map((t, i) => <div key={t} style={{ flex: 1, textAlign: 'center', fontSize: 13, fontWeight: 600, padding: '7px 0', borderRadius: 999, background: i === 0 ? D.ink : 'transparent', color: i === 0 ? D.gold : D.text2 }}>{t}</div>)}
+        <div style={{ display: 'flex', background: D.ink, borderRadius: 999, padding: 3 }}>
+          {['Bugun', 'Hafta', 'Oy'].map((t, i) => <div key={t} style={{ flex: 1, textAlign: 'center', fontSize: 13, fontWeight: 600, padding: '7px 0', borderRadius: 999, background: i === 0 ? D.gold : 'transparent', color: i === 0 ? D.ink : 'rgba(255,255,255,.6)' }}>{t}</div>)}
         </div>
         {/* B: siyoh hero, oltin raqam */}
         <div style={{ borderRadius: 22, background: `linear-gradient(135deg, ${D.ink} 0%, ${D.ink2} 100%)`, padding: 18, color: '#fff', position: 'relative', overflow: 'hidden' }}>
@@ -269,7 +272,7 @@ export function DirectorD() {
           ))}
         </div>
       </div>
-      <TabBar active={0} bg={D.card} border={D.line} color={D.text3} activeColor={D.ink} items={[{ label: 'Asosiy', icon: <Home size={22} /> }, { label: 'Hisobot', icon: <BarChart3 size={22} /> }, { label: 'Ombor', icon: <Boxes size={22} /> }, { label: 'Sozlamalar', icon: <Settings size={22} /> }]} />
+      <TabBar active={0} bg={D.ink} border={D.lineDark} color="rgba(255,255,255,.55)" activeColor={D.gold} items={[{ label: 'Asosiy', icon: <Home size={22} /> }, { label: 'Hisobot', icon: <BarChart3 size={22} /> }, { label: 'Ombor', icon: <Boxes size={22} /> }, { label: 'Sozlamalar', icon: <Settings size={22} /> }]} />
     </Phone>
   )
 }

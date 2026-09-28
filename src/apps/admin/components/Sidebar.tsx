@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import * as Tooltip from '@radix-ui/react-tooltip'
 import { ChevronDown, Clock3, PanelLeftClose, PanelLeftOpen, Zap } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Icon, Logo } from '@/design'
+import { Icon, Seal } from '@/design'
 import { useNow, useStore } from '@/store'
 import { formatDemoTime } from '@/domain/clock'
 import { TID } from '@/lib/testids'
@@ -45,14 +45,15 @@ export function Sidebar({ active, compact, onToggle, onNavigate, pulses }: {
       <nav
         data-testid={TID.aNav}
         aria-label={uz.app.name}
-        className={cn('flex h-full shrink-0 flex-col border-r border-line bg-card text-ink transition-[width] duration-200', compact ? 'w-[64px]' : 'w-[232px]')}
+        className={cn('flex h-full shrink-0 flex-col border-r border-white/10 text-white transition-[width] duration-200', compact ? 'w-[64px]' : 'w-[232px]')}
+        style={{ background: '#1a2430' }}
       >
         <div className={cn('flex h-14 items-center gap-2.5 px-3', compact && 'justify-center px-0')}>
-          <Logo size={28} />
+          <Seal icon="stamp" variant="gold" size={28} ticks aria-label={uz.app.name} role="img" />
           {!compact && (
             <span className="min-w-0 leading-none">
-              <span className="block truncate font-display text-[15px] text-ink" style={{ fontWeight: 800, letterSpacing: '-0.02em' }}>{uz.app.wordmark}</span>
-              <span className="mt-0.5 block text-[10.5px] text-ink-3">{uz.admin.roles[role]}</span>
+              <span className="block truncate font-display text-[15px] text-gold-fill" style={{ fontWeight: 800, letterSpacing: '-0.02em' }}>{uz.app.wordmark}</span>
+              <span className="mt-0.5 block text-[10.5px] uppercase tracking-[0.12em] text-white/50">{uz.admin.roles[role]}</span>
             </span>
           )}
         </div>
@@ -64,14 +65,14 @@ export function Sidebar({ active, compact, onToggle, onNavigate, pulses }: {
             return (
               <div key={g.key} className="mt-1">
                 {g.label && !compact && (
-                  <button type="button" onClick={() => g.key !== 'quick' && toggleGroup(g.key)} aria-expanded={!isCollapsed} className={cn('flex w-full items-center gap-1 px-2.5 pb-0.5 pt-2 text-left', g.key === 'quick' ? 'cursor-default' : 'hover:text-ink')}>
-                    {g.key === 'quick' && <Zap size={11} strokeWidth={2.2} className="text-gold" aria-hidden="true" />}
-                    <span className="eyebrow !text-[10.5px]">{g.label}</span>
-                    {g.key !== 'quick' && <ChevronDown size={12} strokeWidth={2} className={cn('ml-auto text-ink-3 transition-transform', isCollapsed && '-rotate-90')} aria-hidden="true" />}
-                    {isCollapsed && items.reduce((a, s) => a + (counts[s] ?? 0), 0) > 0 && <span className="tnum rounded-full bg-gold-soft px-1.5 text-[10.5px] font-semibold text-ink">{items.reduce((a, s) => a + (counts[s] ?? 0), 0)}</span>}
+                  <button type="button" onClick={() => g.key !== 'quick' && toggleGroup(g.key)} aria-expanded={!isCollapsed} className={cn('flex w-full items-center gap-1 px-2.5 pb-0.5 pt-2 text-left', g.key === 'quick' ? 'cursor-default' : 'hover:text-white')}>
+                    {g.key === 'quick' && <Zap size={11} strokeWidth={2.2} className="text-gold-fill" aria-hidden="true" />}
+                    <span className="eyebrow !text-[10.5px] !text-white/45">{g.label}</span>
+                    {g.key !== 'quick' && <ChevronDown size={12} strokeWidth={2} className={cn('ml-auto text-white/40 transition-transform', isCollapsed && '-rotate-90')} aria-hidden="true" />}
+                    {isCollapsed && items.reduce((a, s) => a + (counts[s] ?? 0), 0) > 0 && <span className="tnum rounded-full bg-gold-fill px-1.5 text-[10.5px] font-semibold text-ink">{items.reduce((a, s) => a + (counts[s] ?? 0), 0)}</span>}
                   </button>
                 )}
-                {g.label && compact && <div className="mx-3 my-2 h-px bg-line" />}
+                {g.label && compact && <div className="mx-3 my-2 h-px bg-white/10" />}
                 {!isCollapsed && items.map((s) => {
                   const isActive = active === s
                   const count = counts[s] ?? 0
@@ -86,12 +87,12 @@ export function Sidebar({ active, compact, onToggle, onNavigate, pulses }: {
                       onClick={() => onNavigate(s)}
                       className={cn(
                         'relative flex h-[34px] w-full items-center gap-2.5 rounded-[10px] px-2.5 text-[13.5px] transition-colors',
-                        isActive ? 'bg-blue-soft font-semibold text-blue' : 'text-ink-2 hover:bg-paper-2 hover:text-ink',
+                        isActive ? 'bg-gold-fill/12 font-semibold text-gold-fill' : 'text-white/72 hover:bg-white/[.06] hover:text-white',
                         compact && 'justify-center px-0',
                       )}
                     >
-                      {isActive && <span aria-hidden="true" className="absolute -left-2 top-[5px] h-6 w-[3px] rounded-r bg-blue" />}
-                      <Icon name={SECTION_ICON[s]} size={18} className={cn('shrink-0', isActive ? 'text-blue' : 'text-ink-3')} />
+                      {isActive && <span aria-hidden="true" className="absolute -left-2 top-[5px] h-6 w-[3px] rounded-r bg-gold-fill" />}
+                      <Icon name={SECTION_ICON[s]} size={18} className={cn('shrink-0', isActive ? 'text-gold-fill' : 'text-white/45')} />
                       {!compact && <span className="min-w-0 flex-1 truncate text-left">{sectionTitle(s)}</span>}
                       {count > 0 && (
                         <motion.span
@@ -101,8 +102,8 @@ export function Sidebar({ active, compact, onToggle, onNavigate, pulses }: {
                           transition={{ duration: 0.6, ease: 'easeOut' }}
                           className={cn(
                             'tnum inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-semibold',
-                            urgent ? 'bg-brick-soft text-brick' : 'bg-blue-soft text-blue',
-                            isActive && !urgent && 'bg-card',
+                            urgent ? 'bg-[#e07b6c]/20 text-[#f0a094]' : 'bg-white/10 text-white/85',
+                            isActive && !urgent && 'bg-gold-fill text-ink',
                             compact && 'absolute right-1 top-0.5 h-4 min-w-4 px-1 text-[10px]',
                           )}
                           aria-label={`${count}`}
@@ -117,7 +118,7 @@ export function Sidebar({ active, compact, onToggle, onNavigate, pulses }: {
                     <Tooltip.Root key={`${g.key}-${s}`}>
                       <Tooltip.Trigger asChild>{item}</Tooltip.Trigger>
                       <Tooltip.Portal>
-                        <Tooltip.Content side="right" sideOffset={8} className="z-[80] rounded-[8px] bg-ink px-2.5 py-1.5 text-[12px] text-paper shadow-soft">
+                        <Tooltip.Content side="right" sideOffset={8} className="z-[80] rounded-[8px] bg-card px-2.5 py-1.5 text-[12px] text-ink shadow-soft">
                           {sectionTitle(s)}{count > 0 && <span className={cn('tnum ml-1.5', urgent ? 'text-brick' : 'text-gold-fill')}>{count}</span>}
                         </Tooltip.Content>
                       </Tooltip.Portal>
@@ -130,22 +131,22 @@ export function Sidebar({ active, compact, onToggle, onNavigate, pulses }: {
         </div>
         {!compact && hiddenCount > 0 && (
           <div className="px-2 pb-1">
-            <button type="button" onClick={toggleAll} className="flex h-9 w-full items-center gap-2 rounded-[10px] px-2.5 text-[12.5px] font-medium text-ink-2 hover:bg-paper-2 hover:text-ink" title={coreMode ? A.shell.allSections : A.shell.coreHint}>
+            <button type="button" onClick={toggleAll} className="flex h-9 w-full items-center gap-2 rounded-[10px] px-2.5 text-[12.5px] font-medium text-white/70 hover:bg-white/[.06] hover:text-white" title={coreMode ? A.shell.allSections : A.shell.coreHint}>
               <ChevronDown size={14} strokeWidth={2} className={cn('transition-transform', !coreMode && 'rotate-180')} />{coreMode ? `${A.shell.allSections} (${hiddenCount})` : A.shell.coreSections}
             </button>
           </div>
         )}
-        <div className="border-t border-line p-2">
+        <div className="border-t border-white/10 p-2">
           {!compact && (
-            <div className="mx-1 mb-1 flex items-center gap-2 rounded-[10px] bg-paper px-2.5 py-1.5">
-              <Clock3 size={15} strokeWidth={1.75} className="shrink-0 text-gold" aria-hidden="true" />
+            <div className="mx-1 mb-1 flex items-center gap-2 rounded-[10px] bg-white/[.06] px-2.5 py-1.5">
+              <Clock3 size={15} strokeWidth={1.75} className="shrink-0 text-gold-fill" aria-hidden="true" />
               <span className="min-w-0 leading-tight">
-                <span className="block text-[10px] uppercase tracking-[0.12em] text-ink-3">{A.shell.demoClock}</span>
-                <span className="tnum block text-[13px] font-medium text-ink">{formatDemoTime(now)}</span>
+                <span className="block text-[10px] uppercase tracking-[0.12em] text-white/45">{A.shell.demoClock}</span>
+                <span className="tnum block text-[13px] font-medium text-white">{formatDemoTime(now)}</span>
               </span>
             </div>
           )}
-          <button type="button" onClick={onToggle} aria-label={compact ? A.shell.expand : A.shell.collapse} className={cn('flex h-9 w-full items-center gap-2 rounded-[10px] px-2.5 text-[12.5px] text-ink-3 hover:bg-paper-2 hover:text-ink', compact && 'justify-center px-0')}>
+          <button type="button" onClick={onToggle} aria-label={compact ? A.shell.expand : A.shell.collapse} className={cn('flex h-9 w-full items-center gap-2 rounded-[10px] px-2.5 text-[12.5px] text-white/55 hover:bg-white/[.06] hover:text-white', compact && 'justify-center px-0')}>
             {compact ? <PanelLeftOpen size={17} strokeWidth={1.75} /> : <PanelLeftClose size={17} strokeWidth={1.75} />}
             {!compact && <span>{A.shell.collapse}</span>}
           </button>

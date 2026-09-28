@@ -38,7 +38,7 @@ export function TabBar() {
   const reduce = useReducedMotion()
   const raised = !useContext(BottomBarCtx).has
   return (
-    <nav aria-label="Asosiy" className="pb-safe relative z-20 shrink-0 border-t border-line bg-card">
+    <nav aria-label="Asosiy" className="pb-safe relative z-20 shrink-0 border-t border-white/10 text-white" style={{ background: '#1a2430' }}>
       <ul className="m-0 flex list-none items-end justify-between px-2 pb-1 pt-1">
         {TABS.map((tb) => {
           const isActive = active === tb.key
@@ -56,12 +56,12 @@ export function TabBar() {
                   className={cn('flex flex-col items-center gap-0.5 transition-[margin]', raised ? '-mt-7' : 'mt-0')}
                 >
                   <span
-                    className={cn('inline-flex items-center justify-center rounded-full text-ink transition-all', raised ? 'h-[56px] w-[56px] ring-4 ring-card' : 'h-[34px] w-[34px]')}
+                    className={cn('inline-flex items-center justify-center rounded-full text-ink transition-all', raised ? 'h-[56px] w-[56px] ring-4 ring-[#1a2430]' : 'h-[34px] w-[34px]')}
                     style={{ background: COIN, boxShadow: raised ? '0 10px 22px -8px rgba(245,180,0,.9), 0 2px 6px rgba(15,31,58,.12)' : '0 2px 6px rgba(245,180,0,.45)' }}
                   >
                     <tb.Icon size={raised ? 28 : 20} strokeWidth={2.6} />
                   </span>
-                  <span className={cn('text-[10.5px] font-semibold', isActive ? 'text-ink' : 'text-ink-2')}>{tb.label}</span>
+                  <span className={cn('text-[10.5px] font-semibold', isActive ? 'text-gold-fill' : 'text-white/70')}>{tb.label}</span>
                 </motion.button>
               </li>
             )
@@ -75,12 +75,12 @@ export function TabBar() {
                 whileTap={reduce ? undefined : { scale: 0.94 }}
                 transition={SPRING}
                 onClick={() => { haptic(6); nav(tb.path) }}
-                className={cn('relative flex h-[50px] min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-[12px] px-2', isActive ? 'text-ink' : 'text-ink-3')}
+                className={cn('relative flex h-[50px] min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-[12px] px-2', isActive ? 'text-gold-fill' : 'text-white/55')}
               >
                 <span className="relative">
                   <tb.Icon size={23} strokeWidth={isActive ? 2.1 : 1.75} />
                   {tb.key === 'cart' && cartCount > 0 && (
-                    <span className="tnum absolute -right-2.5 -top-1.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-brick px-1 text-[10.5px] font-bold text-white ring-2 ring-card">{cartCount}</span>
+                    <span className="tnum absolute -right-2.5 -top-1.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-gold-fill px-1 text-[10.5px] font-bold text-ink ring-2 ring-[#1a2430]">{cartCount}</span>
                   )}
                 </span>
                 <span className={cn('text-[10.5px]', isActive ? 'font-semibold' : 'font-medium')}>{tb.label}</span>

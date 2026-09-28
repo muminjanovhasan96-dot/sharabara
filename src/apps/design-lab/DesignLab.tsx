@@ -27,12 +27,12 @@ interface Direction {
 
 const directions: Direction[] = [
   {
-    id: 'D', recommended: true, name: 'Aralashma: A + B', pitch: 'A’ning tanish marketpleys tartibi (oq kartochkalar, katta rasm, narx birinchi) + B’ning siyoh-oltin brendi (serif narxlar, qorong’i admin menyusi, oltin muhr) + C’dan yumshoq burchak va iliq oq fon.',
+    id: 'D', recommended: true, name: 'B asosida, A aksentlari', pitch: 'Asos — B: siyoh sarlavha-blok, qorong’i tab-bar va admin menyusi, serif narxlar, oltin urg’u. A’dan faqat uslub aksentlari: oq kartochkalarda katta rasm va narx birinchi, 4×2 kategoriya plitkalari, yorug’ admin kontenti.',
     accent: D.ink, accentFg: D.gold,
     swatches: [{ hex: D.page, label: 'Fon · iliq oq' }, { hex: D.card, label: 'Karta' }, { hex: D.ink, label: 'Siyoh' }, { hex: D.gold, label: 'Oltin · CTA' }, { hex: D.goldDeep, label: 'Oltin · to’q' }, { hex: D.green, label: 'Ishonch' }, { hex: D.red, label: 'Chegirma' }],
     type: { display: D.display, body: D.font, sample: '6 200 000 so’m', names: 'Narx va sarlavha: Bitter (serif) · Matn: Inter, 15px' },
-    why: 'Foydalanuvchi Uzum/Ozon’dan o’rganib qolgan tartibni oladi (A), lekin har ekranda Sharabara’ning siyoh-oltin xarakteri sezilib turadi (B): hero-blok, narxlar va admin menyusi. Yumshoq burchaklar va iliq fon (C) «sovuq SaaS» hissini olib tashlaydi. Hozirgi jonli demo aynan shu yo’nalishga o’tkazilgan.',
-    familiar: 'Uzum Market tartibi + Apple Card / Revolut ishonch hissi.',
+    why: 'Brend xarakteri (siyoh + oltin, B) har ekranda birinchi ko’zga tashlanadi — ilovani ochganda darhol «Sharabara» ekani bilinadi. Tovar kartalari va kategoriyalar esa A’ning tanish tartibida — o’rganish talab qilmaydi. Jonli demo shu yo’nalishga o’tkazildi.',
+    familiar: 'Apple Card / Revolut / Uzum Bank hissi + Uzum Market tovar tartibi.',
     mockups: [<HomeD key="h" />, <AdminD key="a" />, <DirectorD key="d" />],
   },
   {
@@ -153,7 +153,7 @@ export default function DesignLab() {
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: A.gold }} />Dizayn laboratoriyasi · 28-sentabr, 2026
         </div>
         <h1 style={{ ...h2, fontSize: 44, margin: '14px 0 0', lineHeight: 1.05 }}>Sharabara — dizayn yo’nalishlari</h1>
-        <p style={{ fontSize: 20, color: P.text2, margin: '10px 0 0' }}>4 ta namuna: D — A va B aralashmasi (tavsiya), keyin A, B, C</p>
+        <p style={{ fontSize: 20, color: P.text2, margin: '10px 0 0' }}>4 ta namuna: D — B asosida A aksentlari (tavsiya), keyin A, B, C</p>
         <p style={{ fontSize: 15.5, lineHeight: 1.55, color: P.text2, margin: '18px 0 0', maxWidth: 760 }}>
           Har bir yo’nalishda uchta haqiqiy ekran ko’rsatilgan: mijoz ilovasining bosh sahifasi, adminning «Boshqaruv paneli» va direktor uchun mobil panel.
           Kontent, narxlar va raqamlar hammasida bir xil — faqat uslub farq qiladi, shuning uchun taqqoslash oson.

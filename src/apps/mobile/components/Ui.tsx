@@ -70,7 +70,7 @@ export interface PastelTileProps extends HTMLAttributes<HTMLSpanElement> {
 /** Kategoriya plitkasi: iliq neytral doira + siyoh chiziqli ikon (Sharabara uslubi; pastel ranglar olib tashlandi). */
 export function PastelTile({ icon, Icon, tone: _tone = 'blue', size = 64, iconSize, radius, className, style, ...rest }: PastelTileProps) {
   const Cmp = Icon ?? resolveIcon(icon ?? 'tag')
-  const st: CSSProperties = { width: size, height: size, background: 'var(--paper-2)', color: 'var(--ink)', boxShadow: 'inset 0 0 0 1px var(--line)', borderRadius: radius ?? Math.round(size / 2), ...style }
+  const st: CSSProperties = { width: size, height: size, background: 'var(--paper-2)', color: 'var(--ink)', boxShadow: 'inset 0 0 0 1px var(--line)', borderRadius: radius ?? Math.round(size * 0.3), ...style }
   return (
     <span className={cn('inline-flex shrink-0 items-center justify-center', className)} style={st} aria-hidden="true" {...rest}>
       <Cmp size={iconSize ?? Math.round(size * 0.42)} strokeWidth={1.8} />
