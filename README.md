@@ -45,7 +45,7 @@ soat o'zgarishini faqat sahna ko'rsatadi.
 
 1. Xaridor bosh sahifada «Siz uchun» blokida iPhone'larni ko'radi (kecha ko'rgan).
 2. Sotuvchi «Sotish»: iPhone 13 Pro, 4 rasm, IMEI, narx **6 600 000**. AI tahlili → «Tekshiruvga yuborildi».
-3. Admin → Narx tahlili: taqqoslash jadvali, AI tavsiyasi **6 200 000** (ishonch 87%). «Sotuvchiga taklif yuborish».
+3. Admin → Narx tahlili: taqqoslash jadvali, AI tavsiyasi **6 200 000** (ishonch 88%): o'xshashlar o'rtachasi 6 900 000 → holat tuzatmasi (B) −345 000 → Sharabara qoidasi aynan −5% = −327 750 → yaxlitlash −27 250. «Sotuvchiga taklif yuborish».
 4. Sotuvchi telefonida push. Xizmat haqi **186 000**, qo'lga **6 014 000**. «Roziman, joylash» → e'lon «Narx tekshirilgan».
 5. Xaridor telefonida push (tavsiya triggeri). E'lonni ochadi, «Nega adolatli» sheet'i.
 6. Savat → rasmiylashtirish: xaritadan BTS Namangan Markaz, Payme, jami **6 235 000**. Muhr animatsiyasi.
@@ -105,7 +105,7 @@ Qisqacha: har ekranda bir gaplik izoh va «?» paneli, jargon yo’q, bitta olti
 |---|---|
 | `tsc --noEmit` | toza |
 | `oxlint src` | toza |
-| Vitest | 121 test o'tdi |
+| Vitest | 121 test o'tdi (narx hisob-kitobi: qatorlar yig'indisi = tavsiya, A holatda tuzatma 0, qoida aynan 5%) |
 | Playwright e2e | 7/7: Oltin yo'l boshidan oxirigacha + 6 ta smoke (konsol xatosiz) |
 | Tushunarlilik skripti | 50 ekran: sarlavha, izoh/«?», oltin tugma, jargon — `docs/audit-v2/_ux-check.json` |
 | Lighthouse, admin (desktop) | Performance 99 · Accessibility 100 · Best practices 100 · CLS 0.017 |
@@ -130,4 +130,4 @@ backend'dan olish, ilovani code-split qilish.
 - To'lov, BTS, Excel — haqiqiy integratsiyasiz; Excel import haqiqiy fayl o'qiydi, lekin server yo'q.
 - Xarita OpenStreetMap plitkalariga bog'liq; tarmoq bo'lmasa stilize qilingan SVG xarita ko'rinadi.
 - Rus tili: tuzilma tayyor (`src/i18n`), tarjima yo'q.
-- Ma'lumot bitta brauzerda saqlanadi; boshqa qurilma bilan sinxronlanmaydi.
+- Ma'lumot bitta brauzerda saqlanadi; boshqa qurilma bilan sinxronlanmaydi. Seed o'zgarganda (barmoq izi `seedFingerprint`) eski persist avtomatik tashlanadi va «Demo ma'lumoti yangilandi» xabari chiqadi.

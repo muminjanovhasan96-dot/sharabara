@@ -4,16 +4,17 @@
  *  1. recognize specs (or reuse listing.specs)
  *  2. pick comparables (same model [+storage], last 30 days, sold/published/expired)
  *  3. normalise every comparable to condition A, weighted median  -> marketMedianTiyin
- *  4. bring back to the listing's condition, round to 50 000 so'm  -> holat tuzatmasi
+ *  4. bring back to the listing's condition (exact; A → 0)          -> holat tuzatmasi
  *  5. cap at newRetail × maxNewRatio (row shown only when it binds)
- *  6. Sharabara rule: × (1 − discountRate), round to 50 000 so'm    -> tavsiya
+ *  6. Sharabara rule: exactly −discountRate of the previous line     -> qoida
+ *  7. floor to 50 000 so'm; the difference is its own row            -> yaxlitlash
  *  Invariant: base + adjust rows === total === suggestedTiyin.
  */
 import type {
   Category, Comparable, Condition, ISODate, Listing, PriceBreakdownRow, PriceFlag, PriceSuggestion,
   RecognizedSpecs, Tiyin,
 } from '../types'
-import { mulRate, quantile, roundToStep, weightedMedian } from '../money'
+import { floorToStep, mulRate, quantile, weightedMedian } from '../money'
 import { ageDays, daysBetween } from '../clock'
 import { recognize } from '../checks/recognize'
 import { MODEL_DICTIONARY, findModel } from '../checks/models'
@@ -140,30 +141,39 @@ export function suggestPrice(input: SuggestInput): PriceSuggestion {
   let marketMedian: Tiyin
   let confidence: number
 
+  /** qoida va yaxlitlash qatorlari — ikkala tarmoq uchun bir xil */
+  const applyRuleAndRound = (from: Tiyin, rate: number): Tiyin => {
+    const rule = mulRate(from, rate)
+    breakdown.push({ label: `Sharabara qoidasi (−${pct(rate)})`, amountTiyin: -rule, kind: 'adjust' })
+    const exact = from - rule
+    const rounded = floorToStep(exact, PRICE_STEP)
+    if (rounded !== exact) breakdown.push({ label: 'Yaxlitlash (50 000 so’mgacha)', amountTiyin: rounded - exact, kind: 'adjust' })
+    return rounded
+  }
+
   if (comparables.length === 0) {
     // Fallback: seller's asking price minus the Sharabara rule.
     marketMedian = listing.askingTiyin
-    suggested = roundToStep(mulRate(listing.askingTiyin, 1 - FALLBACK_DISCOUNT), PRICE_STEP)
-    confidence = 0.2
     breakdown.push({ label: "Sotuvchi narxi (o'xshashlar topilmadi)", amountTiyin: listing.askingTiyin, kind: 'base' })
-    breakdown.push({ label: `Sharabara qoidasi (−${pct(FALLBACK_DISCOUNT)})`, amountTiyin: suggested - listing.askingTiyin, kind: 'adjust' })
+    suggested = applyRuleAndRound(listing.askingTiyin, FALLBACK_DISCOUNT)
+    confidence = 0.2
   } else {
     const normalized = comparables.map((c) => normalizeToA(c.priceTiyin, c.condition))
     marketMedian = weightedMedian(comparables.map((c, i) => ({ value: normalized[i], weight: c.weight })))
-    const afterCondition = roundToStep(mulRate(marketMedian, k), PRICE_STEP)
+    // holat tuzatmasi aniq: A → 0, B → −5%, C → −15%, D → −30%
+    const afterCondition = mulRate(marketMedian, k)
     breakdown.push({ label: "O'xshashlar o'rtachasi (A holatga keltirilgan)", amountTiyin: marketMedian, kind: 'base' })
     breakdown.push({ label: `Holat tuzatmasi (${listing.condition})`, amountTiyin: afterCondition - marketMedian, kind: 'adjust' })
 
     let afterCap = afterCondition
     if (newRetail !== null && newRetail > 0) {
-      const cap = roundToStep(mulRate(newRetail, category.maxNewRatio), PRICE_STEP)
+      const cap = mulRate(newRetail, category.maxNewRatio)
       if (cap < afterCondition) {
         afterCap = cap
         breakdown.push({ label: `Yangi narx chegarasi (${pct(category.maxNewRatio)})`, amountTiyin: cap - afterCondition, kind: 'adjust' })
       }
     }
-    suggested = roundToStep(mulRate(afterCap, 1 - category.discountRate), PRICE_STEP)
-    breakdown.push({ label: `Sharabara qoidasi (−${pct(category.discountRate)})`, amountTiyin: suggested - afterCap, kind: 'adjust' })
+    suggested = applyRuleAndRound(afterCap, category.discountRate)
     confidence = confidenceFor(normalized, marketMedian)
   }
   breakdown.push({ label: 'Tavsiya etilgan narx', amountTiyin: suggested, kind: 'total' })

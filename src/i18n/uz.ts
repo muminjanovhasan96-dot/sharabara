@@ -8,6 +8,8 @@ export const uz = {
     wordmark: 'Sharabara',
     tagline: 'Narx bilan yutamiz',
     demo: 'Demo',
+    seedUpdated: 'Demo ma’lumoti yangilandi',
+    seedUpdatedHint: 'Yangi versiya chiqdi — brauzerdagi eski ma’lumot o’chirilib, yangi namuna yuklandi',
     loading: 'Yuklanmoqda…',
     retry: 'Qayta urinish',
     error: 'Xatolik yuz berdi',

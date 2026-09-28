@@ -157,8 +157,10 @@ export function makeCommerce(
   }
 
   // ── 30-day history: 20 listing orders + 100 product orders
+  // oltin xaridorning buyurtmalari faqat 3 ta belgilangan (pastda) — tarixiy buyurtmalarda u qatnashmaydi
+  const historyBuyers = buyers.filter((u) => u.id !== GOLDEN.buyerId)
   for (let i = 0; i < 120; i++) {
-    const buyer = r.pick(buyers)
+    const buyer = r.pick(historyBuyers)
     const daysAgo = r.int(4, 30)
     const createdAt = setHour(addDays(now, -daysAgo), r.int(8, 22), r.int(0, 59))
     const item = i < soldListings.length ? listingItem(soldListings[i]) : productItem(r.pick(stocked), r.chance(0.2) ? 2 : 1)

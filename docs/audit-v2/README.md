@@ -99,3 +99,12 @@ Faqat «keyin» (12 ta): d-stage-golden-step2, d-stage-golden-step3, dark-admin-
 - Sahna tezlik tanlagichi (0.5x/1x/2x) 1500 px dan tor ekranda yashiringan; «Orqaga» esa har doim bor.
 - «Orqaga» qadam holatni qaytarmaydi (savdo o’tgan bo’lsa o’tgan), faqat ekranlarni qayta ko’rsatadi.
 - Matn o’lchami: mobil asosiy matn 15 px, yordamchi yozuvlar 12–13 px joylarda qoldi.
+
+## 5. Oxirgi 4 ta tuzatish (skrinshotlar `fix4/`)
+
+| № | Tuzatish | Dalil |
+|---|---|---|
+| 1 | Seed barmoq izi (`seedFingerprint`) mos kelmasa eski persist tashlanib yangi seed yuklanadi; sessiya (rol, mavzu) saqlanadi; bir marta «Demo ma’lumoti yangilandi» xabari | `fix4/1-seed-auto-reset.png` (eski blob 3 ta e’lon bilan yozildi → yuklangach 524 ta) |
+| 2 | Rollar matritsasi: «Ko’rish / Tahrirlash / Tasdiqlash» to’liq so’z (vertikal) | `fix4/2-roles-headers.png` |
+| 3 | Narx hisob-kitobi: A holatda tuzatma 0; «Sharabara qoidasi (−5%)» aynan 5%; «Yaxlitlash (50 000 so’mgacha)» alohida qator; yig’indi = tavsiya (unit test `pricing/index.test.ts`) | `fix4/3-pricing-golden-B.png` (6 900 000 − 345 000 − 327 750 − 27 250 = 6 200 000), `fix4/3-pricing-A-condition.png` (0 so’m) |
+| 4 | Mobil kartalarda sabab 2 qatorgacha to’liq | `fix4/4-mobile-reasons.png` («Siz MacBook Air M1 saqlagansiz») |

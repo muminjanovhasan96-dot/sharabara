@@ -19,6 +19,16 @@ export { GOLDEN, DEMO_NOW } from './golden'
 export { rng } from './rng'
 
 export const DEFAULT_SEED = 2026
+/** Seed mantiqi o'zgarganda qo'lda oshiring; barmoq izi esa hisoblangan ma'lumotdan avtomatik chiqadi. */
+export const SEED_VERSION = '2026-09-28.3'
+
+/** Seed barmoq izi: versiya + hajmlar + narxlar yig'indisi. Kod o'zgarsa iz ham o'zgaradi → brauzerdagi eski persist tashlanadi. */
+export function seedFingerprint(d: DataSnapshot): string {
+  let sum = 0
+  for (const l of d.listings) sum = (sum + (l.priceTiyin % 1_000_003)) % 1_000_000_007
+  for (const p of d.products) sum = (sum + (p.priceTiyin % 1_000_003)) % 1_000_000_007
+  return `${SEED_VERSION}:${d.listings.length}:${d.products.length}:${d.orders.length}:${d.dailyStats.length}:${sum}`
+}
 
 export function generateSnapshot(seed: number = DEFAULT_SEED, now: ISODate = DEMO_NOW): DataSnapshot {
   const root = rng(seed)

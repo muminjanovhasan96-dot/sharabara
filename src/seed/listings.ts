@@ -146,6 +146,7 @@ export function makeListings(r: Rng, now: ISODate, users: User[], categories: Ca
   // Guarantee a handful of published iPhone 13 listings for the buyer's feed
   const iphone13 = MODEL_DICTIONARY.find((m) => m.id === 'iphone-13')!
   const iphone13max = MODEL_DICTIONARY.find((m) => m.id === 'iphone-13-pro-max')!
+  const macAir = MODEL_DICTIONARY.find((m) => /MacBook Air M1/i.test(m.model))!
 
   const listings: Listing[] = []
   const queueRole = new Map<string, QueueRole>()
@@ -156,7 +157,9 @@ export function makeListings(r: Rng, now: ISODate, users: User[], categories: Ca
     let categoryId = catPlan[i]
     let force: ModelEntry | undefined
     if (i < 8) { categoryId = 'telefonlar'; force = i < 6 ? iphone13 : iphone13max }
-    const forcedStatus: ListingStatus = i < 8 ? 'published' : status
+    // 2 ta MacBook Air M1 (xaridor birini saqlagan → lentada «Siz MacBook Air M1 saqlagansiz» sababi)
+    else if (i < 10) { categoryId = 'noutbuklar'; force = macAir }
+    const forcedStatus: ListingStatus = i < 10 ? 'published' : status
     // navbatdagi e'lon: rolga qarab kategoriya (o'xshash e'lon kam → lug'atsiz kategoriya, IMEI → telefon)
     let role: QueueRole | undefined
     if (forcedStatus === 'in_review') {

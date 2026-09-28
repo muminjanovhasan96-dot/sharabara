@@ -120,6 +120,8 @@ export default function StageApp() {
   useEffect(() => { setFastMode(fast); goldenRunner.setFast(fast) }, [fast])
   useEffect(() => () => setFastMode(false), [])
 
+  // seed yangilangan bo'lsa bir marta xabar
+  useEffect(() => { const st = useStore.getState(); if (st.resetNotice) { stageToast.show(uz.app.seedUpdated, uz.app.seedUpdatedHint, { icon: 'refresh-cw', tone: 'gold' }); st.clearResetNotice() } }, [])
   // clock toasts (sahnaning o'zi ko'rsatadi; ichki ilovalar takrorlamaydi)
   useEffect(() => bus.on('clock', (p) => stageToast.show(p.label, formatDemoTime(p.now), { icon: 'clock-3', tone: 'gold' })), [])
 

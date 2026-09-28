@@ -27,6 +27,13 @@ export function mulRate(t: Tiyin, rate: number): Tiyin {
 }
 
 /** Round to nearest step (in tiyin), e.g. 50 000 so'm = 5 000 000 tiyin */
+/** Qadamga pastga yaxlitlash (narx tavsiyasi: 6 227 250 → 6 200 000). */
+export function floorToStep(t: Tiyin, stepTiyin: Tiyin): Tiyin {
+  assertTiyin(t); assertTiyin(stepTiyin)
+  if (stepTiyin <= 0) return t
+  return Math.floor(t / stepTiyin) * stepTiyin
+}
+
 export function roundToStep(t: Tiyin, stepTiyin: Tiyin): Tiyin {
   assertTiyin(t); assertTiyin(stepTiyin)
   if (stepTiyin <= 0) return t

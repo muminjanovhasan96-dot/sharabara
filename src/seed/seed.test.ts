@@ -164,7 +164,7 @@ describe('golden path from the generated snapshot', () => {
     const s = suggestPrice({ listing, category, history: snap.listings, newRetailTiyin: GOLDEN.newRetail, now: DEMO_NOW })
     expect(s.marketMedianTiyin).toBe(GOLDEN.marketMedian)
     expect(s.suggestedTiyin).toBe(GOLDEN.suggested)
-    expect(s.breakdown.map((b) => b.amountTiyin)).toEqual([690_000_000, -35_000_000, -35_000_000, 620_000_000])
+    expect(s.breakdown.map((b) => b.amountTiyin)).toEqual([690_000_000, GOLDEN.conditionAdjust, GOLDEN.ruleAdjust, GOLDEN.roundingAdjust, 620_000_000])
     expect(s.breakdown[1].label).toBe('Holat tuzatmasi (B)')
     expect(s.breakdown[2].label).toBe('Sharabara qoidasi (−5%)')
     expect(breakdownIsConsistent(s)).toBe(true)

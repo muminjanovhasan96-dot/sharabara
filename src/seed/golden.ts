@@ -10,8 +10,12 @@ export const GOLDEN = {
   suggested: 620_000_000,
   /** market median normalised to condition A: 6 900 000 so'm */
   marketMedian: 690_000_000,
-  conditionAdjust: -35_000_000,
-  ruleAdjust: -35_000_000,
+  /** B holat: 6 900 000 × 0,95 − 6 900 000 = −345 000 so'm */
+  conditionAdjust: -34_500_000,
+  /** aynan −5%: 6 555 000 × 0,05 = −327 750 so'm */
+  ruleAdjust: -32_775_000,
+  /** 6 227 250 → 6 200 000 (50 000 so'mgacha pastga) */
+  roundingAdjust: -2_725_000,
   /** 3% of 6 200 000 */
   fee: 18_600_000,
   sellerGets: 601_400_000,

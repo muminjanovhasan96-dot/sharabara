@@ -1,8 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   suggestPrice, buildComparables, normalizeToA, fromA, confidenceFor, classifyQueue, priceHistogram,
-  breakdownIsConsistent, clamp, modelOf, PRICE_STEP,
-} from './index'
+  breakdownIsConsistent, clamp, modelOf, PRICE_STEP, CONDITION_K } from './index'
 import type { Category, Comparable, Listing } from '../types'
 import { addDays } from '../clock'
 
@@ -71,11 +70,13 @@ describe('suggestPrice — golden path', () => {
     expect(s.marketMedianTiyin).toBe(690_000_000)
     expect(s.suggestedTiyin).toBe(620_000_000)
     const rows = s.breakdown
-    expect(rows.map((r) => r.kind)).toEqual(['base', 'adjust', 'adjust', 'total'])
+    expect(rows.map((r) => r.kind)).toEqual(['base', 'adjust', 'adjust', 'adjust', 'total'])
     expect(rows[0].amountTiyin).toBe(690_000_000)
-    expect(rows[1]).toMatchObject({ label: 'Holat tuzatmasi (B)', amountTiyin: -35_000_000 })
-    expect(rows[2]).toMatchObject({ label: 'Sharabara qoidasi (−5%)', amountTiyin: -35_000_000 })
-    expect(rows[3]).toMatchObject({ label: 'Tavsiya etilgan narx', amountTiyin: 620_000_000 })
+    expect(rows[1]).toMatchObject({ label: 'Holat tuzatmasi (B)', amountTiyin: -34_500_000 })
+    // aynan 5%: 6 555 000 × 0,05 = 327 750
+    expect(rows[2]).toMatchObject({ label: 'Sharabara qoidasi (−5%)', amountTiyin: -32_775_000 })
+    expect(rows[3]).toMatchObject({ label: 'Yaxlitlash (50 000 so’mgacha)', amountTiyin: -2_725_000 })
+    expect(rows[4]).toMatchObject({ label: 'Tavsiya etilgan narx', amountTiyin: 620_000_000 })
     expect(breakdownIsConsistent(s)).toBe(true)
   })
   it('confidence 0.85–0.89, n ≥ 10, overpriced flag (6 600 000 is 6,5% above 6 200 000)', () => {
@@ -98,6 +99,19 @@ describe('suggestPrice — golden path', () => {
       const r = suggestPrice({ listing: { ...golden, condition }, category: cat, history, newRetailTiyin: 950_000_000, now: NOW })
       expect(breakdownIsConsistent(r)).toBe(true)
       expect(r.suggestedTiyin % PRICE_STEP).toBe(0)
+      // qatorlar yig'indisi = tavsiya
+      const sum = r.breakdown.filter((b) => b.kind !== 'total').reduce((a, b) => a + b.amountTiyin, 0)
+      expect(sum).toBe(r.suggestedTiyin)
+      // holat tuzatmasi aniq k bo'yicha; A → 0
+      const cond = r.breakdown.find((b) => b.label.startsWith('Holat tuzatmasi'))!
+      expect(cond.amountTiyin).toBe(condition === 'A' ? 0 : Math.round(690_000_000 * CONDITION_K[condition]) - 690_000_000)
+      // qoida aynan 5% oldingi qatordan
+      const afterCond = 690_000_000 + cond.amountTiyin
+      const rule = r.breakdown.find((b) => b.label.startsWith('Sharabara qoidasi'))!
+      expect(rule.amountTiyin).toBe(-Math.round(afterCond * 0.05))
+      // yaxlitlash qatori bo'lsa manfiy va 50 000 dan kichik
+      const rnd = r.breakdown.find((b) => b.label.startsWith('Yaxlitlash'))
+      if (rnd) { expect(rnd.amountTiyin).toBeLessThan(0); expect(-rnd.amountTiyin).toBeLessThan(PRICE_STEP) }
     }
   })
   it('uses listing.specs when present and reports on the model', () => {
@@ -117,7 +131,8 @@ describe('suggestPrice — edge cases', () => {
     expect(capRow).toBeDefined()
     expect(capRow!.amountTiyin).toBeLessThan(0)
     // 600 000 × 0.85 = 510 000 → × 0.95 = 484 500 → 484 500 (already 50k step? 484 500 -> 500 000 step rounding)
-    expect(r.suggestedTiyin).toBe(roundTo(510_000_000 * 0.95))
+    // 510 000 × 0,95 = 484 500 → 50 000 gacha pastga = 480 000
+    expect(r.suggestedTiyin).toBe(480_000_000)
     expect(breakdownIsConsistent(r)).toBe(true)
     expect(r.flags).toContain('overpriced')
   })
@@ -220,6 +235,3 @@ describe('priceHistogram', () => {
   })
 })
 
-function roundTo(v: number): number {
-  return Math.round(v / PRICE_STEP) * PRICE_STEP
-}

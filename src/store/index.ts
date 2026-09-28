@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist, createJSONStorage, subscribeWithSelector } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 import type { CartItem, DataSnapshot, ISODate, Role, StaffRole } from '@/domain/types'
-import { generateSnapshot } from '@/seed'
+import { generateSnapshot, seedFingerprint } from '@/seed'
 
 export const STORE_KEY = 'sharabara-demo-v1'
 export const DEFAULT_SEED = 2026
@@ -39,6 +39,11 @@ export interface StoreState {
   ui: UiState
   /** increments on every mutation; used for sync + memo invalidation */
   version: number
+  /** persist'dagi seed barmoq izi — mos kelmasa ma'lumot avtomatik yangilanadi */
+  seedFp: string
+  /** avtomatik yangilanish bo'ldi — ilova bir marta xabar ko'rsatadi */
+  resetNotice: boolean
+  clearResetNotice: () => void
   /** random per-tab id to avoid echo loops */
   tabId: string
   // actions
@@ -67,6 +72,9 @@ function initialSession(): Session {
   return { userId: 'u-buyer', staffId: 's-super', role: 'super_admin', companyId: 'c-namuna', theme: 'light' }
 }
 
+/** Joriy kod uchun seed barmoq izi (bir marta hisoblanadi). */
+const CURRENT_FP = seedFingerprint(generateSnapshot(DEFAULT_SEED, defaultNow()))
+
 export const useStore = create<StoreState>()(
   subscribeWithSelector(
     persist(
@@ -76,6 +84,9 @@ export const useStore = create<StoreState>()(
         clock: { now: defaultNow(), dayOffset: 0 },
         ui: initialUi(),
         version: 0,
+        seedFp: CURRENT_FP,
+        resetNotice: false,
+        clearResetNotice: () => set((s) => { s.resetNotice = false }),
         tabId: Math.random().toString(36).slice(2, 10),
         update: (recipe) => set((s) => { recipe(s.data); s.version += 1 }),
         setSession: (patch) => set((s) => { Object.assign(s.session, patch) }),
@@ -86,6 +97,7 @@ export const useStore = create<StoreState>()(
           s.clock = { now: defaultNow(), dayOffset: 0 }
           s.ui = initialUi()
           s.version += 1
+          s.seedFp = seed === DEFAULT_SEED ? CURRENT_FP : `seed-${seed}:${CURRENT_FP}`
         }),
         applyRemote: (r) => set((s) => {
           s.data = r.data; s.clock = r.clock; s.ui = r.ui; s.version = r.version
@@ -93,9 +105,19 @@ export const useStore = create<StoreState>()(
       })),
       {
         name: STORE_KEY,
-        version: 1,
+        version: 2,
         storage: createJSONStorage(() => localStorage),
-        partialize: (s) => ({ data: s.data, session: s.session, clock: s.clock, ui: s.ui, version: s.version }),
+        partialize: (s) => ({ data: s.data, session: s.session, clock: s.clock, ui: s.ui, version: s.version, seedFp: s.seedFp }),
+        /** Eski persist: seed barmoq izi mos kelmasa (yoki yo'q bo'lsa) — ma'lumot, soat va savat yangi seed'dan; sessiya (rol, mavzu) saqlanadi. */
+        merge: (persisted, current) => {
+          const p = (persisted ?? {}) as Partial<Pick<StoreState, 'data' | 'session' | 'clock' | 'ui' | 'version' | 'seedFp'>>
+          const fp = p.seedFp ?? ''
+          const sameSeed = fp === CURRENT_FP || (fp.startsWith('seed-') && fp.endsWith(`:${CURRENT_FP}`))
+          if (p.data && sameSeed) return { ...current, ...p } as StoreState
+          return { ...current, session: { ...current.session, ...p.session }, resetNotice: Boolean(p.data) }
+        },
+        /** persist versiyasi eskirgan bo'lsa ham merge o'zi hal qiladi */
+        migrate: (persisted) => persisted as never,
       },
     ),
   ),

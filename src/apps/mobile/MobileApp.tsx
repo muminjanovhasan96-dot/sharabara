@@ -12,6 +12,7 @@ import { useStore } from '@/store'
 import { PhoneFrame, PushStack, Toaster, toast, usePhoneContainer } from '@/design'
 import { TID } from '@/lib/testids'
 import { ms } from './strings'
+import { uz } from '@/i18n/uz'
 import { TabBar } from './components/TabBar'
 import Home from './screens/Home'
 import Search from './screens/Search'
@@ -58,6 +59,7 @@ function usePushBanners() {
 function Shell({ onboarding = false }: { onboarding?: boolean }) {
   useStageNav()
   usePushBanners()
+  useEffect(() => { if (!onboarding) return; const st = useStore.getState(); if (st.resetNotice) { toast.info(uz.app.seedUpdated, { description: uz.app.seedUpdatedHint }); st.clearResetNotice() } }, [onboarding])
   const { base } = useBase()
   const loc = useLocation()
   const navType = useNavigationType()

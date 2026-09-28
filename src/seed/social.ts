@@ -19,6 +19,9 @@ export function makeEvents(r: Rng, now: ISODate, users: User[], listings: Listin
   })
   events.push({ userId: GOLDEN.buyerId, kind: 'search', at: addMinutes(yesterday, -3), query: 'iphone 13' })
   if (iphones[1]) events.push({ userId: GOLDEN.buyerId, kind: 'save', at: addMinutes(yesterday, 20), itemId: iphones[1].id, source: 'listing', categoryId: 'telefonlar', model: 'iPhone 13', priceTiyin: iphones[1].priceTiyin })
+  // ...va bir MacBook Air M1 ni saqlagan — lentada «Siz MacBook Air M1 saqlagansiz» sababi 2 qatorda ko'rinadi
+  const macs = listings.filter((l) => l.status === 'published' && !l.historical && /MacBook Air M1/.test(l.title)).slice(0, 2)
+  macs.forEach((mac, i) => events.push({ userId: GOLDEN.buyerId, kind: 'save', at: addMinutes(yesterday, 35 + i * 4), itemId: mac.id, source: 'listing', categoryId: 'noutbuklar', model: 'MacBook Air M1', priceTiyin: mac.priceTiyin }))
   const tv = published.find((l) => l.categoryId === 'televizorlar')
   if (tv) events.push({ userId: GOLDEN.buyerId, kind: 'view', at: addDays(now, -9), itemId: tv.id, source: 'listing', categoryId: 'televizorlar', priceTiyin: tv.priceTiyin })
 

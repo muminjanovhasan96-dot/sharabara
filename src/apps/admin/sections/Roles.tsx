@@ -28,7 +28,7 @@ export function Roles() {
           <thead className="sticky top-0 z-10 bg-paper shadow-[inset_0_-1px_0_var(--line)]">
             <tr>
               <th className="eyebrow px-3 py-2.5 text-left font-semibold">{A.roles.section}</th>
-              {ROLES.map((r) => <th key={r} className="px-2 py-2.5 text-center"><div className="eyebrow font-semibold">{uz.admin.roles[r]}</div><div className="mt-1 flex justify-center gap-1 text-[9px] uppercase tracking-[0.1em] text-ink-3">{PERMS.map((p) => <span key={p} className="w-9">{A.roles[p].slice(0, 3)}</span>)}</div></th>)}
+              {ROLES.map((r) => <th key={r} className="px-2 py-2.5 text-center"><div className="eyebrow font-semibold">{uz.admin.roles[r]}</div><div className="mt-1 flex justify-center gap-1 text-[10.5px] font-medium text-ink-3">{PERMS.map((p) => <span key={p} className="inline-flex h-[74px] w-9 items-end justify-center"><span className="whitespace-nowrap" style={{ writingMode: 'vertical-rl', textOrientation: 'sideways', transform: 'rotate(180deg)' }}>{A.roles[p][0].toUpperCase() + A.roles[p].slice(1)}</span></span>)}</div></th>)}
             </tr>
           </thead>
           <tbody className="divide-y divide-line">

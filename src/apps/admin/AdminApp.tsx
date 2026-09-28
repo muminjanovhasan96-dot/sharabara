@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, useParams } from 'react-router-dom'
 import { ThemeProvider, Toaster, EmptyState, Button } from '@/design'
 import { toast } from './lib/toast'
 import { bus } from '@/api'
+import { useStore } from '@/store'
 import { uz } from '@/i18n/uz'
 import type { AdminSection } from '@/domain/types'
 import { useAppNavigate, useStageNav } from '@/lib/router'
@@ -72,6 +73,7 @@ function AdminInner({ root, embedded }: { root: HTMLDivElement; embedded: boolea
   }), [nav, pulse])
   // sahnada soat xabarini sahnaning o'zi ko'rsatadi — takrorlamaymiz
   useEffect(() => (embedded ? undefined : bus.on('clock', (p) => toast.info(p.label))), [embedded])
+  useEffect(() => { if (embedded) return; const st = useStore.getState(); if (st.resetNotice) { toast.info(uz.app.seedUpdated, { description: uz.app.seedUpdatedHint }); st.clearResetNotice() } }, [embedded])
 
   // keyboard: ⌘K / Ctrl+K, ?
   useEffect(() => {
