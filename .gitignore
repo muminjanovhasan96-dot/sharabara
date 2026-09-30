@@ -7,3 +7,7 @@ playwright-report
 screenshots
 .DS_Store
 *.local
+
+# Claude Code (shaxsiy sozlamalar)
+.claude/settings.local.json
+.claude/skills/impeccable/scripts/bin/
