@@ -118,7 +118,7 @@ export function Toolbar({ children, right, className }: { children?: ReactNode; 
   return (
     <div className={cn('mb-4 flex flex-wrap items-center justify-between gap-2', className)}>
       <div className="flex min-w-0 flex-wrap items-center gap-2">{children}</div>
-      {right && <div className="flex shrink-0 items-center gap-2">{right}</div>}
+      {right && <div className="flex min-w-0 flex-wrap items-center gap-2">{right}</div>}
     </div>
   )
 }

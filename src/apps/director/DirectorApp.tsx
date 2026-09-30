@@ -4,7 +4,7 @@
  */
 import { useCallback, useState } from 'react'
 import { Navigate, Route, Routes, useParams, useSearchParams } from 'react-router-dom'
-import { ThemeProvider } from '@/design'
+import { ThemeProvider, usePhoneContainer } from '@/design'
 import { useIsMobile } from '@/lib/hooks'
 import { useAppNavigate, useStageNav } from '@/lib/router'
 import { DirectorDashboard } from './DirectorDashboard'
@@ -13,8 +13,10 @@ import type { TabKey } from './strings'
 
 export default function DirectorApp({ embedded = false }: { embedded?: boolean }) {
   const [el, setEl] = useState<HTMLDivElement | null>(null)
+  // /tel/direktor: telefon ramkasi ichida — balandlik ramkadan keladi
+  const inPhone = usePhoneContainer() !== null
   return (
-    <div ref={setEl} data-director-root className={embedded ? 'h-full min-h-0 w-full bg-paper text-ink' : 'h-dvh w-full bg-paper text-ink'}>
+    <div ref={setEl} data-director-root className={embedded || inPhone ? 'h-full min-h-0 w-full bg-paper text-ink' : 'h-dvh w-full bg-paper text-ink'}>
       {el && (
         <ThemeProvider scope={el} storageKey="sb-director-theme">
           <Routes>
@@ -32,7 +34,8 @@ function Page() {
   const { tab } = useParams()
   const nav = useAppNavigate()
   const [sp] = useSearchParams()
-  const mobile = useIsMobile()
+  // telefon ekrani yoki telefon ramkasi (/tel/direktor kompyuterda) — pastki tablar
+  const mobile = useIsMobile() || usePhoneContainer() !== null
   const onGo = useCallback((t: TabKey, search: URLSearchParams) => {
     const q = search.toString()
     nav(`/${t === 'umumiy' ? '' : t}${q ? `?${q}` : ''}`)

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Check, PencilLine, X, ZoomIn } from 'lucide-react'
-import { Badge, Button, EmptyState, Kbd, Money, ProductImage, Illustration, isIllustrationId, illustrationFor, Skeleton } from '@/design'
+import { Check, ChevronRight, PencilLine, X, ZoomIn } from 'lucide-react'
+import { Badge, BottomSheet, Button, EmptyState, Kbd, Money, ProductImage, Illustration, isIllustrationId, illustrationFor, Skeleton } from '@/design'
 import { useNow, useStore } from '@/store'
 import { api } from '@/api'
 import { uz } from '@/i18n/uz'
@@ -12,7 +12,7 @@ import { useAccess, isModerated } from '../lib/sections'
 import { useAct, useQueryParam, useSectionLoading } from '../lib/hooks'
 import { categoryName, regionName, userName, waitFor, fmtTime } from '../lib/format'
 import { A, tt } from '../strings'
-import { useAdmin } from '../lib/context'
+import { useAdmin, useContainer } from '../lib/context'
 
 export const BANNED_WORDS = ['kredit', 'garov', 'nasiya', 'kafolat 100%', 'original emas']
 
@@ -32,17 +32,19 @@ export function Moderation() {
   const now = useNow()
   const access = useAccess('moderation')
   const loading = useSectionLoading()
-  const { compact } = useAdmin()
+  const { compact, mobile } = useAdmin()
+  const root = useContainer()
   const [qid, setQid] = useQueryParam('id')
   const { run, pending } = useAct()
   const queue = useMemo(() => data.listings.filter((l) => (l.status === 'in_review' || l.status === 'submitted') && !l.historical && !isModerated(l)).sort((a, b) => (a.submittedAt ?? a.createdAt).localeCompare(b.submittedAt ?? b.createdAt)), [data.listings])
   const fromParam = qid ? data.listings.find((l) => l.id === qid) : undefined
-  const selected = fromParam ?? queue.find((l) => l.id === qid) ?? queue[0]
+  // Telefonda avtomatik tanlov yo'q: ro'yxat → bosish → pastdan chiqadigan varaq
+  const selected = mobile ? fromParam : fromParam ?? queue.find((l) => l.id === qid) ?? queue[0]
   const idx = queue.findIndex((l) => l.id === selected?.id)
   const [dlg, setDlg] = useState<'edit' | 'reject' | null>(null)
   const [zoom, setZoom] = useState<string | null>(null)
 
-  useEffect(() => { if (!qid && queue[0]) setQid(queue[0].id) }, [qid, queue, setQid])
+  useEffect(() => { if (!mobile && !qid && queue[0]) setQid(queue[0].id) }, [mobile, qid, queue, setQid])
   const move = useCallback((d: number) => { if (!queue.length) return; const n = Math.max(0, Math.min(queue.length - 1, (idx < 0 ? 0 : idx) + d)); setQid(queue[n].id) }, [queue, idx, setQid])
   const selectNext = useCallback((cur: string) => { const rest = queue.filter((l) => l.id !== cur); setQid(rest[Math.min(idx, rest.length - 1)]?.id ?? null) }, [queue, idx, setQid])
 
@@ -52,7 +54,70 @@ export function Moderation() {
   useKey('e', () => { if (selected && access.edit) setDlg('edit') }, { enabled: !dlg })
   useKey('r', () => { if (selected && access.approve) setDlg('reject') }, { enabled: !dlg })
 
-  if (loading) return <div className="grid h-full grid-cols-[340px_1fr] gap-4 p-5"><Skeleton height="100%" className="rounded-card" /><Skeleton height="100%" className="rounded-card" /></div>
+  if (loading) return mobile
+    ? <div className="flex flex-col gap-3 p-3">{Array.from({ length: 5 }, (_, i) => <Skeleton key={i} height={76} className="rounded-card" />)}</div>
+    : <div className="grid h-full grid-cols-[340px_1fr] gap-4 p-5"><Skeleton height="100%" className="rounded-card" /><Skeleton height="100%" className="rounded-card" /></div>
+
+  const list = (
+    <>
+      {queue.length === 0 && <EmptyState compact icon="shield-check" title={A.moderation.empty} hint={A.moderation.emptyHint} />}
+      {queue.map((l) => {
+        const banned = bannedIn(l).length
+        const risk = banned > 0 || l.specs?.imeiStatus === 'suspicious' || l.specs?.imagesOriginal === false
+        const active = selected?.id === l.id
+        return (
+          <button key={l.id} type="button" onClick={() => setQid(l.id)} aria-current={active ? 'true' : undefined} className={cn('flex w-full items-start gap-3 border-b border-line px-4 py-3 text-left transition-colors hover:bg-blue-soft/40', active && !mobile && 'bg-blue-soft shadow-[inset_3px_0_0_var(--blue)] hover:bg-blue-soft')}>
+            <ProductImage id={imgId(l.images[0] ?? '', l.id)} className="h-12 w-12 shrink-0" fill={0.8} />
+            <span className="min-w-0 flex-1">
+              <span className={cn('block truncate font-medium text-ink', mobile ? 'text-[14px]' : 'text-[13.5px]')}>{l.title}</span>
+              <span className="mt-0.5 flex items-center gap-2 text-[12px] text-ink-3"><span className="tnum">{l.id}</span><span>·</span><span className="tnum">{waitFor(l.submittedAt, now)}</span></span>
+              <span className="mt-1 flex flex-wrap gap-1">
+                <ListingStatusBadge status={l.status} />
+                {risk && <Badge tone="brick" size="sm">{A.moderation.risks}</Badge>}
+              </span>
+            </span>
+            {mobile && <ChevronRight size={16} className="mt-3 shrink-0 text-ink-3" aria-hidden="true" />}
+          </button>
+        )
+      })}
+    </>
+  )
+  const confirms = (
+    <>
+      <AdminConfirm open={dlg === 'edit'} onOpenChange={(o) => !o && setDlg(null)} title={uz.admin.requestEdit} description={selected?.title} requireReason reasonPlaceholder={A.moderation.editReason} confirmLabel={uz.admin.requestEdit}
+        onConfirm={async (reason) => { if (!selected) return; const id = selected.id; setDlg(null); await run('edit', () => api.listings.returnForEdit(id, reason ?? ''), A.moderation.returned); selectNext(id) }} />
+      <AdminConfirm open={dlg === 'reject'} onOpenChange={(o) => !o && setDlg(null)} title={uz.admin.reject} description={selected?.title} requireReason tone="destructive" reasonPlaceholder={A.moderation.rejectReason} confirmLabel={uz.admin.reject}
+        onConfirm={async (reason) => { if (!selected) return; const id = selected.id; setDlg(null); await run('reject', () => api.listings.reject(id, reason ?? ''), A.moderation.rejected); selectNext(id) }} />
+    </>
+  )
+
+  if (mobile) {
+    return (
+      <div className="flex flex-col pb-3">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-line bg-paper/95 px-4 py-2.5 backdrop-blur">
+          <span className="eyebrow">{A.moderation.queue} · <span className="tnum text-ink">{queue.length}</span></span>
+          <span className="text-[12px] text-ink-3">{idx >= 0 && selected ? `${idx + 1} / ${queue.length}` : 'E’lonni bosib oching'}</span>
+        </div>
+        <div className="bg-card">{list}</div>
+        <BottomSheet open={!!selected} onOpenChange={(o) => { if (!o) setQid(null) }} container={root} snap="full" eyebrow={`${A.moderation.queue} · ${idx + 1} / ${queue.length}`} title={selected?.title} bodyClassName="px-4 pb-4"
+          footer={selected && (
+            <div className="flex flex-col gap-2">
+              <Button variant="gold" fullWidth leading={<Check strokeWidth={2} />} onClick={approve} disabled={!access.approve} loading={pending === 'approve'}>{uz.admin.approve}</Button>
+              <div className="grid grid-cols-2 gap-2">
+                <Button variant="secondary" size="sm" leading={<PencilLine strokeWidth={1.75} />} onClick={() => setDlg('edit')} disabled={!access.edit}>{uz.admin.requestEdit}</Button>
+                <Button variant="danger" size="sm" leading={<X strokeWidth={1.75} />} onClick={() => setDlg('reject')} disabled={!access.approve}>{uz.admin.reject}</Button>
+              </div>
+            </div>
+          )}>
+          {selected && <Detail l={selected} onZoom={setZoom} onApprove={approve} onEdit={() => setDlg('edit')} onReject={() => setDlg('reject')} canEdit={access.edit} canApprove={access.approve} pending={pending} mobile />}
+        </BottomSheet>
+        <AdminModal open={!!zoom} onOpenChange={(o) => !o && setZoom(null)} size="lg" title={A.moderation.zoom}>
+          {zoom && <div className="hatch rounded-[12px] p-4"><Illustration id={imgId(zoom, zoom)} className="mx-auto h-[260px] w-full" /></div>}
+        </AdminModal>
+        {confirms}
+      </div>
+    )
+  }
 
   return (
     <div className={cn('grid h-full min-h-0', compact ? 'grid-cols-[280px_minmax(0,1fr)]' : 'grid-cols-[340px_minmax(0,1fr)]')}>
@@ -61,26 +126,7 @@ export function Moderation() {
           <span className="eyebrow">{A.moderation.queue} · <span className="tnum text-ink">{queue.length}</span></span>
           <span className="flex items-center gap-1 text-[11px] text-ink-3"><Kbd>J</Kbd><Kbd>K</Kbd></span>
         </div>
-        <div className="scroll-thin min-h-0 flex-1 overflow-y-auto">
-          {queue.length === 0 && <EmptyState compact icon="shield-check" title={A.moderation.empty} hint={A.moderation.emptyHint} />}
-          {queue.map((l) => {
-            const banned = bannedIn(l).length
-            const risk = banned > 0 || l.specs?.imeiStatus === 'suspicious' || l.specs?.imagesOriginal === false
-            return (
-              <button key={l.id} type="button" onClick={() => setQid(l.id)} aria-current={selected?.id === l.id ? 'true' : undefined} className={cn('flex w-full items-start gap-3 border-b border-line px-4 py-3 text-left transition-colors hover:bg-blue-soft/40', selected?.id === l.id && 'bg-blue-soft shadow-[inset_3px_0_0_var(--blue)] hover:bg-blue-soft')}>
-                <ProductImage id={imgId(l.images[0] ?? '', l.id)} className="h-12 w-12 shrink-0" fill={0.8} />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[13.5px] font-medium text-ink">{l.title}</span>
-                  <span className="mt-0.5 flex items-center gap-2 text-[12px] text-ink-3"><span className="tnum">{l.id}</span><span>·</span><span className="tnum">{waitFor(l.submittedAt, now)}</span></span>
-                  <span className="mt-1 flex flex-wrap gap-1">
-                    <ListingStatusBadge status={l.status} />
-                    {risk && <Badge tone="brick" size="sm">{A.moderation.risks}</Badge>}
-                  </span>
-                </span>
-              </button>
-            )
-          })}
-        </div>
+        <div className="scroll-thin min-h-0 flex-1 overflow-y-auto">{list}</div>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-line px-4 py-2 text-[11.5px] text-ink-3" aria-label={A.shell.shortcuts}>
           <span className="flex items-center gap-1"><Kbd>J</Kbd><Kbd>K</Kbd> {A.shell.kbd.next.toLowerCase()} / {A.shell.kbd.prev.toLowerCase()}</span>
           <span className="flex items-center gap-1"><Kbd>A</Kbd> {A.shell.kbd.approve.toLowerCase()}</span>
@@ -98,15 +144,12 @@ export function Moderation() {
       <AdminModal open={!!zoom} onOpenChange={(o) => !o && setZoom(null)} size="lg" title={A.moderation.zoom}>
         {zoom && <div className="hatch rounded-[12px] p-8"><Illustration id={imgId(zoom, zoom)} className="mx-auto h-[380px] w-full" /></div>}
       </AdminModal>
-      <AdminConfirm open={dlg === 'edit'} onOpenChange={(o) => !o && setDlg(null)} title={uz.admin.requestEdit} description={selected?.title} requireReason reasonPlaceholder={A.moderation.editReason} confirmLabel={uz.admin.requestEdit}
-        onConfirm={async (reason) => { if (!selected) return; const id = selected.id; setDlg(null); await run('edit', () => api.listings.returnForEdit(id, reason ?? ''), A.moderation.returned); selectNext(id) }} />
-      <AdminConfirm open={dlg === 'reject'} onOpenChange={(o) => !o && setDlg(null)} title={uz.admin.reject} description={selected?.title} requireReason tone="destructive" reasonPlaceholder={A.moderation.rejectReason} confirmLabel={uz.admin.reject}
-        onConfirm={async (reason) => { if (!selected) return; const id = selected.id; setDlg(null); await run('reject', () => api.listings.reject(id, reason ?? ''), A.moderation.rejected); selectNext(id) }} />
+      {confirms}
     </div>
   )
 }
 
-function Detail({ l, onZoom, onApprove, onEdit, onReject, canEdit, canApprove, pending }: { l: Listing; onZoom: (id: string) => void; onApprove: () => void; onEdit: () => void; onReject: () => void; canEdit: boolean; canApprove: boolean; pending: string | null }) {
+function Detail({ l, onZoom, onApprove, onEdit, onReject, canEdit, canApprove, pending, mobile = false }: { l: Listing; onZoom: (id: string) => void; onApprove: () => void; onEdit: () => void; onReject: () => void; canEdit: boolean; canApprove: boolean; pending: string | null; mobile?: boolean }) {
   const data = useStore((s) => s.data)
   const banned = bannedIn(l)
   const s = l.specs
@@ -120,8 +163,8 @@ function Detail({ l, onZoom, onApprove, onEdit, onReject, canEdit, canApprove, p
     <div className="mx-auto flex max-w-[980px] flex-col gap-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <div className="flex items-center gap-2 text-[12px] text-ink-3"><span className="tnum">{l.id}</span><span>·</span><span>{categoryName(data, l.categoryId)}</span><span>·</span><span>{regionName(data, l.regionId)}</span></div>
-          <h2 className="m-0 mt-1 font-display text-[22px] leading-tight text-ink">{highlightBanned(l.title)}</h2>
+          <div className="flex flex-wrap items-center gap-2 text-[12px] text-ink-3"><span className="tnum">{l.id}</span><span>·</span><span>{categoryName(data, l.categoryId)}</span><span>·</span><span>{regionName(data, l.regionId)}</span></div>
+          {!mobile && <h2 className="m-0 mt-1 font-display text-[22px] leading-tight text-ink">{highlightBanned(l.title)}</h2>}
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <ListingStatusBadge status={l.status} />
             <Badge tone="outline">{uz.condition[l.condition]}</Badge>
@@ -129,11 +172,14 @@ function Detail({ l, onZoom, onApprove, onEdit, onReject, canEdit, canApprove, p
             <span className="text-[13px] text-ink-3">{fmtTime(l.submittedAt)}</span>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="secondary" size="sm" leading={<PencilLine strokeWidth={1.75} />} trailing={<Kbd>E</Kbd>} onClick={onEdit} disabled={!canEdit}>{uz.admin.requestEdit}</Button>
-          <Button variant="danger" size="sm" leading={<X strokeWidth={1.75} />} trailing={<Kbd className="[&_kbd]:bg-transparent [&_kbd]:text-paper [&_kbd]:border-paper/40">R</Kbd>} onClick={onReject} disabled={!canApprove}>{uz.admin.reject}</Button>
-          <Button variant="gold" size="sm" leading={<Check strokeWidth={1.75} />} trailing={<Kbd>A</Kbd>} onClick={onApprove} disabled={!canApprove} loading={pending === 'approve'}>{uz.admin.approve}</Button>
-        </div>
+        {/* telefonda amallar varaq pastida (footer) */}
+        {!mobile && (
+          <div className="flex items-center gap-2">
+            <Button variant="secondary" size="sm" leading={<PencilLine strokeWidth={1.75} />} trailing={<Kbd>E</Kbd>} onClick={onEdit} disabled={!canEdit}>{uz.admin.requestEdit}</Button>
+            <Button variant="danger" size="sm" leading={<X strokeWidth={1.75} />} trailing={<Kbd className="[&_kbd]:bg-transparent [&_kbd]:text-paper [&_kbd]:border-paper/40">R</Kbd>} onClick={onReject} disabled={!canApprove}>{uz.admin.reject}</Button>
+            <Button variant="gold" size="sm" leading={<Check strokeWidth={1.75} />} trailing={<Kbd>A</Kbd>} onClick={onApprove} disabled={!canApprove} loading={pending === 'approve'}>{uz.admin.approve}</Button>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-4 gap-3">

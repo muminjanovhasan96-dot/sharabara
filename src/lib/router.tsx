@@ -25,7 +25,7 @@ export function useHref() {
 
 /** Strip a known app prefix from a stored link like '/m/orders/O-1' so it works embedded too. */
 export function stripAppPrefix(link: string): string {
-  return link.replace(/^\/(m|admin|partner|bts)(?=\/|$)/, '') || '/'
+  return link.replace(/^\/(tel\/admin|tel\/direktor|m|admin|partner|bts|direktor)(?=\/|$)/, '') || '/'
 }
 
 export function useAppNavigate() {

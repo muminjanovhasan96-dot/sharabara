@@ -10,12 +10,14 @@ import { useAppNavigate, useStageNav } from '@/lib/router'
 import { AdminContext } from './lib/context'
 import './admin.css'
 import { useContainerWidth } from './lib/hooks'
-import { isSection, useAccess, useAdminRole } from './lib/sections'
+import { isSection, sectionTitle, useAccess, useAdminRole } from './lib/sections'
 import { Sidebar } from './components/Sidebar'
 import { TopBar } from './components/TopBar'
 import { CommandPalette, ShortcutsHelp } from './components/CommandPalette'
 import { SectionBoundary } from './components/ui'
-import { A, tt } from './strings'
+import { MobileShell } from './components/MobileShell'
+import { SectionIntro } from '@/design'
+import { A, HELP, tt } from './strings'
 import { Dashboard } from './sections/Dashboard'
 import { Moderation } from './sections/Moderation'
 import { Pricing } from './sections/Pricing'
@@ -59,6 +61,7 @@ function AdminInner({ root, embedded }: { root: HTMLDivElement; embedded: boolea
   const width = useContainerWidth(root)
   const [forcedCompact, setForcedCompact] = useState<boolean | null>(null)
   const compact = forcedCompact ?? width < 1100
+  const mobile = !embedded && width < 640
   const [palette, setPalette] = useState(false)
   const [help, setHelp] = useState(false)
   const [pulses, setPulses] = useState<Partial<Record<AdminSection, number>>>({})
@@ -87,33 +90,42 @@ function AdminInner({ root, embedded }: { root: HTMLDivElement; embedded: boolea
     return () => window.removeEventListener('keydown', fn)
   }, [])
 
-  const ctx = useMemo(() => ({ root, embedded, compact, width, pulse, openPalette }), [root, embedded, compact, width, pulse, openPalette])
+  const ctx = useMemo(() => ({ root, embedded, compact, mobile, width, pulse, openPalette }), [root, embedded, compact, mobile, width, pulse, openPalette])
   return (
     <AdminContext.Provider value={ctx}>
       <Routes>
         <Route index element={<Navigate to="dashboard" replace />} />
-        <Route path=":section" element={<Shell compact={compact} onToggle={() => setForcedCompact(!compact)} pulses={pulses} onOpenPalette={openPalette} />} />
+        <Route path=":section" element={<Shell compact={compact} mobile={mobile} onToggle={() => setForcedCompact(!compact)} pulses={pulses} onOpenPalette={openPalette} />} />
         <Route path="*" element={<Navigate to="dashboard" replace />} />
       </Routes>
       <CommandPalette open={palette} onOpenChange={setPalette} />
       <ShortcutsHelp open={help} onOpenChange={setHelp} />
-      <Toaster channel="admin" container={root} position="bottom" className="items-end pr-4" />
+      <Toaster channel="admin" container={root} position="bottom" className={mobile ? 'items-center px-3 !bottom-[76px]' : 'items-end pr-4'} />
       <div id="print-root" aria-hidden="true" />
     </AdminContext.Provider>
   )
 }
 
-function Shell({ compact, onToggle, pulses, onOpenPalette }: { compact: boolean; onToggle: () => void; pulses: Partial<Record<AdminSection, number>>; onOpenPalette: () => void }) {
+function Shell({ compact, mobile, onToggle, pulses, onOpenPalette }: { compact: boolean; mobile: boolean; onToggle: () => void; pulses: Partial<Record<AdminSection, number>>; onOpenPalette: () => void }) {
   const { section } = useParams()
   const nav = useAppNavigate()
   const sec: AdminSection | null = isSection(section) ? section : null
   if (!sec) return <Navigate to="../dashboard" replace />
+  if (mobile) {
+    return (
+      <MobileShell active={sec} onNavigate={(s) => nav(`/${s}`)}>
+        <SectionIntro id={`admin-${sec}`} title={sectionTitle(sec)} help={HELP[sec]} compact className="mx-3 mt-3" />
+        <SectionBoundary key={sec}><SectionView section={sec} /></SectionBoundary>
+      </MobileShell>
+    )
+  }
   return (
     <div className="flex h-full min-h-0 w-full">
       <Sidebar active={sec} compact={compact} onToggle={onToggle} onNavigate={(s) => nav(`/${s}`)} pulses={pulses} />
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar section={sec} onOpenPalette={onOpenPalette} compactSearch={compact} />
         <main className="scroll-thin relative min-h-0 flex-1 overflow-auto">
+          <SectionIntro id={`admin-${sec}`} title={sectionTitle(sec)} help={HELP[sec]} className="mx-5 mt-4" />
           <SectionBoundary key={sec}><SectionView section={sec} /></SectionBoundary>
         </main>
       </div>

@@ -73,11 +73,13 @@ export default function PartnerApp({ embedded = false }: { embedded?: boolean })
   const [printRoot, setPrintRoot] = useState<HTMLElement | null>(null)
   const rail = width < 1100
   const compactHeader = width < 760
+  // telefon: yon menyu o'rniga sarlavha ostida aylanadigan bo'limlar qatori
+  const phone = width < 640
 
   return (
     <PrintRootCtx.Provider value={printRoot}>
       <div ref={rootRef} className={cn('relative flex bg-paper text-ink', isEmbedded ? 'h-full min-h-0' : 'h-dvh')} data-app="partner">
-        <aside className={cn('flex shrink-0 flex-col border-r border-line bg-card text-ink transition-[width]', rail ? 'w-[64px]' : 'w-[232px]')} aria-label={P.title}>
+        {!phone && <aside className={cn('flex shrink-0 flex-col border-r border-line bg-card text-ink transition-[width]', rail ? 'w-[64px]' : 'w-[232px]')} aria-label={P.title}>
           <div className={cn('flex h-14 items-center', rail ? 'justify-center' : 'gap-2.5 px-4')}>
             <Wordmark tone="ink" size="sm" textOnly={rail} className={rail ? 'sr-only' : ''} />
             {rail && <Seal icon="stamp" size={28} variant="ink" />}
@@ -105,17 +107,26 @@ export default function PartnerApp({ embedded = false }: { embedded?: boolean })
               </div>
             </div>
           )}
-        </aside>
+        </aside>}
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="flex h-[60px] shrink-0 items-center justify-between gap-3 border-b border-line bg-card px-5">
-            <div className="min-w-0"><div className="eyebrow !text-[10px] leading-none">{P.eyebrow}</div><div className="mt-0.5 truncate font-display text-[20px] leading-tight text-ink">{P.title}</div></div>
+          <header className={cn('flex shrink-0 items-center justify-between gap-3 border-b border-line bg-card', phone ? 'pt-safe min-h-[56px] px-4 py-2' : 'h-[60px] px-5')}>
+            <div className="min-w-0"><div className="eyebrow !text-[10px] leading-none">{P.eyebrow}</div><div className={cn('mt-0.5 truncate font-display leading-tight text-ink', phone ? 'text-[18px]' : 'text-[20px]')}>{P.title}</div></div>
             <div className="flex items-center gap-2">
               {!compactHeader && <span className="tnum hidden h-9 items-center rounded-full bg-paper px-3 text-[12.5px] text-ink-2 md:inline-flex">{formatDemoTime(now)}</span>}
               <CompanySwitcher compact={compactHeader} />
             </div>
           </header>
-          <main className={cn('scroll-thin min-w-0 flex-1 overflow-y-auto px-5 py-5', width < 900 ? 'px-4' : 'px-6')}>
+          {phone && (
+            <nav className="no-scrollbar flex shrink-0 gap-1.5 overflow-x-auto border-b border-line bg-card px-3 py-2" aria-label="Bo’limlar">
+              {NAV.map((n) => (
+                <NavLink key={n.to} to={href(n.to)} end={n.to === '/'} className={({ isActive }) => cn('inline-flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 text-[13px] font-medium transition-colors', isActive ? 'border-ink bg-ink text-card' : 'border-line bg-card text-ink-2')}>
+                  {({ isActive }) => <><Icon name={n.icon} size={15} className={isActive ? 'text-gold-fill' : 'text-ink-3'} />{P.nav[n.key]}</>}
+                </NavLink>
+              ))}
+            </nav>
+          )}
+          <main className={cn('scroll-thin min-w-0 flex-1 overflow-y-auto py-5', phone ? 'px-3 py-3' : width < 900 ? 'px-4' : 'px-6')}>
             <Routes>
               <Route index element={<Overview />} />
               <Route path="products" element={<Products />} />

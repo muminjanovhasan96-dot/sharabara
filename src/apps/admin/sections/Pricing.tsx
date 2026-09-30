@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Bar, BarChart, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { Check, Minus, Plus, Sparkles, Undo2, X } from 'lucide-react'
+import { Check, ChevronRight, Minus, Plus, Sparkles, Undo2, X } from 'lucide-react'
 import {
-  Badge, Button, Chip, DataTable, EmptyState, Field, Input, LedgerRow, Ledger, Money, MoneyInput, ProductImage, Skeleton, Textarea, chartTheme, type Column,
+  Badge, BottomSheet, Button, Chip, DataTable, EmptyState, Field, Input, LedgerRow, Ledger, Money, MoneyInput, ProductImage, Skeleton, Textarea, chartTheme, type Column,
 } from '@/design'
 import { useNow, useStore } from '@/store'
 import { api } from '@/api'
@@ -19,7 +19,7 @@ import { useAccess } from '../lib/sections'
 import { useAct, useQueryParam, useSectionLoading } from '../lib/hooks'
 import { categoryName, regionName, signedPct, userName, waitFor } from '../lib/format'
 import { localApi } from '../localApi'
-import { useAdmin } from '../lib/context'
+import { useAdmin, useContainer } from '../lib/context'
 import { imgId } from './Moderation'
 import { A, tt } from '../strings'
 
@@ -30,52 +30,81 @@ export function Pricing() {
   const now = useNow()
   const access = useAccess('pricing')
   const loading = useSectionLoading()
-  const { compact } = useAdmin()
+  const { compact, mobile } = useAdmin()
+  const root = useContainer()
   const [qid, setQid] = useQueryParam('id')
   const [chip, setChip] = useState<QueueChip | 'all'>('all')
   const queue = useMemo(() => data.listings
     .filter(isPricingQueue)
     .sort((a, b) => (a.status === 'in_review' ? 0 : 1) - (b.status === 'in_review' ? 0 : 1) || (a.submittedAt ?? a.createdAt).localeCompare(b.submittedAt ?? b.createdAt)), [data.listings])
   const filtered = chip === 'all' ? queue : queue.filter((l) => classifyQueue(l) === chip)
-  const selected = data.listings.find((l) => l.id === qid) ?? filtered[0]
-  useEffect(() => { if (!qid && filtered[0]) setQid(filtered[0].id) }, [qid, filtered, setQid])
+  // Telefonda hech narsa avtomatik tanlanmaydi: ro'yxat → bosish → pastdan chiqadigan varaq
+  const fromParam = data.listings.find((l) => l.id === qid)
+  const selected = mobile ? fromParam : fromParam ?? filtered[0]
+  useEffect(() => { if (!mobile && !qid && filtered[0]) setQid(filtered[0].id) }, [mobile, qid, filtered, setQid])
   const selectNext = (cur: string) => { const rest = filtered.filter((l) => l.id !== cur); setQid(rest[0]?.id ?? null) }
   const counts = useMemo(() => { const c: Record<QueueChip, number> = { overpriced: 0, fair: 0, low_data: 0, imei_issue: 0 }; for (const l of queue) c[classifyQueue(l)] += 1; return c }, [queue])
 
-  if (loading) return <div className="grid h-full grid-cols-[300px_1fr_340px] gap-4 p-4"><Skeleton height="100%" className="rounded-card" /><Skeleton height="100%" className="rounded-card" /><Skeleton height="100%" className="rounded-card" /></div>
+  if (loading) return mobile
+    ? <div className="flex flex-col gap-3 p-3">{Array.from({ length: 5 }, (_, i) => <Skeleton key={i} height={72} className="rounded-card" />)}</div>
+    : <div className="grid h-full grid-cols-[300px_1fr_340px] gap-4 p-4"><Skeleton height="100%" className="rounded-card" /><Skeleton height="100%" className="rounded-card" /><Skeleton height="100%" className="rounded-card" /></div>
+
+  const chips = (
+    <div className="flex flex-wrap gap-1">
+      <Chip size="sm" selected={chip === 'all'} onToggle={() => setChip('all')}>{A.pricing.chips.all}</Chip>
+      {(['overpriced', 'fair', 'low_data', 'imei_issue'] as QueueChip[]).map((c) => (
+        <Chip key={c} size="sm" selected={chip === c} onToggle={() => setChip(chip === c ? 'all' : c)}>{A.pricing.chips[c]} <span className="tnum text-ink-3">{counts[c]}</span></Chip>
+      ))}
+    </div>
+  )
+  const list = (
+    <>
+      {filtered.length === 0 && <EmptyState compact icon="badge-percent" title={A.pricing.empty} hint={A.pricing.emptyHint} />}
+      {filtered.map((l) => {
+        const q = classifyQueue(l)
+        const active = selected?.id === l.id
+        return (
+          <button key={l.id} type="button" data-testid={TID.aQueueItem} data-id={l.id} aria-current={active ? 'true' : undefined} onClick={() => setQid(l.id)}
+            className={cn('flex w-full items-start gap-2.5 border-b border-line text-left transition-colors hover:bg-blue-soft/40', mobile ? 'px-4 py-3' : 'px-3 py-2.5', active && !mobile && 'bg-blue-soft shadow-[inset_3px_0_0_var(--blue)] hover:bg-blue-soft')}>
+            <ProductImage id={imgId(l.images[0] ?? '', l.id)} className={cn('shrink-0', mobile ? 'h-12 w-12' : 'h-11 w-11')} fill={0.8} />
+            <span className="min-w-0 flex-1">
+              <span className={cn('block truncate font-medium text-ink', mobile ? 'text-[14px]' : 'text-[13px]')}>{l.title}</span>
+              <span className="mt-0.5 flex items-center justify-between gap-2 text-[12px]"><Money tiyin={l.askingTiyin} size="xs" className="text-ink-2" /><span className="tnum text-ink-3">{waitFor(l.submittedAt, now)}</span></span>
+              <span className="mt-1 flex items-center gap-1">
+                {l.suggestion ? <Badge size="sm" tone={CHIP_TONE[q]} dot>{A.pricing.chips[q]}</Badge> : <Badge size="sm" tone="outline">{uz.listing.status[l.status]}</Badge>}
+              </span>
+            </span>
+            {mobile && <ChevronRight size={16} className="mt-3 shrink-0 text-ink-3" aria-hidden="true" />}
+          </button>
+        )
+      })}
+    </>
+  )
+
+  if (mobile) {
+    // Telefon: navbat to'liq kenglikda; e'lon bosilsa AI tahlili + narx tuzatish pastdan chiqadigan varaqda
+    return (
+      <div className="flex flex-col pb-3">
+        <div className="sticky top-0 z-10 border-b border-line bg-paper/95 px-4 py-2.5 backdrop-blur">
+          <div className="eyebrow mb-2">{A.pricing.queue} · <span className="tnum text-ink">{queue.length}</span></div>
+          {chips}
+        </div>
+        <div className="bg-card">{list}</div>
+        <BottomSheet open={!!selected} onOpenChange={(o) => { if (!o) setQid(null) }} container={root} snap="full" eyebrow={A.pricing.aiCard} title={selected?.title} bodyClassName="px-0 pb-0">
+          {selected && <div className="flex flex-col"><Workbench key={selected.id} l={selected} canEdit={access.edit} canApprove={access.approve} onDone={() => selectNext(selected.id)} mobile /></div>}
+        </BottomSheet>
+      </div>
+    )
+  }
 
   return (
     <div className={cn('grid h-full min-h-0', compact ? 'grid-cols-[236px_minmax(0,1fr)_300px]' : 'grid-cols-[292px_minmax(0,1fr)_340px]')}>
       <aside className="flex min-h-0 flex-col border-r border-line bg-card">
         <div className="border-b border-line px-3 py-2.5">
           <div className="eyebrow mb-2">{A.pricing.queue} · <span className="tnum text-ink">{queue.length}</span></div>
-          <div className="flex flex-wrap gap-1">
-            <Chip size="sm" selected={chip === 'all'} onToggle={() => setChip('all')}>{A.pricing.chips.all}</Chip>
-            {(['overpriced', 'fair', 'low_data', 'imei_issue'] as QueueChip[]).map((c) => (
-              <Chip key={c} size="sm" selected={chip === c} onToggle={() => setChip(chip === c ? 'all' : c)}>{A.pricing.chips[c]} <span className="tnum text-ink-3">{counts[c]}</span></Chip>
-            ))}
-          </div>
+          {chips}
         </div>
-        <div className="scroll-thin min-h-0 flex-1 overflow-y-auto">
-          {filtered.length === 0 && <EmptyState compact icon="badge-percent" title={A.pricing.empty} hint={A.pricing.emptyHint} />}
-          {filtered.map((l) => {
-            const q = classifyQueue(l)
-            const active = selected?.id === l.id
-            return (
-              <button key={l.id} type="button" data-testid={TID.aQueueItem} data-id={l.id} aria-current={active ? 'true' : undefined} onClick={() => setQid(l.id)}
-                className={cn('flex w-full items-start gap-2.5 border-b border-line px-3 py-2.5 text-left transition-colors hover:bg-blue-soft/40', active && 'bg-blue-soft shadow-[inset_3px_0_0_var(--blue)] hover:bg-blue-soft')}>
-                <ProductImage id={imgId(l.images[0] ?? '', l.id)} className="h-11 w-11 shrink-0" fill={0.8} />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[13px] font-medium text-ink">{l.title}</span>
-                  <span className="mt-0.5 flex items-center justify-between gap-2 text-[12px]"><Money tiyin={l.askingTiyin} size="xs" className="text-ink-2" /><span className="tnum text-ink-3">{waitFor(l.submittedAt, now)}</span></span>
-                  <span className="mt-1 flex items-center gap-1">
-                    {l.suggestion ? <Badge size="sm" tone={CHIP_TONE[q]} dot>{A.pricing.chips[q]}</Badge> : <Badge size="sm" tone="outline">{uz.listing.status[l.status]}</Badge>}
-                  </span>
-                </span>
-              </button>
-            )
-          })}
-        </div>
+        <div className="scroll-thin min-h-0 flex-1 overflow-y-auto">{list}</div>
       </aside>
       {selected ? <Workbench key={selected.id} l={selected} canEdit={access.edit} canApprove={access.approve} onDone={() => selectNext(selected.id)} />
         : <div className="col-span-2 grid place-items-center"><EmptyState icon="badge-percent" title={A.pricing.empty} hint={A.pricing.emptyHint} /></div>}
@@ -83,7 +112,7 @@ export function Pricing() {
   )
 }
 
-function Workbench({ l, canEdit, canApprove, onDone }: { l: Listing; canEdit: boolean; canApprove: boolean; onDone: () => void }) {
+function Workbench({ l, canEdit, canApprove, onDone, mobile = false }: { l: Listing; canEdit: boolean; canApprove: boolean; onDone: () => void; mobile?: boolean }) {
   const data = useStore((s) => s.data)
   const now = useNow()
   const { run, pending } = useAct()
@@ -118,16 +147,16 @@ function Workbench({ l, canEdit, canApprove, onDone }: { l: Listing; canEdit: bo
 
   return (
     <>
-      <section className="scroll-thin flex min-h-0 flex-col gap-4 overflow-y-auto p-4">
+      <section className={cn('flex min-h-0 flex-col gap-4 p-4', !mobile && 'scroll-thin overflow-y-auto')}>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2 text-[12px] text-ink-3"><span className="tnum">{l.id}</span><span>·</span><span>{categoryName(data, l.categoryId)}</span><span>·</span><span>{regionName(data, l.regionId)}</span><span>·</span><span>{userName(data, l.sellerId)}</span></div>
-            <h2 className="m-0 mt-1 font-display text-[20px] leading-tight text-ink">{l.title}</h2>
+            {!mobile && <h2 className="m-0 mt-1 font-display text-[20px] leading-tight text-ink">{l.title}</h2>}
           </div>
-          <div className="flex items-center gap-2"><ListingStatusBadge status={l.status} /><Badge tone="outline">{uz.condition[l.condition]}</Badge><span className="tnum text-[12.5px] text-ink-3">{waitFor(l.submittedAt, now)} {A.pricing.waiting}</span></div>
+          <div className="flex flex-wrap items-center gap-2"><ListingStatusBadge status={l.status} /><Badge tone="outline">{uz.condition[l.condition]}</Badge><span className="tnum text-[12.5px] text-ink-3">{waitFor(l.submittedAt, now)} {A.pricing.waiting}</span></div>
         </div>
         <div className="flex flex-col gap-3">
-          <div className="flex gap-3">{(l.images.length ? l.images : ['x']).slice(0, 4).map((img, i) => <ProductImage key={i} id={imgId(img, `${l.id}-${i}`)} className="h-[88px] w-[88px] shrink-0" />)}</div>
+          <div className={cn('flex gap-3', mobile && 'no-scrollbar -mx-4 overflow-x-auto px-4')}>{(l.images.length ? l.images : ['x']).slice(0, 4).map((img, i) => <ProductImage key={i} id={imgId(img, `${l.id}-${i}`)} className="h-[88px] w-[88px] shrink-0" />)}</div>
           <div className="min-w-0 rounded-card border border-line bg-card p-3">
             <div className="flex flex-wrap items-baseline justify-between gap-2"><SectionTitle>{A.pricing.sellerNote}</SectionTitle><span className="flex items-baseline gap-2 text-[13px]"><span className="text-ink-2">{A.pricing.asking}</span><Money tiyin={l.askingTiyin} size="md" /></span></div>
             <p className="m-0 text-[13px] leading-snug text-ink-2">{l.description}</p>
@@ -151,7 +180,7 @@ function Workbench({ l, canEdit, canApprove, onDone }: { l: Listing; canEdit: bo
               <SectionTitle right={<span className="text-[12px] text-ink-3">{A.pricing.marketMedian}: <Money tiyin={sug.marketMedianTiyin} size="xs" className="text-ink" /></span>}>{A.pricing.comparables} · {sug.comparables.length}</SectionTitle>
               <DataTable columns={compCols} rows={sug.comparables} rowKey={(c) => c.listingId} pageSize={6} exportFilename={`oxshash-${l.id}`} defaultSort={{ key: 'weight', dir: 'desc' }} columnsMenu emptyState={<EmptyState compact title={A.pricing.noComparables} />} />
             </div>
-            <div className="grid grid-cols-[minmax(0,1fr)_200px] gap-4">
+            <div className={cn('grid gap-4', mobile ? 'grid-cols-1' : 'grid-cols-[minmax(0,1fr)_200px]')}>
               <div className="rounded-card border border-line bg-card p-3">
                 <SectionTitle right={<LegendPills items={[{ label: A.pricing.asking, color: AC.brick }, { label: A.pricing.suggested, color: AC.goldFill }]} />}>{A.pricing.histogram}</SectionTitle>
                 <div className="h-[150px]">
@@ -183,7 +212,7 @@ function Workbench({ l, canEdit, canApprove, onDone }: { l: Listing; canEdit: bo
         )}
       </section>
 
-      <aside className="scroll-thin flex min-h-0 flex-col overflow-y-auto border-l border-line bg-card">
+      <aside className={cn('flex min-h-0 flex-col border-line bg-card', mobile ? 'border-t' : 'scroll-thin overflow-y-auto border-l')}>
         <div className="flex shrink-0 items-start justify-between gap-3 border-b border-blue/10 bg-blue-soft px-4 py-3">
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-blue"><Sparkles size={13} strokeWidth={2} aria-hidden="true" />{A.pricing.aiCard}</div>
@@ -234,7 +263,7 @@ function Workbench({ l, canEdit, canApprove, onDone }: { l: Listing; canEdit: bo
         <Field label={A.pricing.note} optionalText={uz.app.optional}>
           <Textarea rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder={A.pricing.notePlaceholder} disabled={!canEdit} />
         </Field>
-        <div className="mt-auto flex flex-col gap-2">
+        <div className={cn('mt-auto flex flex-col gap-2', mobile && 'sticky bottom-0 -mx-4 -mb-4 border-t border-line bg-card px-4 pb-safe pt-3')}>
           <Button data-testid={TID.aSendOffer} variant="gold" fullWidth leading={<Check strokeWidth={2} />} onClick={send} disabled={!canApprove || !price || l.status !== 'in_review'} loading={pending === 'send'}>{uz.admin.sendOffer}</Button>
           <div className="grid grid-cols-2 gap-2">
             <Button variant="secondary" size="sm" leading={<Undo2 strokeWidth={1.75} />} onClick={() => setDlg('return')} disabled={!canEdit || l.status !== 'in_review'}>{uz.admin.return}</Button>

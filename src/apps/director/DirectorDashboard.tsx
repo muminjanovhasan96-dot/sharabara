@@ -137,12 +137,11 @@ function Shell() {
             {!embedded && <div className="hidden items-center gap-2 @3xl:flex">{themeBtn}{avatar}</div>}
           </div>
         </div>
-        {!mobile && (
-          <div className="mx-auto flex w-full max-w-[1200px] items-center gap-1.5 px-4 pb-2 text-[12.5px] text-ink-2">
-            <span className="truncate">{D.help[tab].sub}</span>
-            <HelpPopover size="sm" title={D.tabs[tab]} help={D.help[tab]} />
-          </div>
-        )}
+        {/* «Bu tab nima uchun» — bir gap + «?»; telefonda ham ko'rinadi, birinchi marta ochgan odam tushunsin */}
+        <div className={cn('mx-auto flex w-full max-w-[1200px] items-center gap-1.5 px-4 pb-2 text-[12.5px] text-ink-2', mobile && 'pb-2.5')}>
+          <span className={cn('min-w-0', mobile ? 'clamp-2 leading-snug' : 'truncate')}>{D.help[tab].sub}</span>
+          <HelpPopover size="sm" title={D.tabs[tab]} help={D.help[tab]} />
+        </div>
       </header>
 
       <main className={cn('@container min-w-0 flex-1', !embedded && 'scroll-thin min-h-0 overflow-y-auto')}>

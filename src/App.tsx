@@ -12,6 +12,7 @@ const StageApp = lazy(() => import('@/apps/stage/StageApp'))
 const DesignLab = lazy(() => import('@/apps/design-lab/DesignLab'))
 const DirectorApp = lazy(() => import('@/apps/director/DirectorApp'))
 const StoryApp = lazy(() => import('@/apps/story/StoryApp'))
+const PhoneDemo = lazy(() => import('@/apps/PhoneDemo').then((m) => ({ default: m.PhoneDemo })))
 
 function Fallback() {
   return (
@@ -34,6 +35,11 @@ export default function App() {
         <Route path="/partner/*" element={<AppBase base="/partner" app="partner"><PartnerApp /></AppBase>} />
         <Route path="/bts/*" element={<AppBase base="/bts" app="bts"><BtsApp /></AppBase>} />
         <Route path="/direktor/*" element={<AppBase base="/direktor" app="director"><DirectorApp /></AppBase>} />
+        {/* Telefon havolalari: telefonda to'liq ekran, kompyuterda telefon ramkasi */}
+        <Route path="/tel/admin/*" element={<AppBase base="/tel/admin" app="admin"><PhoneDemo><AdminApp /></PhoneDemo></AppBase>} />
+        <Route path="/tel/direktor/*" element={<AppBase base="/tel/direktor" app="director"><PhoneDemo><DirectorApp /></PhoneDemo></AppBase>} />
+        <Route path="/tel/m/*" element={<Navigate to="/m" replace />} />
+        <Route path="/tel" element={<Navigate to="/tel/admin" replace />} />
         <Route path="/stage" element={<StageApp />} />
         <Route path="/hikoya" element={<StoryApp />} />
         <Route path="/dizayn" element={<DesignLab />} />

@@ -22,3 +22,25 @@
 /* Recharts: yumshoqroq to'r va oq kartada ko'k kursor */
 [data-admin-root] .recharts-cartesian-grid line { stroke: var(--line); stroke-opacity: 0.8; }
 [data-admin-root] .recharts-tooltip-cursor { fill: color-mix(in srgb, var(--blue-soft) 60%, transparent); }
+
+/* ─── Telefon qobig'i ([data-admin-mobile]) ────────────────────────────────
+ * Bo'limlar kompyuter uchun yozilgan (p-5, 3–4 ustunli KV to'rlari, qattiq kenglikli filtrlar).
+ * Telefonda shu qatlamsiz qoidalar utilitalardan ustun keladi: tor chekka, 2 ustun, to'liq kenglikli filtrlar.
+ */
+[data-admin-mobile] .p-5 { padding: 12px; }
+[data-admin-mobile] .p-4 { padding: 12px; }
+[data-admin-mobile] .gap-5 { gap: 12px; }
+[data-admin-mobile] .grid-cols-3, [data-admin-mobile] .grid-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+[data-admin-mobile] .w-36, [data-admin-mobile] .w-40, [data-admin-mobile] .w-44, [data-admin-mobile] .w-48, [data-admin-mobile] .w-56 { width: 100%; }
+[data-admin-mobile] .max-w-\[980px\] { max-width: none; }
+/* Jadval kartasi: gorizontal aylantirish belgisi — o'ng chetdagi yumshoq soya */
+[data-admin-mobile] table { min-width: 560px; }
+/* Telefonda klaviatura yorliqlari ma'nosiz */
+[data-admin-mobile] kbd { display: none; }
+/* Kompyuterdagi telefon ramkasi (/tel/admin): viewport 1440px, konteyner 390px — sm/md/lg/xl to'rlari
+ * media-so'rovga qarab ochilib ketmasin. Telefon qobig'ida har qanday breakpoint-to'r bitta ustun. */
+[data-admin-mobile] [class*="sm:grid-cols-"], [data-admin-mobile] [class*="md:grid-cols-"], [data-admin-mobile] [class*="lg:grid-cols-"], [data-admin-mobile] [class*="xl:grid-cols-"] { grid-template-columns: minmax(0, 1fr); }
+[data-admin-mobile] [class*="sm:grid-cols-2"], [data-admin-mobile] [class*="md:grid-cols-2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+[data-admin-mobile] [class*="xl:col-span-"], [data-admin-mobile] [class*="lg:col-span-"] { grid-column: auto; }
+[data-admin-mobile] [class*="sm:flex-row"] { flex-direction: column; }
+[data-admin-mobile] .md\:block { display: none; }

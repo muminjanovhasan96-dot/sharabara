@@ -3,7 +3,7 @@
  */
 import { test, expect } from '@playwright/test'
 
-const ROUTES = ['/', '/m', '/admin', '/partner', '/bts', '/stage', '/hikoya']
+const ROUTES = ['/', '/m', '/admin', '/partner', '/bts', '/stage', '/hikoya', '/direktor', '/tel/admin', '/tel/direktor']
 
 for (const route of ROUTES) {
   test(`${route} konsol xatosisiz ochiladi`, async ({ page }) => {

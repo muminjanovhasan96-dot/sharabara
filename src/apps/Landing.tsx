@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Gauge, LayoutDashboard, LayoutPanelLeft, Monitor, Palette, Smartphone, Sparkles, Store, Truck } from 'lucide-react'
+import { ArrowRight, Gauge, LayoutDashboard, LayoutPanelLeft, Monitor, Palette, ShieldCheck, Smartphone, Sparkles, Store, Truck } from 'lucide-react'
 import QRCode from 'qrcode'
 import { Seal } from '@/design'
+import { useIsMobile } from '@/lib/hooks'
 
 /** Bosh sahifa: 3 ta katta yo'l — Hikoya (asosiy), Telefon, Kompyuter. Qolgani kichik havolalar. */
 const MORE = [
@@ -13,15 +14,46 @@ const MORE = [
   { to: '/dizayn', title: 'Dizayn namunalari', Icon: Palette },
 ]
 
+/** Telefon havolalari: har biri telefonda to'liq ekran, kompyuterda telefon ramkasida ochiladi. */
+const PHONE_LINKS = [
+  { to: '/m', title: 'Mijoz ilovasi', who: 'Xaridor va sotuvchi', Icon: Smartphone },
+  { to: '/tel/direktor', title: 'Direktor paneli', who: 'Rahbar uchun: savdo, pul, muammolar', Icon: Gauge },
+  { to: '/tel/admin', title: 'Admin (telefon)', who: 'Navbatlar va tasdiqlash yo’lda', Icon: ShieldCheck },
+]
+
 function useQr(url: string) {
   const [svg, setSvg] = useState('')
   useEffect(() => { let on = true; QRCode.toString(url, { type: 'svg', margin: 1, width: 132, color: { dark: '#1a2430', light: '#0000' } }).then((s) => { if (on) setSvg(s) }).catch(() => {}); return () => { on = false } }, [url])
   return svg
 }
 
+function absUrl(path: string): string {
+  return typeof window !== 'undefined' ? `${window.location.origin}${import.meta.env.BASE_URL}${path.replace(/^\//, '')}` : ''
+}
+
+/** Telefon havolasi kartasi: kompyuterda QR, telefonning o'zida — bosiladigan qator. */
+function PhoneLinkCard({ to, title, who, Icon, mobile }: (typeof PHONE_LINKS)[number] & { mobile: boolean }) {
+  const qr = useQr(absUrl(to))
+  return (
+    <Link to={to} className="group flex items-center gap-3 rounded-[18px] border border-line bg-card p-3 shadow-soft transition-transform hover:-translate-y-0.5">
+      {!mobile && qr ? (
+        <span className="h-[84px] w-[84px] shrink-0 rounded-[10px] bg-white p-1 [&>svg]:h-full [&>svg]:w-full" dangerouslySetInnerHTML={{ __html: qr }} aria-hidden="true" />
+      ) : (
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-paper-2 text-ink shadow-[inset_0_0_0_1px_var(--line)]"><Icon size={20} strokeWidth={1.75} /></span>
+      )}
+      <span className="min-w-0 flex-1">
+        <span className="block font-display text-[16px] leading-tight text-ink">{title}</span>
+        <span className="mt-0.5 block text-[12.5px] leading-snug text-ink-2">{who}</span>
+        <span className="mt-1.5 inline-flex items-center gap-1 text-[12.5px] font-semibold text-blue">{mobile ? 'Ochish' : 'Kamera bilan skanerlang'}<ArrowRight size={13} strokeWidth={2} className="transition-transform group-hover:translate-x-0.5" /></span>
+      </span>
+    </Link>
+  )
+}
+
 export function Landing() {
-  const phoneUrl = typeof window !== 'undefined' ? `${window.location.origin}${import.meta.env.BASE_URL}m` : ''
+  const phoneUrl = absUrl('/m')
   const qr = useQr(phoneUrl)
+  const mobile = useIsMobile()
   return (
     <main className="min-h-dvh bg-paper text-ink">
       <div className="mx-auto max-w-5xl px-4 py-8 sm:py-12">
@@ -53,12 +85,13 @@ export function Landing() {
               <span className="eyebrow">2 · Xaridor va sotuvchi uchun</span>
               <span className="mt-0.5 block font-display text-[22px] leading-tight">Telefon ilovasi</span>
               <span className="mt-1 block text-[14px] leading-snug text-ink-2">«Narx tekshirilgan» e’lonlar, sotish ustasi, savat, buyurtma, hamyon. Kompyuterda telefon ramkasida ochiladi.</span>
-              {qr && (
+              {qr && !mobile && (
                 <span className="mt-3 flex items-center gap-3 rounded-[14px] bg-paper p-2.5">
                   <span className="h-[96px] w-[96px] shrink-0 rounded-[8px] bg-white p-1 [&>svg]:h-full [&>svg]:w-full" dangerouslySetInnerHTML={{ __html: qr }} aria-hidden="true" />
                   <span className="text-[12.5px] leading-snug text-ink-2">O’z telefoningizda oching: kamera bilan skanerlang — ilova to’liq ekranda ishlaydi.</span>
                 </span>
               )}
+              {mobile && <span className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-semibold text-gold"><Smartphone size={14} strokeWidth={2} />Ochish<ArrowRight size={14} strokeWidth={2} /></span>}
             </span>
           </Link>
           <Link to="/admin" className="group flex gap-4 rounded-[22px] border border-line bg-card p-5 shadow-soft transition-transform hover:-translate-y-0.5">
@@ -71,6 +104,19 @@ export function Landing() {
             </span>
           </Link>
         </div>
+
+        {/* Telefonda ochiladigan ekranlar — alohida havolalar */}
+        <section className="mt-8" aria-labelledby="tel-h">
+          <div className="mb-3 flex items-end justify-between gap-3">
+            <div className="min-w-0">
+              <h2 id="tel-h" className="m-0 font-display text-[20px] leading-tight text-ink">Telefonda oching</h2>
+              <p className="m-0 mt-0.5 text-[13.5px] text-ink-2">{mobile ? 'Uchala ekran telefon uchun moslangan: bosing va ishlating.' : 'Har birini telefoningizda skanerlang — kompyuterda telefon ramkasida ko’rsatiladi.'}</p>
+            </div>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {PHONE_LINKS.map((l) => <PhoneLinkCard key={l.to} {...l} mobile={mobile} />)}
+          </div>
+        </section>
 
         <div className="mt-8">
           <div className="eyebrow mb-2">Qo’shimcha ekranlar</div>
